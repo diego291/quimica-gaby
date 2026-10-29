@@ -77,7 +77,7 @@ function motCard(){
   paint(); return c;
 }
 const _vInicio = vInicio;
-vInicio = function(v){ _vInicio(v); const c = motCard(); const kids = [...v.children]; const at = kids.find(x => !x.classList.contains(`alert`) && !x.dataset.sync && x.tagName !== `P`); v.insertBefore(c, at || null); };
+vInicio = function(v){ _vInicio(v); };
 const _openFocus2 = openFocus;
 openFocus = function(){ _openFocus2(); const f = $(`#focusroot .focus`); if (f && motCfg().open !== null){ const q = frase(); const p = el(`p`, `fquote`, `“${q.t}”${q.s ? `<small>— ${q.s}</small>` : ``}`); f.append(p); } };
 function openMotSettings(){
@@ -90,4 +90,15 @@ function openMotSettings(){
     b.append(fld(`Frases mientras estudias`, s, `Aparecen abajo sin interrumpir`));
     b.append(el(`p`, `muted`, `Hay ${FRASES.length} frases, ${BIBLIA.length} versículos y ${CITAS.length} citas. No se repiten hasta que salgan todas.`));
   });
+}
+
+/* frase pequeña bajo el reloj de Inicio */
+function motLine(){
+  const m = motCfg(); if (!m.cur || Date.now() - (m.curT || 0) > 30 * 60000){ m.cur = frase(); m.curT = Date.now(); save(); }
+  const w = el(`div`, `motline`);
+  const paint = () => { const f = m.cur; w.innerHTML = `<span class="mq">${f.k === `b` ? `🙏` : `✨`} “${f.t}”${f.s ? ` <small>— ${f.s}</small>` : ``}</span>`;
+    const r = btn(`↻`, `mbtn`, () => { m.cur = frase(); m.curT = Date.now(); save(); paint(); }); r.title = `Otra frase`; r.setAttribute(`aria-label`, `Otra frase`);
+    const s = btn(``, `mbtn`, openMotSettings); s.innerHTML = icon(`gear`); s.title = `Ajustes de frases`; s.setAttribute(`aria-label`, `Ajustes de frases`);
+    const a = el(`span`, `macts`); a.append(r, s); w.append(a); };
+  paint(); return w;
 }

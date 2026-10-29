@@ -680,3 +680,12 @@ body{background:var(--bg)}
 .fquote{max-width:520px;color:var(--muted);font-family:"Zilla Slab",serif;font-size:1.1rem;margin-top:10px}
 .fquote small{display:block;font-family:inherit;font-size:.85rem;margin-top:4px}
 @media (max-width:700px){ .motoast{bottom:86px} .motcard .mq{font-size:1.12rem} }
+.clockwrap{display:flex;flex-direction:column;align-items:center;gap:8px;flex:0 1 340px;min-width:0}
+.motline{display:flex;align-items:flex-start;gap:6px;max-width:340px;font-size:.84rem;line-height:1.4;color:var(--muted);font-style:italic;text-align:center}
+.motline .mq small{font-style:normal;opacity:.85;white-space:nowrap}
+.motline .macts{display:flex;gap:2px;flex:none;opacity:.55;transition:opacity .2s}
+.motline:hover .macts,.motline .macts:focus-within{opacity:1}
+.motline .mbtn{border:none;background:none;color:var(--muted);padding:2px 4px;border-radius:6px;font-size:.9rem;line-height:1;display:inline-flex;font-style:normal}
+.motline .mbtn svg{width:14px;height:14px}
+.motline .mbtn:hover{color:var(--acc);background:var(--accSoft)}
+@media (max-width:700px){ .clockwrap{align-items:stretch;flex-basis:auto} .motline{max-width:none;text-align:left;font-size:.8rem;padding:0 4px} }

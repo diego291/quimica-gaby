@@ -37,7 +37,7 @@ function addHeadClock(){
   if (S.mode === `notas`){ const h1 = $(`#head h1`); if (h1) h1.textContent = `Mis notas`; const k = $(`#head .top .k`); if (k) k.textContent = `Inicio · ${curCiclo() ? curCiclo().name : `Notas`}`; document.querySelectorAll(`#head .chips, #head .hstat`).forEach(x => x.remove()); }
   if (S.mode === `inicio`){
     const k = $(`#head .top .k`); if (k) k.textContent = `Química · Laboratorio Clínico`;
-    const w = el(`div`, `clockwrap`); w.append(clockBig());
+    const w = el(`div`, `clockwrap`); w.append(clockBig()); if (typeof motLine === `function`) w.append(motLine());
     if (innerWidth <= 700) top.after(w); else top.insertBefore(w, tools);
   } else if (clkCfg().chip && tools){ const c = btn(``, `hbtn hclock`); c.dataset.clock = `chip`; c.title = `Hora · ajustes del reloj`; c.onclick = openClockSettings; paintClock(c); tools.prepend(c); }
 }
