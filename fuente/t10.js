@@ -46,5 +46,5 @@ let cloud = {}; let writes = 0;
  await A.screenshot({ path:'shots/sync_conflict.png' });
  await A.click('button:has-text("Conservar el de este dispositivo")'); await A.waitForTimeout(800);
  log('cloud now', Object.keys(JSON.parse(cloud.gaby1.datos.parcialM4_v2).st).join(','));
- log(errs.join('\n') || 'sin errores'); await b.close();
+ await B.click('#rail .ri:has-text("Inicio")'); await B.click('#subw .sb:has-text("Mi progreso")'); await B.waitForTimeout(300); log('push card', await B.$$eval('article h3', a => a.map(x => x.textContent).filter(t => /Notific/.test(t)))); await B.screenshot({ path:'shots/push_card.png', fullPage:true }); log(errs.join('\n') || 'sin errores'); await b.close();
 })();

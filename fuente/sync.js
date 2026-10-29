@@ -67,7 +67,7 @@ async function syncPush(force){
     const m = syncMeta();
     if (!force){ const snap = await docRef().get({ source:`server` }); const r = snap.exists ? snap.data() : null; if (r && (r.updated || 0) > (m.rev || 0)){ SY.busy = false; return syncConflict(r); } }
     const now = Date.now();
-    await docRef().set({ datos:localData(), updated:now, dev:devName() });
+    await docRef().set({ datos:localData(), updated:now, dev:devName() }, { merge:true });
     setMeta({ uid:SY.user.uid, rev:now, dirty:false, at:now }); SY.busy = false; setSync(`ok`);
   } catch(e){ SY.busy = false; setSync(navigator.onLine ? `err` : `offline`, navigator.onLine ? `No se pudo guardar en la nube.` : ``); }
 }

@@ -59,7 +59,7 @@ function hoy(){ try { return new Date().toLocaleDateString(`es-SV`, { day:`numer
 
 /* ======================= ESTADO ======================= */
 const KEY = `parcialM4_v2`;
-const MODES = [[`inicio`,`Hoy`],[`notas`,`Mis notas`],[`impreso`,`Parcial impreso`],[`guia`,`Cómo estudiar`],[`repaso`,`Repaso`],[`videos`,`Videos`],[`preguntar`,`Preguntar`],[`fichas`,`Fichas`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`formula`,`¿Qué fórmula uso?`],[`practica`,`Práctica infinita`],[`lab`,`Laboratorio`],[`simulacro`,`Simulacro`],[`formulario`,`Formulario`],[`progreso`,`Mi progreso`]];
+const MODES = [[`inicio`,`Hoy`],[`hoy`,`Para hoy`],[`escuchar`,`Escuchar`],[`notas`,`Mis notas`],[`impreso`,`Parcial impreso`],[`guia`,`Cómo estudiar`],[`repaso`,`Repaso`],[`videos`,`Videos`],[`preguntar`,`Preguntar`],[`fichas`,`Fichas`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`formula`,`¿Qué fórmula uso?`],[`practica`,`Práctica infinita`],[`lab`,`Laboratorio`],[`simulacro`,`Simulacro`],[`formulario`,`Formulario`],[`progreso`,`Mi progreso`]];
 const S = { x:{}, sel: new Set(TORDER), mode:`inicio`, simFb:`now`, st:{}, err:[], box:{}, shuffle:false, onlyErr:false, figFront:false };
 try { const s = JSON.parse(localStorage.getItem(KEY) || `null`); if (s){ S.sel = new Set(s.sel.filter(k => TORDER.includes(k))); S.mode = MODES.some(m => m[0] === s.mode) ? s.mode : `inicio`; S.x = s.x || {}; S.st = s.st || {}; S.err = s.err || []; S.box = s.box || {}; S.simFb = s.simFb || `now`; } } catch(e){}
 function save(){ try { localStorage.setItem(KEY, JSON.stringify({ sel:[...S.sel], mode:S.mode, simFb:S.simFb, st:S.st, err:S.err, box:S.box, x:S.x })); } catch(e){} }
@@ -130,7 +130,7 @@ function ejCard(it){
 
 /* ======================= GRADILLA Y MODOS ======================= */
 function counts(t){
-  const n = { guia:ALL.REPASO, videos:VIDEOS, preguntar:ALL.REPASO, repaso:ALL.REPASO, fichas:ALL.FICHAS, preguntas:ALL.MCQ.concat(ALL.ABIERTAS), ejercicios:ALL.EJ, formula:ALL.FQ, practica:GENS, lab:LABS, simulacro:ALL.MCQ, formulario:ALL.FORM, progreso:ALL.MCQ }[S.mode];
+  const n = { guia:ALL.REPASO, videos:VIDEOS, preguntar:ALL.REPASO, repaso:ALL.REPASO, fichas:ALL.FICHAS, preguntas:ALL.MCQ.concat(ALL.ABIERTAS), ejercicios:ALL.EJ, formula:ALL.FQ, practica:GENS, lab:LABS, simulacro:ALL.MCQ, formulario:ALL.FORM, progreso:ALL.MCQ, hoy:ALL.MCQ, escuchar:ALL.REPASO, notas:ALL.MCQ, inicio:ALL.REPASO, impreso:ALL.MCQ }[S.mode] || ALL.MCQ;
   return n.filter(x => x.t === t || (x.ts && x.ts.includes(t))).length;
 }
 /* (gradilla y modos: ver ui.js) */
@@ -481,7 +481,7 @@ function vSimulacro(v){
   if (SIM.i >= SIM.qs.length){
     stopTick();
     const nota = (SIM.ok / Math.max(1, SIM.qs.length) * 10).toFixed(1);
-    if (!SIM.saved && SIM.qs.length){ SIM.saved = true; S.x.simLast = { d: todayStr(), nota: +nota, ts:[...new Set(SIM.qs.map(q => q.t))] }; save(); setTimeout(() => motSim(+nota), 400); }
+    if (!SIM.saved && SIM.qs.length){ SIM.saved = true; S.x.simLast = { d: todayStr(), nota: +nota, ts:[...new Set(SIM.qs.map(q => q.t))] }; save(); if (SIM.ev) simEventSave(SIM.ev, +nota); setTimeout(() => motSim(+nota), 400); }
     const box = el(`div`,`simstart`);
     const used = Math.round((Date.now() - SIM.t0)/1000);
     box.append(el(`p`,`score`, `${nota} / 10`), el(`p`,``, `${SIM.ok} correctas de ${SIM.qs.length} · tiempo usado ${Math.floor(used/60)} min ${used%60} s.`));
@@ -623,6 +623,7 @@ function refsBlock(){
 
 /* ---------- Mi progreso ---------- */
 function vProgreso(v){
+  v.append(weakMap(false));
   const box = el(`div`,`list`);
   const c1 = el(`article`,`card plain`);
   c1.append(el(`h3`,``,`Aciertos por tema`), el(`p`,`muted`,`Suma preguntas, ejercicios autocalificados, fichas, práctica infinita y simulacros.`));
@@ -819,7 +820,7 @@ function pdfBar(){
 /* ======================= RENDER ======================= */
 function renderView(){
   const v = $(`#view`); v.innerHTML = ``;
-  if (!S.sel.size && ![`inicio`,`progreso`,`guia`,`videos`,`preguntar`,`notas`].includes(S.mode)){ const e = el(`div`,`empty`,`No hay temas elegidos. `); e.append(btn(`Elegir temas`, `btn acc`, () => openTopics())); v.append(e); return; }
-  ({ notas:vNotas, inicio:vInicio, impreso:vImpreso, guia:vGuia, videos:vVideos, preguntar:vPreguntar, repaso:vRepaso, fichas:vFichas, preguntas:vPreguntas, ejercicios:vEjercicios, formula:vFormula, practica:vPractica, lab:vLab, simulacro:vSimulacro, formulario:vFormulario, progreso:vProgreso })[S.mode](v);
+  if (!S.sel.size && ![`inicio`,`progreso`,`guia`,`videos`,`preguntar`,`notas`,`hoy`].includes(S.mode)){ const e = el(`div`,`empty`,`No hay temas elegidos. `); e.append(btn(`Elegir temas`, `btn acc`, () => openTopics())); v.append(e); return; }
+  ({ hoy:vHoy, escuchar:vEscuchar, notas:vNotas, inicio:vInicio, impreso:vImpreso, guia:vGuia, videos:vVideos, preguntar:vPreguntar, repaso:vRepaso, fichas:vFichas, preguntas:vPreguntas, ejercicios:vEjercicios, formula:vFormula, practica:vPractica, lab:vLab, simulacro:vSimulacro, formulario:vFormulario, progreso:vProgreso })[S.mode](v);
   const pb = pdfBar(); if (pb){ pb.style.marginTop = `22px`; v.append(pb); }
 }

@@ -12,7 +12,7 @@ os.chdir(B)
 # conserva .git si existe
 os.makedirs(OUT, exist_ok=True)
 for n in os.listdir(OUT):
-    if n in ('.git', 'fuente'): continue
+    if n in ('.git', 'fuente', '.github'): continue
     p = os.path.join(OUT, n)
     shutil.rmtree(p) if os.path.isdir(p) else os.remove(p)
 for d in ('lib', 'fonts', 'material', 'icons'): os.makedirs(f'{OUT}/{d}', exist_ok=True)
@@ -30,7 +30,7 @@ open(f'{OUT}/app.css', 'w', encoding='utf-8').write(fcss + '\n' + cat(['base.css
 # ---- librerías PDF locales
 shutil.copy('node_modules/jspdf/dist/jspdf.umd.min.js', f'{OUT}/lib/')
 shutil.copy('node_modules/html2canvas/dist/html2canvas.min.js', f'{OUT}/lib/')
-for f in ('app', 'auth', 'firestore'): shutil.copy(f'node_modules/firebase/firebase-{f}-compat.js', f'{OUT}/lib/')
+for f in ('app', 'auth', 'firestore', 'messaging'): shutil.copy(f'node_modules/firebase/firebase-{f}-compat.js', f'{OUT}/lib/')
 HASFB = os.path.exists('firebase-config.js')
 if HASFB: shutil.copy('firebase-config.js', f'{OUT}/firebase-config.js')
 
@@ -43,7 +43,7 @@ mats = sorted(glob.glob('material/*.js'))
 for m in mats: shutil.copy(m, f'{OUT}/material/')
 packs = '/* Material nuevo: un paquete por tema (carpeta material/). */\n' + cat(mats)
 open(f'{OUT}/packs.js', 'w', encoding='utf-8').write(packs)
-open(f'{OUT}/app.js', 'w', encoding='utf-8').write(cat('app.js org_app.js arom_app.js alc_app.js eter_app.js ask.js ui.js notas.js clock.js frases.js motiva.js sync.js init.js'.split()))
+open(f'{OUT}/app.js', 'w', encoding='utf-8').write(cat('app.js org_app.js arom_app.js alc_app.js eter_app.js ask.js ui.js notas.js clock.js frases.js motiva.js estudio.js audio.js push.js sync.js init.js'.split()))
 
 # ---- iconos
 def icon(size, path, pad=0.0):
@@ -98,6 +98,15 @@ const CACHE = `quimica`;
 const ASSETS = __A__;
 self.addEventListener(`install`, e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS.map(u => new Request(u, { cache:`reload` })))).catch(() => {}).then(() => self.skipWaiting())); });
 self.addEventListener(`activate`, e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
+self.addEventListener(`push`, e => {
+  let d = {}; try { d = e.data ? e.data.json() : {}; } catch (x) { d = { notification:{ title:`Química`, body: e.data ? e.data.text() : `` } }; }
+  const n = d.notification || {}, data = d.data || {};
+  e.waitUntil(self.registration.showNotification(n.title || data.title || `Química`, { body: n.body || data.body || ``, icon:`icons/icon-192.png`, badge:`icons/icon-192.png`, tag: data.tag || n.tag || undefined, data:{ link: data.link || `./` } }));
+});
+self.addEventListener(`notificationclick`, e => {
+  e.notification.close(); const link = (e.notification.data && e.notification.data.link) || `./`;
+  e.waitUntil(self.clients.matchAll({ type:`window`, includeUncontrolled:true }).then(cs => { for (const c of cs){ if (`focus` in c) return c.focus(); } return self.clients.openWindow(link); }));
+});
 self.addEventListener(`fetch`, e => {
   const r = e.request; if (r.method !== `GET` || new URL(r.url).origin !== location.origin) return;
   e.respondWith((async () => {
@@ -113,6 +122,8 @@ self.addEventListener(`fetch`, e => {
 '''.replace('__V__', v).replace('__A__', json.dumps(assets))
 open(f'{OUT}/sw.js', 'w', encoding='utf-8').write(sw)
 open(f'{OUT}/.nojekyll', 'w').write('')
+if os.path.isdir('gh'):
+    shutil.rmtree(f'{OUT}/.github', ignore_errors=True); shutil.copytree('gh', f'{OUT}/.github')
 open(f'{OUT}/README.md', 'w', encoding='utf-8').write(f'''# Química · Laboratorio Clínico
 
 Página de estudio (versión {v}). Se abre en GitHub Pages y se actualiza sola.

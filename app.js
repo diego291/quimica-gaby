@@ -59,7 +59,7 @@ function hoy(){ try { return new Date().toLocaleDateString(`es-SV`, { day:`numer
 
 /* ======================= ESTADO ======================= */
 const KEY = `parcialM4_v2`;
-const MODES = [[`inicio`,`Hoy`],[`notas`,`Mis notas`],[`impreso`,`Parcial impreso`],[`guia`,`Cómo estudiar`],[`repaso`,`Repaso`],[`videos`,`Videos`],[`preguntar`,`Preguntar`],[`fichas`,`Fichas`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`formula`,`¿Qué fórmula uso?`],[`practica`,`Práctica infinita`],[`lab`,`Laboratorio`],[`simulacro`,`Simulacro`],[`formulario`,`Formulario`],[`progreso`,`Mi progreso`]];
+const MODES = [[`inicio`,`Hoy`],[`hoy`,`Para hoy`],[`escuchar`,`Escuchar`],[`notas`,`Mis notas`],[`impreso`,`Parcial impreso`],[`guia`,`Cómo estudiar`],[`repaso`,`Repaso`],[`videos`,`Videos`],[`preguntar`,`Preguntar`],[`fichas`,`Fichas`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`formula`,`¿Qué fórmula uso?`],[`practica`,`Práctica infinita`],[`lab`,`Laboratorio`],[`simulacro`,`Simulacro`],[`formulario`,`Formulario`],[`progreso`,`Mi progreso`]];
 const S = { x:{}, sel: new Set(TORDER), mode:`inicio`, simFb:`now`, st:{}, err:[], box:{}, shuffle:false, onlyErr:false, figFront:false };
 try { const s = JSON.parse(localStorage.getItem(KEY) || `null`); if (s){ S.sel = new Set(s.sel.filter(k => TORDER.includes(k))); S.mode = MODES.some(m => m[0] === s.mode) ? s.mode : `inicio`; S.x = s.x || {}; S.st = s.st || {}; S.err = s.err || []; S.box = s.box || {}; S.simFb = s.simFb || `now`; } } catch(e){}
 function save(){ try { localStorage.setItem(KEY, JSON.stringify({ sel:[...S.sel], mode:S.mode, simFb:S.simFb, st:S.st, err:S.err, box:S.box, x:S.x })); } catch(e){} }
@@ -130,7 +130,7 @@ function ejCard(it){
 
 /* ======================= GRADILLA Y MODOS ======================= */
 function counts(t){
-  const n = { guia:ALL.REPASO, videos:VIDEOS, preguntar:ALL.REPASO, repaso:ALL.REPASO, fichas:ALL.FICHAS, preguntas:ALL.MCQ.concat(ALL.ABIERTAS), ejercicios:ALL.EJ, formula:ALL.FQ, practica:GENS, lab:LABS, simulacro:ALL.MCQ, formulario:ALL.FORM, progreso:ALL.MCQ }[S.mode];
+  const n = { guia:ALL.REPASO, videos:VIDEOS, preguntar:ALL.REPASO, repaso:ALL.REPASO, fichas:ALL.FICHAS, preguntas:ALL.MCQ.concat(ALL.ABIERTAS), ejercicios:ALL.EJ, formula:ALL.FQ, practica:GENS, lab:LABS, simulacro:ALL.MCQ, formulario:ALL.FORM, progreso:ALL.MCQ, hoy:ALL.MCQ, escuchar:ALL.REPASO, notas:ALL.MCQ, inicio:ALL.REPASO, impreso:ALL.MCQ }[S.mode] || ALL.MCQ;
   return n.filter(x => x.t === t || (x.ts && x.ts.includes(t))).length;
 }
 /* (gradilla y modos: ver ui.js) */
@@ -481,7 +481,7 @@ function vSimulacro(v){
   if (SIM.i >= SIM.qs.length){
     stopTick();
     const nota = (SIM.ok / Math.max(1, SIM.qs.length) * 10).toFixed(1);
-    if (!SIM.saved && SIM.qs.length){ SIM.saved = true; S.x.simLast = { d: todayStr(), nota: +nota, ts:[...new Set(SIM.qs.map(q => q.t))] }; save(); setTimeout(() => motSim(+nota), 400); }
+    if (!SIM.saved && SIM.qs.length){ SIM.saved = true; S.x.simLast = { d: todayStr(), nota: +nota, ts:[...new Set(SIM.qs.map(q => q.t))] }; save(); if (SIM.ev) simEventSave(SIM.ev, +nota); setTimeout(() => motSim(+nota), 400); }
     const box = el(`div`,`simstart`);
     const used = Math.round((Date.now() - SIM.t0)/1000);
     box.append(el(`p`,`score`, `${nota} / 10`), el(`p`,``, `${SIM.ok} correctas de ${SIM.qs.length} · tiempo usado ${Math.floor(used/60)} min ${used%60} s.`));
@@ -623,6 +623,7 @@ function refsBlock(){
 
 /* ---------- Mi progreso ---------- */
 function vProgreso(v){
+  v.append(weakMap(false));
   const box = el(`div`,`list`);
   const c1 = el(`article`,`card plain`);
   c1.append(el(`h3`,``,`Aciertos por tema`), el(`p`,`muted`,`Suma preguntas, ejercicios autocalificados, fichas, práctica infinita y simulacros.`));
@@ -819,8 +820,8 @@ function pdfBar(){
 /* ======================= RENDER ======================= */
 function renderView(){
   const v = $(`#view`); v.innerHTML = ``;
-  if (!S.sel.size && ![`inicio`,`progreso`,`guia`,`videos`,`preguntar`,`notas`].includes(S.mode)){ const e = el(`div`,`empty`,`No hay temas elegidos. `); e.append(btn(`Elegir temas`, `btn acc`, () => openTopics())); v.append(e); return; }
-  ({ notas:vNotas, inicio:vInicio, impreso:vImpreso, guia:vGuia, videos:vVideos, preguntar:vPreguntar, repaso:vRepaso, fichas:vFichas, preguntas:vPreguntas, ejercicios:vEjercicios, formula:vFormula, practica:vPractica, lab:vLab, simulacro:vSimulacro, formulario:vFormulario, progreso:vProgreso })[S.mode](v);
+  if (!S.sel.size && ![`inicio`,`progreso`,`guia`,`videos`,`preguntar`,`notas`,`hoy`].includes(S.mode)){ const e = el(`div`,`empty`,`No hay temas elegidos. `); e.append(btn(`Elegir temas`, `btn acc`, () => openTopics())); v.append(e); return; }
+  ({ hoy:vHoy, escuchar:vEscuchar, notas:vNotas, inicio:vInicio, impreso:vImpreso, guia:vGuia, videos:vVideos, preguntar:vPreguntar, repaso:vRepaso, fichas:vFichas, preguntas:vPreguntas, ejercicios:vEjercicios, formula:vFormula, practica:vPractica, lab:vLab, simulacro:vSimulacro, formulario:vFormulario, progreso:vProgreso })[S.mode](v);
   const pb = pdfBar(); if (pb){ pb.style.marginTop = `22px`; v.append(pb); }
 }
 
@@ -1394,8 +1395,8 @@ const ICONS = {
 const icon = (n, cls = `ic`) => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ``}</svg>`;
 const SECS = [
   { k:`inicio`, n:`Inicio`, ic:`home`, modes:[[`inicio`,`Hoy`],[`guia`,`Cómo estudiar`],[`progreso`,`Mi progreso`],[`notas`,`Mis notas`]] },
-  { k:`estudiar`, n:`Estudiar`, ic:`book`, modes:[[`repaso`,`Repaso`],[`fichas`,`Fichas`],[`videos`,`Videos`],[`formulario`,`Formulario`]] },
-  { k:`practicar`, n:`Practicar`, ic:`pencil`, modes:[[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`practica`,`Práctica`],[`formula`,`¿Qué fórmula?`],[`lab`,`Laboratorio`]] },
+  { k:`estudiar`, n:`Estudiar`, ic:`book`, modes:[[`repaso`,`Repaso`],[`escuchar`,`Escuchar`],[`fichas`,`Fichas`],[`videos`,`Videos`],[`formulario`,`Formulario`]] },
+  { k:`practicar`, n:`Practicar`, ic:`pencil`, modes:[[`hoy`,`Para hoy`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`practica`,`Práctica`],[`formula`,`¿Qué fórmula?`],[`lab`,`Laboratorio`]] },
   { k:`examen`, n:`Examen`, ic:`clip`, modes:[[`simulacro`,`Simulacro`],[`impreso`,`Parcial impreso`]] },
   { k:`preguntar`, n:`Preguntar`, ic:`chat`, modes:[[`preguntar`,`Preguntar`]] }
 ];
@@ -1431,7 +1432,7 @@ function markDay(){ const t = todayStr(), d = S.x.days || (S.x.days = []); if (!
 function streak(){ const d = new Set(S.x.days || []); let s = todayStr(); if (!d.has(s)) s = addDays(s, -1); let n = 0; while (d.has(s)){ n++; s = addDays(s, -1); } return n; }
 
 /* ---------- navegación ---------- */
-function go(mode){ S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`notas`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
+function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`notas`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
 function goSec(k){ const sc = SECS.find(s => s.k === k); go(S.x.sm[k] || sc.modes[0][0]); }
 function topScroll(){ window.scrollTo({ top:0 }); const p = $(`#panel`); if (p) p.scrollTop = 0; }
 function setSel(set){ S.sel = new Set(set); save(); SIM.on = false; stopTick(); renderAll(); }
@@ -1689,6 +1690,7 @@ function openEvent(ev, date){
     r.append(btn(isNew ? `Guardar evento` : `Guardar cambios`, `btn acc`, () => { e.title = t.value.trim(); if (!e.title){ msg.textContent = `Escribe un título.`; t.focus(); return; } if (!e.date){ msg.textContent = `Elige una fecha.`; return; }
       const i = S.x.ev.findIndex(x => x.id === e.id); if (i >= 0) S.x.ev[i] = e; else S.x.ev.push(e); S.x.calM = e.date.slice(0, 7); save(); closeSheet(); renderAgendaHosts(); if (S.mode === `inicio`) renderView(); }));
     if (!isNew) r.append(btn(`Eliminar`, `btn danger`, () => { S.x.ev = S.x.ev.filter(x => x.id !== e.id); save(); closeSheet(); renderAgendaHosts(); if (S.mode === `inicio`) renderView(); }));
+    if (!isNew && e.type === `parcial`) r.append(btn(`Simulacro de este parcial`, `btn ghost`, () => { closeSheet(); simParcial(e, 20); }));
     r.append(btn(`Cancelar`, `btn ghost`, closeSheet)); b.append(r, msg);
   });
 }
@@ -1848,6 +1850,7 @@ function importPack(msg){
 function removePack(id){ let saved = {}; try { saved = JSON.parse(localStorage.getItem(PACK_KEY) || `{}`) || {}; } catch(e){} delete saved[id]; try { localStorage.setItem(PACK_KEY, JSON.stringify(saved)); } catch(e){} location.reload(); }
 function progresoExtras(box){
   if (syncAvailable()) box.append(syncCard(false));
+  const pc = typeof pushCard === `function` ? pushCard() : null; if (pc) box.append(pc);
   const c = el(`article`, `card plain`); c.append(el(`h3`, ``, `Respaldo de tu progreso`), el(`p`, `muted`, `Guarda un archivo con tu progreso, fichas, agenda, Pomodoro y dudas. Sirve para pasarlo a otro navegador, a otro dispositivo o a la versión en línea de la página.`));
   const m = el(`p`, `muted`); m.setAttribute(`aria-live`, `polite`);
   const r = el(`div`, `btnrow`); r.append(btn(`Descargar respaldo`, `btn acc`, () => exportBackup(m)), btn(`Restaurar desde archivo`, `btn ghost`, () => importBackup(m))); c.append(r, m); box.append(c);
@@ -2467,6 +2470,349 @@ function motLine(){
   paint(); return w;
 }
 
+/* ======================= REPASO ESPACIADO · PUNTOS DÉBILES · SIMULACRO POR PARCIAL ======================= */
+/* ---------- repaso espaciado (tipo Anki, simplificado) ----------
+   S.x.srs[id] = { iv:días, ef:facilidad, due:`AAAA-MM-DD`, n:aciertos seguidos, lap:olvidos }      */
+function srsCfg(){ if (!S.x.srs) S.x.srs = {}; if (!S.x.srsc) S.x.srsc = { nuevas:10, fichas:true }; return S.x.srsc; }
+function addDaysStr(d, n){ const x = pdate(d); x.setDate(x.getDate() + n); return dstr(x); }
+function srsUpdate(id, ok, soft){
+  srsCfg(); const t = todayStr(); const r = S.x.srs[id] || { iv:0, ef:2.3, n:0, lap:0, due:t };
+  if (ok){ r.iv = r.n === 0 ? 1 : r.n === 1 ? 3 : Math.max(r.iv + 1, Math.round(r.iv * r.ef)); r.n++; r.ef = Math.min(2.8, r.ef + .08); }
+  else if (soft){ r.iv = Math.max(1, Math.round(r.iv / 2)); r.ef = Math.max(1.3, r.ef - .1); }
+  else { r.iv = 0; r.n = 0; r.lap++; r.ef = Math.max(1.3, r.ef - .2); }
+  r.iv = Math.min(r.iv, 120); r.due = addDaysStr(t, r.iv || 1); r.last = t; S.x.srs[id] = r;
+}
+const _recordSrs = record;
+record = function(it, ok){
+  const id = it.id || ``;
+  if (id[0] === `M`) srsUpdate(id, ok);
+  else if (id.startsWith(`F_`)) srsUpdate(id.slice(2), ok, HOY.soft);
+  HOY.soft = false;
+  _recordSrs(it, ok);
+};
+const HOY = { q:null, i:0, flip:false, done:0, ok:0, custom:null, soft:false, again:new Set() };
+function itemById(id){ return ALL.MCQ.find(x => x.id === id) || ALL.FICHAS.find(x => x.id === id); }
+function nextParcial(){ const t = todayStr(); return (S.x.ev || []).filter(e => e.type === `parcial` && e.date >= t).sort((a, b) => a.date.localeCompare(b.date))[0] || null; }
+function srsQueue(){
+  const c = srsCfg(), t = todayStr();
+  const due = Object.entries(S.x.srs).filter(([id, r]) => r.due <= t).map(([id]) => itemById(id)).filter(Boolean).filter(x => c.fichas || x.q);
+  // nuevas: primero los temas del próximo parcial, luego los temas con repaso leído, luego los elegidos
+  const np = nextParcial(); const pref = np && np.topics && np.topics.length ? np.topics : [];
+  const readT = new Set(ALL.REPASO.filter(x => S.x.seen[hash(x.title)]).map(x => x.t));
+  const pool = ALL.MCQ.concat(c.fichas ? ALL.FICHAS : []).filter(x => !S.x.srs[x.id] && !S.st[x.id] && !S.st[`F_` + x.id]);
+  const rank = x => (pref.includes(x.t) ? 0 : 3) + (readT.has(x.t) ? 0 : 1) + (S.sel.has(x.t) ? 0 : 1);
+  if (!S.x.srsNew || S.x.srsNew.d !== t) S.x.srsNew = { d:t, n:0 };
+  const left = Math.max(0, c.nuevas - S.x.srsNew.n);
+  const nuevas = shuf(pool).sort((a, b) => rank(a) - rank(b)).slice(0, left);
+  return { due:shuf(due).sort((a, b) => (S.x.srs[a.id].due).localeCompare(S.x.srs[b.id].due)), nuevas };
+}
+function hoyCounts(){ const q = srsQueue(); return { due:q.due.length, nuevas:q.nuevas.length, total:q.due.length + q.nuevas.length }; }
+function startHoy(custom){
+  HOY.custom = custom || null; HOY.i = 0; HOY.done = 0; HOY.ok = 0; HOY.flip = false; HOY.again = new Set();
+  if (custom) HOY.q = shuf(custom.items).map(x => ({ id:x.id, nueva:!S.x.srs[x.id] }));
+  else { const q = srsQueue(); HOY.q = q.due.map(x => ({ id:x.id })).concat(q.nuevas.map(x => ({ id:x.id, nueva:true }))); }
+  if (S.mode !== `hoy`) go(`hoy`); else renderView();
+}
+function vHoy(v){
+  if (!HOY.q){
+    const k = hoyCounts(), np = nextParcial();
+    const box = el(`div`, `simstart`);
+    box.append(el(`h2`, ``, `Repaso de hoy`));
+    box.append(el(`p`, ``, k.total ? `Tienes <b>${k.due}</b> para repasar${k.nuevas ? ` y <b>${k.nuevas}</b> nuevas` : ``}. Tiempo aproximado: <b>${Math.max(1, Math.round(k.total * .5))} min</b>.` : `¡Al día! No tienes repasos pendientes hoy.`));
+    box.append(el(`p`, `muted`, `La página te vuelve a preguntar cada cosa justo cuando la estás por olvidar: lo que fallas vuelve mañana; lo que aciertas, en 3, 7, 15 días y así. Mezcla preguntas de todos los temas que ya practicaste${np ? `, y las nuevas salen primero de los temas de <b>${np.title}</b>` : ``}.`));
+    const r = el(`div`, `btnrow`);
+    if (k.total) r.append(btn(`Empezar repaso (${k.total})`, `btn acc`, () => startHoy()));
+    r.append(btn(`Practicar mis puntos débiles`, `btn ghost`, () => startWeak()));
+    r.append(btn(`Ajustes`, `btn ghost`, openSrsSettings));
+    box.append(r); v.append(box);
+    v.append(weakMap(true));
+    return;
+  }
+  const total = HOY.q.length;
+  if (HOY.i >= total){
+    const box = el(`div`, `simstart center`);
+    const pct = HOY.done ? Math.round(HOY.ok / HOY.done * 100) : 0;
+    box.append(el(`h2`, ``, HOY.custom ? `¡Práctica terminada!` : `¡Repaso de hoy completo!`), el(`p`, `score`, `${pct}%`), el(`p`, ``, `${HOY.ok} de ${HOY.done} correctas.`));
+    const k = hoyCounts(); if (!HOY.custom && k.total) box.append(el(`p`, `muted`, `Aún quedan ${k.total} disponibles hoy.`));
+    const r = el(`div`, `btnrow center`); r.append(btn(`Volver`, `btn`, () => { HOY.q = null; renderView(); })); if (!HOY.custom && k.total) r.append(btn(`Seguir con ${k.total} más`, `btn ghost`, () => startHoy()));
+    box.append(r); v.append(box);
+    if (!HOY.cel){ HOY.cel = true; setTimeout(() => celebrate(pct >= 80 ? `repaso` : `dia`, HOY.done, pct >= 80), 300); }
+    return;
+  }
+  HOY.cel = false;
+  const cur = HOY.q[HOY.i], it = itemById(cur.id);
+  if (!it){ HOY.i++; return vHoy(v); }
+  const head = el(`div`, `hoyhead`);
+  head.innerHTML = `<span>${HOY.custom ? HOY.custom.title : `Repaso de hoy`} · <b>${HOY.i + 1}</b> de ${total}${cur.nueva ? ` · <span class="tagnew">nueva</span>` : ``}</span><div class="bar"><i style="width:${HOY.i / total * 100}%"></i></div>`;
+  head.append(btn(`Salir`, `btn ghost`, () => { HOY.q = null; renderView(); }));
+  v.append(head);
+  const next = () => { HOY.i++; HOY.flip = false; renderView(); topScroll(); };
+  const markNew = () => { if (cur.nueva && !HOY.custom){ srsCfg(); if (!S.x.srsNew || S.x.srsNew.d !== todayStr()) S.x.srsNew = { d:todayStr(), n:0 }; S.x.srsNew.n++; } };
+  if (it.q){
+    v.append(mcqCard(it, ok => {
+      HOY.done++; if (ok) HOY.ok++; markNew();
+      if (!ok && !HOY.again.has(it.id)){ HOY.again.add(it.id); HOY.q.push({ id:it.id }); }
+      const r = el(`div`, `btnrow`); const b = btn(HOY.i + 1 < HOY.q.length ? `Siguiente` : `Terminar`, `btn acc`, next); r.append(b); v.append(r); b.focus();
+    }));
+  } else {
+    const f = it; const w = el(`div`, `flash`); w.style.setProperty(`--c`, `var(--${f.t})`);
+    const fig = f.fig ? FIG[f.fig] : null;
+    w.innerHTML = `<div class="face ${HOY.flip ? `back` : `front`} solo"><div class="meta"><span class="chip">${TOPICS[f.t].n}</span><span class="src">Fuente: ${f.src}</span></div><p class="${HOY.flip ? `fa` : `fq`}">${HOY.flip ? f.b : f.f}</p>${HOY.flip && fig ? `<div class="ffig">${fig.svg}</div>` : ``}</div>`;
+    v.append(w);
+    const r = el(`div`, `btnrow center`);
+    if (!HOY.flip) r.append(btn(`Ver respuesta`, `btn acc`, () => { HOY.flip = true; renderView(); }));
+    else {
+      const g = d => { const b = fichaBox(f.id); S.box[f.id] = d < 0 ? 0 : Math.min(3, b + d); HOY.soft = d === 0; record({ id:`F_` + f.id, t:f.t }, d > 0); HOY.done++; if (d > 0) HOY.ok++; markNew(); if (d < 0 && !HOY.again.has(f.id)){ HOY.again.add(f.id); HOY.q.push({ id:f.id }); } save(); next(); };
+      r.append(btn(`No la sabía`, `btn ghost`, () => g(-1)), btn(`Más o menos`, `btn ghost`, () => g(0)), btn(`La sabía`, `btn acc`, () => g(1)));
+    }
+    v.append(r);
+  }
+}
+function openSrsSettings(){
+  const c = srsCfg();
+  openSheet(`Repaso de hoy`, b => {
+    const s = document.createElement(`select`); s.className = `nedit`; s.innerHTML = [0, 5, 10, 15, 20, 30].map(n => `<option value="${n}">${n === 0 ? `Ninguna` : n}</option>`).join(``); s.value = String(c.nuevas); s.onchange = () => { c.nuevas = +s.value; save(); };
+    b.append(fld(`Preguntas nuevas por día`, s, `Además de los repasos pendientes`));
+    b.append(fld(`Incluir fichas`, toggleBtn(c.fichas, v => { c.fichas = v; save(); }), `Si lo apagas, solo salen preguntas de opción múltiple`));
+  });
+}
+/* ---------- puntos débiles ---------- */
+function itemScore(id){
+  const st = S.st[id] || S.st[`F_` + id]; if (!st) return null;
+  const [o, b] = st; const acc = o / Math.max(1, o + b); const r = S.x.srs && S.x.srs[id];
+  const mem = r ? Math.min(1, (r.iv || 0) / 10) : 0;
+  return acc * (.55 + .45 * mem);
+}
+function scoreOf(items){
+  if (!items.length) return { dom:0, acc:null, seen:0, n:0 };
+  let sum = 0, seen = 0, o = 0, b = 0;
+  items.forEach(x => { const s = itemScore(x.id); if (s != null){ sum += s; seen++; const st = S.st[x.id] || S.st[`F_` + x.id]; o += st[0]; b += st[1]; } });
+  return { dom: sum / items.length, acc: o + b ? o / (o + b) : null, seen, n:items.length };
+}
+function lvl(sc){ if (sc.seen < Math.min(3, sc.n)) return [`Sin practicar`, `var(--line2)`, 0]; const d = sc.dom; return d < .3 ? [`Débil`, `var(--bad)`, 1] : d < .6 ? [`En progreso`, `#D9962B`, 2] : d < .85 ? [`Bien`, `#5DAE7A`, 3] : [`Dominado`, `var(--ok)`, 4]; }
+function subtopics(t){
+  return ALL.REPASO.filter(x => x.t === t).map(r => { const pg = pagesOf(r.src); const items = ALL.MCQ.concat(ALL.FICHAS).filter(q => q.t === t && [...pagesOf(q.src)].some(p => pg.has(p))); return { title:r.title, items }; }).filter(s => s.items.length);
+}
+function weakMap(compact){
+  const box = el(`article`, `card plain wmap`);
+  box.append(el(`h3`, ``, `Mapa de dominio`), el(`p`, `muted`, `Qué tanto dominas cada tema según tus respuestas y tus repasos. Toca un tema para ver sus partes y practicar justo lo que te falta.`));
+  const g = el(`div`, `wgrid`);
+  TORDER.forEach(t => {
+    const items = ALL.MCQ.concat(ALL.FICHAS).filter(x => x.t === t); if (!items.length) return;
+    const sc = scoreOf(items), L = lvl(sc);
+    const b = btn(``, `wcell`, () => openWeakTopic(t)); b.style.setProperty(`--lv`, L[1]); b.style.setProperty(`--c`, `var(--${t})`);
+    b.innerHTML = `<span class="wt">${TOPICS[t].n}</span><span class="wn">${TOPICS[t].name}</span><span class="wbar"><i style="width:${Math.round(sc.dom * 100)}%"></i></span><span class="wl">${L[0]} · ${Math.round(sc.dom * 100)}%</span>`;
+    g.append(b);
+  });
+  box.append(g);
+  box.append(el(`div`, `wleg`, [[`Sin practicar`, `var(--line2)`], [`Débil`, `var(--bad)`], [`En progreso`, `#D9962B`], [`Bien`, `#5DAE7A`], [`Dominado`, `var(--ok)`]].map(([n, c]) => `<span><u style="background:${c}"></u>${n}</span>`).join(``)));
+  if (!compact){ const r = el(`div`, `btnrow`); r.append(btn(`Practicar mis puntos débiles`, `btn acc`, () => startWeak())); box.append(r); }
+  return box;
+}
+function openWeakTopic(t){
+  openSheet(`${TOPICS[t].n} · ${TOPICS[t].name}`, b => {
+    const subs = subtopics(t).map(s => ({ ...s, sc:scoreOf(s.items) })).sort((a, b) => a.sc.dom - b.sc.dom);
+    const all = ALL.MCQ.concat(ALL.FICHAS).filter(x => x.t === t), sc = scoreOf(all);
+    b.append(el(`p`, ``, `Dominio del tema: <b>${Math.round(sc.dom * 100)}%</b> · respondiste ${sc.seen} de ${sc.n} preguntas y fichas${sc.acc != null ? ` · precisión ${Math.round(sc.acc * 100)}%` : ``}.`));
+    const ul = el(`div`, `wsubs`);
+    subs.forEach(s => { const L = lvl(s.sc); const row = el(`div`, `wsub`); row.style.setProperty(`--lv`, L[1]);
+      row.innerHTML = `<span class="wsn">${s.title}<small>${L[0]} · ${s.sc.seen}/${s.sc.n} practicadas</small></span><span class="wbar"><i style="width:${Math.round(s.sc.dom * 100)}%"></i></span>`;
+      row.append(btn(`Practicar`, `tool`, () => { closeSheet(); startHoy({ title:s.title, items:s.items.slice() }); })); ul.append(row); });
+    b.append(ul);
+    const r = el(`div`, `btnrow`); r.append(btn(`Practicar lo débil de este tema`, `btn acc`, () => { closeSheet(); startWeak(t); }), btn(`Leer el repaso`, `btn ghost`, () => { closeSheet(); S.sel = new Set([t]); save(); go(`repaso`); })); b.append(r);
+  });
+}
+function startWeak(onlyT){
+  const items = ALL.MCQ.concat(ALL.FICHAS).filter(x => onlyT ? x.t === onlyT : S.sel.has(x.t));
+  const scored = items.map(x => ({ x, s:itemScore(x.id) }));
+  // primero lo fallado, luego lo poco practicado de los temas más débiles
+  const tdom = {}; TORDER.forEach(t => tdom[t] = scoreOf(items.filter(x => x.t === t)).dom);
+  scored.sort((a, b) => ((a.s == null ? .5 : a.s) + tdom[a.x.t] * .5) - ((b.s == null ? .5 : b.s) + tdom[b.x.t] * .5));
+  const pick = scored.filter(y => y.s == null || y.s < .75).slice(0, 15).map(y => y.x);
+  if (!pick.length){ celebrate(`repaso`, 0, true); return; }
+  startHoy({ title: onlyT ? `Lo débil de ${TOPICS[onlyT].n}` : `Mis puntos débiles`, items:pick });
+}
+/* ---------- simulacro por parcial ---------- */
+function simParcial(e, n){
+  const ts = e.topics && e.topics.length ? e.topics : TORDER;
+  S.sel = new Set(ts.filter(t => TORDER.includes(t))); save();
+  const pool = filt(ALL.MCQ); n = Math.min(n || 20, pool.length);
+  // reparte las preguntas entre los temas del parcial, con más peso a los temas débiles
+  const by = {}; pool.forEach(q => (by[q.t] = by[q.t] || []).push(q));
+  const tw = Object.keys(by).map(t => ({ t, w: 1.5 - scoreOf(by[t]).dom }));
+  const W = tw.reduce((s, x) => s + x.w, 0); let qs = [];
+  tw.forEach(x => { qs = qs.concat(shuf(by[x.t]).slice(0, Math.max(1, Math.round(n * x.w / W)))); });
+  qs = shuf(qs).slice(0, n);
+  go(`simulacro`);
+  Object.assign(SIM, { saved:false, on:true, qs, i:0, ok:0, wrong:[], byT:{}, timer: 90 * qs.length, t0: Date.now(), fb:`end`, ans:[], pick:null, ev:e.id });
+  startTick(); renderView();
+}
+function simEventSave(id, nota){ const e = (S.x.ev || []).find(x => x.id === id); if (!e) return; e.sims = (e.sims || []).concat([{ d:todayStr(), nota }]).slice(-10); SIM.ev = null; save(); }
+function parcialCard(){
+  const e = nextParcial(); if (!e) return null; const dd = dayDiff(todayStr(), e.date); if (dd > 14) return null;
+  const c = el(`article`, `card plain pcard`);
+  const ts = e.topics && e.topics.length ? e.topics : TORDER; const items = ALL.MCQ.concat(ALL.FICHAS).filter(x => ts.includes(x.t)); const sc = scoreOf(items);
+  const sims = e.sims || [];
+  c.innerHTML = `<div class="mk">${dd === 0 ? `Hoy` : dd === 1 ? `Mañana` : `En ${dd} días`} · ${e.title}</div><p>Dominio de los temas del parcial: <b>${Math.round(sc.dom * 100)}%</b>${sims.length ? ` · simulacros: ${sims.map(s => `<b>${s.nota}</b>`).join(` → `)}` : ``}</p>`;
+  const r = el(`div`, `btnrow`); r.append(btn(`Simulacro de este parcial (20)`, `btn acc`, () => simParcial(e, 20)), btn(`Repasar lo débil`, `btn ghost`, () => { S.sel = new Set(ts); save(); startWeak(); }));
+  c.append(r); return c;
+}
+function hoyCard(){
+  const k = hoyCounts(); const c = el(`article`, `card plain hoycard`);
+  c.innerHTML = `<div class="mk">🧠 Repaso de hoy</div><p>${k.total ? `<b>${k.due}</b> por repasar${k.nuevas ? ` + <b>${k.nuevas}</b> nuevas` : ``} · ~${Math.max(1, Math.round(k.total * .5))} min` : `¡Al día! Sin repasos pendientes.`}</p>`;
+  const r = el(`div`, `btnrow`); r.append(btn(k.total ? `Empezar` : `Practicar puntos débiles`, `btn acc`, () => k.total ? startHoy() : startWeak())); c.append(r); return c;
+}
+const _vInicioE = vInicio;
+vInicio = function(v){ _vInicioE(v); const w = el(`div`, `twocol`); w.append(hoyCard()); const p = parcialCard(); if (p) w.append(p); const kids = [...v.children]; const at = kids.find(x => !x.classList.contains(`alert`) && !x.dataset.sync && x.tagName !== `P`); v.insertBefore(w, at || null); };
+
+/* ======================= AUDIO-REPASO (lectura en voz alta) ======================= */
+const AU = { on:false, cards:[], ci:0, si:0, sents:[], voices:[], sleepEnd:0, token:0 };
+function auCfg(){ if (!S.x.au) S.x.au = { rate:1, voice:``, check:true, pause:2, pos:{} }; return S.x.au; }
+const AU_SUP = { '⁰':`0`, '¹':`1`, '²':`2`, '³':`3`, '⁴':`4`, '⁵':`5`, '⁶':`6`, '⁷':`7`, '⁸':`8`, '⁹':`9` };
+const AU_SUB = { '₀':`0`, '₁':`1`, '₂':`2`, '₃':`3`, '₄':`4`, '₅':`5`, '₆':`6`, '₇':`7`, '₈':`8`, '₉':`9` };
+function speakable(html){
+  const d = document.createElement(`div`); d.innerHTML = html; d.querySelectorAll(`svg,script,style`).forEach(x => x.remove());
+  d.querySelectorAll(`li`).forEach(li => li.append(`. `)); d.querySelectorAll(`p,h3,h4,tr,div`).forEach(x => x.append(` `));
+  let t = d.textContent.replace(/\s+/g, ` `).trim();
+  t = t.replace(/10\^?⁻([⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (m, e) => `diez a la menos ${[...e].map(c => AU_SUP[c]).join(``)}`)
+       .replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)⁺/g, (m, e) => ` ${e ? [...e].map(c => AU_SUP[c]).join(``) + ` ` : ``}más `).replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)⁻/g, (m, e) => ` ${e ? [...e].map(c => AU_SUP[c]).join(``) + ` ` : ``}menos `)
+       .replace(/²/g, ` al cuadrado`).replace(/³/g, ` al cubo`).replace(/[⁰¹⁴⁵⁶⁷⁸⁹]/g, c => ` a la ${AU_SUP[c]}`)
+       .replace(/[₀-₉]/g, c => AU_SUB[c]);
+  const R = [[/⇌|⇄/g, ` en equilibrio con `], [/→|⟶/g, ` produce `], [/←/g, ` viene de `], [/≈/g, ` aproximadamente `], [/≠/g, ` distinto de `], [/≥/g, ` mayor o igual que `], [/≤/g, ` menor o igual que `], [/±/g, ` más o menos `], [/×/g, ` por `], [/·/g, `, `], [/°C/g, ` grados Celsius`], [/\bK\b(?=[\s.,;)])/g, ` kelvin`], [/Δ/g, ` delta `], [/α/g, ` alfa `], [/β/g, ` beta `], [/π/g, ` pi `], [/σ/g, ` sigma `],
+    [/\bmol\/L\b/g, ` moles por litro`], [/\bg\/mL\b/g, ` gramos por mililitro`], [/\bg\/mol\b/g, ` gramos por mol`], [/\bg\/L\b/g, ` gramos por litro`], [/\bEq\/L\b/g, ` equivalentes por litro`], [/\bmEq\/L\b/g, ` miliequivalentes por litro`], [/\bmg\/dL\b/g, ` miligramos por decilitro`],
+    [/(\d)\s?mL\b/g, `$1 mililitros`], [/(\d)\s?L\b/g, `$1 litros`], [/(\d)\s?mg\b/g, `$1 miligramos`], [/(\d)\s?kg\b/g, `$1 kilogramos`], [/(\d)\s?g\b/g, `$1 gramos`], [/(\d)\s?M\b/g, `$1 molar`], [/(\d)\s?N\b/g, `$1 normal`], [/(\d)\s?m\b/g, `$1 molal`], [/(\d)\s?atm\b/g, `$1 atmósferas`], [/(\d)\s?mmHg\b/g, `$1 milímetros de mercurio`],
+    [/\bpKa\b/g, `pe ka`], [/\bpKb\b/g, `pe ka be`], [/\bpKw\b/g, `pe ka uve doble`], [/\bpOH\b/g, `pe o hache`], [/\bpH\b/g, `pe hache`], [/\bKa\b/g, `ka a`], [/\bKb\b/g, `ka be`], [/\bKw\b/g, `ka uve doble`], [/\bIUPAC\b/g, `iupac`], [/\bR−/g, `R `], [/−/g, ` `], [/\s=\s/g, ` igual a `], [/\//g, ` entre `]];
+  R.forEach(([a, b]) => t = t.replace(a, b));
+  // fórmulas químicas: separa los símbolos para que se lean (CH3CH2OH → C H 3 C H 2 O H)
+  t = t.replace(/\b(?:[A-Z][a-z]?\d*){2,}\b/g, m => /^[A-Z][a-z]+$/.test(m) ? m : m.match(/[A-Z][a-z]?|\d+/g).join(` `));
+  return t.replace(/\s+/g, ` `).replace(/\s([.,;:])/g, `$1`).replace(/([.:;])(\s*\.)+/g, `$1`).trim();
+}
+function splitSents(t){ return (t.match(/[^.!?;:]+[.!?;:]*/g) || [t]).map(s => s.trim()).filter(s => s.length > 1).reduce((a, s) => { if (a.length && (a[a.length - 1].length < 40)) a[a.length - 1] += ` ` + s; else a.push(s); return a; }, []); }
+function cardScript(it){
+  const c = auCfg(); const parts = [`${TOPICS[it.t].n}. ${it.title}.`];
+  parts.push(speakable(it.body || ``));
+  if (it.fig && FIG[it.fig] && FIG[it.fig].cap) parts.push(`En el dibujo: ` + speakable(FIG[it.fig].cap));
+  if (c.check){ const q = checkQ(it); if (q){ parts.push(`Pregunta de repaso: ` + speakable(q.q)); parts.push({ wait:4 }); parts.push(`Respuesta: ` + speakable(q.o[0]) + `. ` + speakable(q.e || ``)); } }
+  const out = []; parts.forEach(p => typeof p === `string` ? splitSents(p).forEach(s => out.push(s)) : out.push(p)); return out;
+}
+function auLoadVoices(){ try { AU.voices = speechSynthesis.getVoices().filter(v => /^es/i.test(v.lang)); } catch(e){ AU.voices = []; } }
+if (`speechSynthesis` in window){ auLoadVoices(); speechSynthesis.onvoiceschanged = () => { auLoadVoices(); if (S.mode === `escuchar`) renderView(); }; }
+function auVoice(){ const c = auCfg(); return AU.voices.find(v => v.voiceURI === c.voice) || AU.voices.find(v => /es[-_](MX|US|419|SV|CO|AR)/i.test(v.lang)) || AU.voices[0] || null; }
+function auKey(){ return selKey(); }
+function auStop(){ AU.on = false; AU.token++; try { speechSynthesis.cancel(); } catch(e){} auPaint(); }
+function auPlay(){
+  if (!(`speechSynthesis` in window)) return;
+  AU.on = true; const tk = ++AU.token; try { speechSynthesis.cancel(); } catch(e){}
+  if (`mediaSession` in navigator){ try { navigator.mediaSession.metadata = new MediaMetadata({ title: AU.cards[AU.ci] ? AU.cards[AU.ci].title : `Repaso`, artist:`Química · Audio-repaso` }); navigator.mediaSession.setActionHandler(`play`, auPlay); navigator.mediaSession.setActionHandler(`pause`, auStop); navigator.mediaSession.setActionHandler(`nexttrack`, () => auJump(1)); navigator.mediaSession.setActionHandler(`previoustrack`, () => auJump(-1)); } catch(e){} }
+  auStep(tk);
+}
+function auStep(tk){
+  if (tk !== AU.token || !AU.on) return;
+  if (AU.sleepEnd && Date.now() > AU.sleepEnd){ AU.sleepEnd = 0; auStop(); return; }
+  if (AU.ci >= AU.cards.length){ auStop(); AU.ci = 0; AU.si = 0; auSavePos(); celebrate(`repaso`, AU.cards.length, true); renderView(); return; }
+  if (!AU.sents.length) AU.sents = cardScript(AU.cards[AU.ci]);
+  if (AU.si >= AU.sents.length){ S.x.seen[hash(AU.cards[AU.ci].title)] = 1; AU.ci++; AU.si = 0; AU.sents = []; auSavePos(); auRender(); setTimeout(() => auStep(tk), auCfg().pause * 1000); return; }
+  const s = AU.sents[AU.si]; auPaint();
+  if (typeof s === `object`){ setTimeout(() => { if (tk !== AU.token) return; AU.si++; auStep(tk); }, s.wait * 1000); return; }
+  const u = new SpeechSynthesisUtterance(s); u.lang = `es-ES`; const v = auVoice(); if (v){ u.voice = v; u.lang = v.lang; } u.rate = auCfg().rate;
+  u.onend = () => { if (tk !== AU.token) return; AU.si++; auStep(tk); };
+  u.onerror = e => { if (tk !== AU.token) return; if (e.error === `interrupted` || e.error === `canceled`) return; AU.si++; auStep(tk); };
+  speechSynthesis.speak(u);
+}
+function auJump(d){ const was = AU.on; auStop(); AU.ci = Math.max(0, Math.min(AU.cards.length - 1, AU.ci + d)); AU.si = 0; AU.sents = []; auSavePos(); auRender(); if (was) auPlay(); }
+function auSavePos(){ auCfg().pos[auKey()] = AU.ci; save(); }
+function auPaint(){
+  const h = $(`#auread`); if (!h || !AU.cards[AU.ci]) return;
+  if (!AU.sents.length) AU.sents = cardScript(AU.cards[AU.ci]);
+  h.innerHTML = AU.sents.map((s, i) => typeof s === `object` ? `<span class="aw ${i === AU.si && AU.on ? `cur` : ``}">⏸ piensa la respuesta…</span>` : `<span class="${i === AU.si && AU.on ? `cur` : i < AU.si ? `past` : ``}">${s} </span>`).join(``);
+  const cur = h.querySelector(`.cur`); if (cur && AU.on) cur.scrollIntoView({ block:`nearest`, behavior:`smooth` });
+  const pb = $(`#auplay`); if (pb) pb.innerHTML = AU.on ? `⏸ Pausar` : `▶ Escuchar`;
+}
+function auRender(){ if (S.mode === `escuchar`) renderView(); }
+function vEscuchar(v){
+  if (!(`speechSynthesis` in window)){ v.append(el(`div`, `empty`, `Este navegador no puede leer en voz alta. Prueba con Chrome, Edge o Safari actualizados.`)); return; }
+  const c = auCfg(); const all = filt(ALL.REPASO);
+  if (!all.length){ v.append(el(`div`, `empty`, `No hay tarjetas de repaso en los temas elegidos.`)); return; }
+  const k = auKey(); if (AU.key !== k){ auStop(); AU.key = k; AU.cards = all; AU.ci = Math.min(c.pos[k] || 0, all.length - 1); AU.si = 0; AU.sents = []; }
+  const it = AU.cards[AU.ci];
+  const p = el(`article`, `card plain aup`); p.style.setProperty(`--c`, `var(--${it.t})`);
+  p.innerHTML = `<div class="aumeta"><span class="chip">${TOPICS[it.t].n}</span><span class="muted">Tarjeta ${AU.ci + 1} de ${AU.cards.length}</span></div><h3>${it.title}</h3><div class="bar"><i style="width:${(AU.ci) / AU.cards.length * 100}%"></i></div>`;
+  const ctr = el(`div`, `auctr`);
+  const prev = btn(`⏮`, `btn ghost`, () => auJump(-1)); prev.setAttribute(`aria-label`, `Tarjeta anterior`);
+  const play = btn(AU.on ? `⏸ Pausar` : `▶ Escuchar`, `btn acc auplay`, () => AU.on ? auStop() : auPlay()); play.id = `auplay`;
+  const nxt = btn(`⏭`, `btn ghost`, () => auJump(1)); nxt.setAttribute(`aria-label`, `Tarjeta siguiente`);
+  ctr.append(prev, play, nxt); p.append(ctr);
+  const opts = el(`div`, `auopts`);
+  const rs = document.createElement(`select`); rs.className = `nedit`; rs.setAttribute(`aria-label`, `Velocidad`); rs.innerHTML = [.8, .9, 1, 1.15, 1.3, 1.5].map(r => `<option value="${r}">${r}×</option>`).join(``); rs.value = String(c.rate); rs.onchange = () => { c.rate = +rs.value; save(); if (AU.on){ auStop(); auPlay(); } };
+  const vs = document.createElement(`select`); vs.className = `nedit`; vs.setAttribute(`aria-label`, `Voz`); vs.innerHTML = AU.voices.length ? AU.voices.map(x => `<option value="${x.voiceURI}">${x.name.replace(/Microsoft |Google /, ``)} (${x.lang})</option>`).join(``) : `<option>Voz del sistema</option>`; const cv = auVoice(); if (cv) vs.value = cv.voiceURI; vs.onchange = () => { c.voice = vs.value; save(); if (AU.on){ auStop(); auPlay(); } };
+  const sl = document.createElement(`select`); sl.className = `nedit`; sl.setAttribute(`aria-label`, `Apagar en`); sl.innerHTML = `<option value="0">Sin temporizador</option><option value="15">Apagar en 15 min</option><option value="30">Apagar en 30 min</option><option value="60">Apagar en 1 hora</option>`; sl.value = AU.sleepEnd ? String(AU.sleepMin || 0) : `0`; sl.onchange = () => { AU.sleepMin = +sl.value; AU.sleepEnd = AU.sleepMin ? Date.now() + AU.sleepMin * 60000 : 0; };
+  opts.append(fld(`Velocidad`, rs), fld(`Voz`, vs), fld(`Temporizador`, sl), fld(`Preguntarme al final de cada tarjeta`, toggleBtn(c.check, x => { c.check = x; AU.sents = []; save(); auPaint(); }), `Lee una pregunta, te da 4 segundos para pensar y luego la respuesta`));
+  p.append(opts); v.append(p);
+  const rd = el(`div`, `card plain auread`); rd.id = `auread`; v.append(rd);
+  v.append(el(`p`, `muted`, `Consejo: usa audífonos y deja la pantalla encendida. En algunos teléfonos la lectura se detiene al bloquear la pantalla o al cambiar de app; si pasa, vuelve a tocar Escuchar y sigue donde quedó.`));
+  setTimeout(auPaint, 0);
+}
+/* botón "Escuchar desde aquí" en el repaso */
+const _vRepasoA = vRepaso;
+vRepaso = function(v){ _vRepasoA(v); const bar = v.querySelector(`.deckbar, .dbar`) || v.firstElementChild; if (!bar || !(`speechSynthesis` in window)) return; const b = btn(`🔊 Escuchar`, `btn ghost`, () => { const all = filt(ALL.REPASO); const i = S.x.rpos[selKey()] || 0; auCfg().pos[selKey()] = i; AU.key = null; save(); go(`escuchar`); setTimeout(auPlay, 200); }); b.title = `Escuchar el repaso desde esta tarjeta`; bar.append(b); };
+document.addEventListener(`visibilitychange`, () => { if (document.visibilityState === `visible` && AU.on && !speechSynthesis.speaking){ AU.sents = []; auPlay(); } });
+
+/* ======================= NOTIFICACIONES EN EL TELÉFONO (Firebase Cloud Messaging) =======================
+   El token de cada dispositivo se guarda en users/{uid}.push.tokens. Un proceso automático en GitHub
+   (cada 15 min) revisa la agenda y el repaso de hoy y envía los avisos, aunque la página esté cerrada.   */
+function pushCfg(){ if (!S.x.push) S.x.push = { on:false, hour:19, am:7, daily:true, ev:true, motiv:true }; return S.x.push; }
+function pushAvailable(){ return syncAvailable() && window.FB_VAPID && `Notification` in window && `serviceWorker` in navigator && `PushManager` in window; }
+function isIOS(){ return /iPhone|iPad|iPod/.test(navigator.userAgent); }
+function isStandalone(){ return matchMedia(`(display-mode: standalone)`).matches || navigator.standalone === true; }
+async function pushEnable(msg){
+  const say = t => { if (msg) msg.innerHTML = t; };
+  if (!SY.user){ say(`Primero inicia sesión con Google en “Guardar en la nube”.`); return; }
+  if (isIOS() && !isStandalone()){ say(`En iPhone primero instala la página: botón Compartir → <b>Agregar a pantalla de inicio</b>. Luego ábrela desde el ícono y activa aquí las notificaciones.`); return; }
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== `granted`){ say(`No diste permiso. Puedes activarlo en los ajustes del navegador para este sitio.`); return; }
+    say(`Activando…`);
+    if (!firebase.messaging) await loadScript(`lib/firebase-messaging-compat.js`);
+    const reg = await navigator.serviceWorker.ready;
+    const token = await firebase.messaging().getToken({ vapidKey:window.FB_VAPID, serviceWorkerRegistration:reg });
+    if (!token) throw new Error(`sin token`);
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || `America/El_Salvador`;
+    await docRef().set({ push:{ tokens:firebase.firestore.FieldValue.arrayUnion(token), tz } }, { merge:true });
+    try { localStorage.setItem(`quimica_pushtoken`, token); } catch(e){}
+    const c = pushCfg(); c.on = true; save();
+    say(`¡Listo! Las notificaciones están activas en este dispositivo.`);
+    setTimeout(renderView, 1200);
+  } catch(e){ say(`No se pudo activar (${e.message || e}). Revisa tu conexión e inténtalo de nuevo.`); }
+}
+async function pushDisable(msg){
+  let tk = null; try { tk = localStorage.getItem(`quimica_pushtoken`); } catch(e){}
+  try { if (tk && SY.user) await docRef().set({ push:{ tokens:firebase.firestore.FieldValue.arrayRemove(tk) } }, { merge:true }); if (firebase.messaging) await firebase.messaging().deleteToken(); } catch(e){}
+  try { localStorage.removeItem(`quimica_pushtoken`); } catch(e){}
+  pushCfg().on = false; save(); renderView();
+}
+function pushTest(msg){
+  navigator.serviceWorker.ready.then(r => r.showNotification(`Química · prueba`, { body:`Así se verán tus recordatorios, ${S.x.name || `Gaby`}.`, icon:`icons/icon-192.png`, badge:`icons/icon-192.png` })).catch(() => { if (msg) msg.textContent = `No se pudo mostrar la prueba.`; });
+}
+function pushCard(){
+  if (!pushAvailable()) return null;
+  const c = pushCfg(); const box = el(`article`, `card plain`);
+  let mine = false; try { mine = !!localStorage.getItem(`quimica_pushtoken`) && Notification.permission === `granted`; } catch(e){}
+  box.append(el(`h3`, ``, `Notificaciones en este dispositivo`));
+  box.append(el(`p`, `muted`, `Te avisa aunque la página esté cerrada: tu repaso del día, tus parciales y eventos de la agenda, y una frase para empezar el día.`));
+  const msg = el(`p`, `muted`); msg.setAttribute(`aria-live`, `polite`);
+  const r = el(`div`, `btnrow`);
+  if (!mine) r.append(btn(`Activar notificaciones`, `btn acc`, () => pushEnable(msg)));
+  else r.append(btn(`Enviar prueba`, `btn ghost`, () => pushTest(msg)), btn(`Desactivar en este dispositivo`, `btn ghost`, () => pushDisable(msg)));
+  box.append(r, msg);
+  const hs = document.createElement(`select`); hs.className = `nedit`; hs.innerHTML = Array.from({ length:17 }, (_, i) => i + 6).map(h => `<option value="${h}">${h > 12 ? h - 12 : h}:00 ${h >= 12 ? `p. m.` : `a. m.`}</option>`).join(``); hs.value = String(c.hour); hs.onchange = () => { c.hour = +hs.value; save(); };
+  const am = document.createElement(`select`); am.className = `nedit`; am.innerHTML = [5, 6, 7, 8, 9].map(h => `<option value="${h}">${h}:00 a. m.</option>`).join(``); am.value = String(c.am); am.onchange = () => { c.am = +am.value; save(); };
+  box.append(fld(`Recordatorio de repaso diario`, toggleBtn(c.daily, v => { c.daily = v; save(); }), `Solo si tienes repasos pendientes`), fld(`Hora del recordatorio diario`, hs));
+  box.append(fld(`Parciales y eventos de la agenda`, toggleBtn(c.ev, v => { c.ev = v; save(); }), `Según el recordatorio que elegiste en cada evento, y 1 hora antes si tiene hora`));
+  box.append(fld(`Frase para empezar el día`, toggleBtn(c.motiv, v => { c.motiv = v; save(); })), fld(`Hora de la frase y avisos de la mañana`, am));
+  box.append(el(`p`, `muted`, `Los avisos pueden llegar con unos minutos de diferencia. ${isIOS() ? `En iPhone solo funcionan con la página instalada en la pantalla de inicio.` : ``}`));
+  return box;
+}
+
 /* ======================= SINCRONIZACIÓN EN LA NUBE (Firebase) =======================
    Solo se activa si existe window.FB_CONFIG (archivo firebase-config.js del sitio).
    Guarda en users/{uid}: { datos:{clave:texto}, updated:ms, dev:texto }.            */
@@ -2536,7 +2882,7 @@ async function syncPush(force){
     const m = syncMeta();
     if (!force){ const snap = await docRef().get({ source:`server` }); const r = snap.exists ? snap.data() : null; if (r && (r.updated || 0) > (m.rev || 0)){ SY.busy = false; return syncConflict(r); } }
     const now = Date.now();
-    await docRef().set({ datos:localData(), updated:now, dev:devName() });
+    await docRef().set({ datos:localData(), updated:now, dev:devName() }, { merge:true });
     setMeta({ uid:SY.user.uid, rev:now, dirty:false, at:now }); SY.busy = false; setSync(`ok`);
   } catch(e){ SY.busy = false; setSync(navigator.onLine ? `err` : `offline`, navigator.onLine ? `No se pudo guardar en la nube.` : ``); }
 }

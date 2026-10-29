@@ -1,0 +1,28 @@
+name: Notificaciones
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+concurrency:
+  group: notificaciones
+  cancel-in-progress: false
+jobs:
+  enviar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/scripts
+            fuente/frases.js
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Instalar firebase-admin
+        run: cd .github/scripts && npm init -y >/dev/null && npm i --no-audit --no-fund firebase-admin@12.7.0
+      - name: Enviar avisos
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
+        run: node .github/scripts/notificar.mjs
