@@ -16,3 +16,4 @@ document.addEventListener(`visibilitychange`, () => { if (!document.hidden) pomo
 window.__doc = (kind, code) => { const d = buildDoc(kind, code ? buildExam(code) : undefined); [...document.body.children].forEach(c => { if (![`STYLE`,`LINK`,`TITLE`,`META`].includes(c.tagName)) c.remove(); }); document.body.className = `printing`; document.body.append(d.root); return d.spec.file; };
 window.__buildExam = buildExam;
 syncInit();
+motOpen();

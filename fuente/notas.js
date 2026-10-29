@@ -126,7 +126,7 @@ function nodeRow(C, m, n, parent, depth, edit){
     else {
       w.innerHTML = `<span class="nn">${n.name}${pw}</span>`;
       const i = document.createElement(`input`); i.className = `ninp`; i.inputMode = `decimal`; i.placeholder = `—`; i.value = n.g == null ? `` : nfmt(n.g); i.setAttribute(`aria-label`, `Nota de ${n.name}`);
-      const commit = () => { const v = parseNota(i.value, sc); if (v === undefined){ i.classList.add(`bad`); return; } i.classList.remove(`bad`); if (v !== n.g){ n.g = v; nSave(); } };
+      const commit = () => { const v = parseNota(i.value, sc); if (v === undefined){ i.classList.add(`bad`); return; } i.classList.remove(`bad`); if (v !== n.g){ n.g = v; nSave(); motNota(v, m); } };
       i.onchange = commit; i.onkeydown = e => { if (e.key === `Enter`) i.blur(); };
       w.append(i);
     }

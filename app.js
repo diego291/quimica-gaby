@@ -481,7 +481,7 @@ function vSimulacro(v){
   if (SIM.i >= SIM.qs.length){
     stopTick();
     const nota = (SIM.ok / Math.max(1, SIM.qs.length) * 10).toFixed(1);
-    if (!SIM.saved && SIM.qs.length){ SIM.saved = true; S.x.simLast = { d: todayStr(), nota: +nota, ts:[...new Set(SIM.qs.map(q => q.t))] }; save(); }
+    if (!SIM.saved && SIM.qs.length){ SIM.saved = true; S.x.simLast = { d: todayStr(), nota: +nota, ts:[...new Set(SIM.qs.map(q => q.t))] }; save(); setTimeout(() => motSim(+nota), 400); }
     const box = el(`div`,`simstart`);
     const used = Math.round((Date.now() - SIM.t0)/1000);
     box.append(el(`p`,`score`, `${nota} / 10`), el(`p`,``, `${SIM.ok} correctas de ${SIM.qs.length} · tiempo usado ${Math.floor(used/60)} min ${used%60} s.`));
@@ -1781,7 +1781,7 @@ function vRepaso(v){
   bar.append(btn(`Ver todas`, `btn ghost`, () => { S.x.rall = true; save(); renderView(); renderPanel(); }));
   v.append(bar);
   v.append(repCard(it));
-  S.x.seen[hash(it.title)] = 1; S.x.last = { mode:`repaso`, sel:selList(), i, n:all.length, title:it.title };
+  const _was = S.x.seen[hash(it.title)]; S.x.seen[hash(it.title)] = 1; motSeen(all, it, _was); S.x.last = { mode:`repaso`, sel:selList(), i, n:all.length, title:it.title };
   const q = checkQ(it);
   if (q){ const ck = el(`section`, `check`); ck.append(el(`h4`, ``, `Comprueba lo que leíste`)); ck.append(mcqCard(q, () => { S.st[`R_` + hash(it.title)] = (S.st[`R_` + hash(it.title)] || 0) + 1; })); v.append(ck); }
   const nav = el(`div`, `decknav`);
@@ -2002,7 +2002,7 @@ function nodeRow(C, m, n, parent, depth, edit){
     else {
       w.innerHTML = `<span class="nn">${n.name}${pw}</span>`;
       const i = document.createElement(`input`); i.className = `ninp`; i.inputMode = `decimal`; i.placeholder = `—`; i.value = n.g == null ? `` : nfmt(n.g); i.setAttribute(`aria-label`, `Nota de ${n.name}`);
-      const commit = () => { const v = parseNota(i.value, sc); if (v === undefined){ i.classList.add(`bad`); return; } i.classList.remove(`bad`); if (v !== n.g){ n.g = v; nSave(); } };
+      const commit = () => { const v = parseNota(i.value, sc); if (v === undefined){ i.classList.add(`bad`); return; } i.classList.remove(`bad`); if (v !== n.g){ n.g = v; nSave(); motNota(v, m); } };
       i.onchange = commit; i.onkeydown = e => { if (e.key === `Enter`) i.blur(); };
       w.append(i);
     }
@@ -2125,6 +2125,336 @@ function openClockSettings(){
   });
 }
 setInterval(updateClocks, 1000);
+
+/* ======================= FRASES Y FELICITACIONES =======================
+   {n} = nombre de la estudiante. Las citas de personas famosas que no tienen una fuente
+   exacta comprobada van marcadas como "atribuida a". Versículos: Reina-Valera 1960.      */
+const FRASES = [
+`{n}, la disciplina de hoy es el título de mañana.`,
+`No tienes que estudiar todo hoy. Solo tienes que estudiar hoy.`,
+`Cada tarjeta que lees es un ladrillo más de la profesional que estás construyendo.`,
+`La motivación te hace empezar; la disciplina te hace llegar. Y tú tienes las dos.`,
+`Un día a la vez, un tema a la vez. Así se llega lejos.`,
+`{n}, eres capaz. No porque sea fácil, sino porque no te rindes.`,
+`Lo que hoy te cuesta, mañana lo vas a explicar con calma.`,
+`Detrás de cada resultado de laboratorio confiable hay alguien que estudió como tú lo estás haciendo ahora.`,
+`No compitas con nadie: compite con la {n} de ayer.`,
+`Veinticinco minutos de enfoque valen más que tres horas distraída.`,
+`Si hoy avanzas poquito, igual avanzaste. Eso cuenta.`,
+`Tu futuro paciente no conoce tu nombre, pero ya depende de lo que estás aprendiendo hoy.`,
+`Las metas grandes se logran con hábitos pequeños repetidos todos los días.`,
+`El cansancio pasa; lo aprendido se queda.`,
+`{n}, confía en el proceso: repasar, practicar, equivocarte, corregir, dominar.`,
+`Equivocarte en la práctica es la mejor forma de no equivocarte en el examen.`,
+`Hoy siembras horas de estudio; pronto vas a cosechar tranquilidad en el parcial.`,
+`Eres más disciplinada de lo que crees. Mira todo lo que ya has logrado.`,
+`La constancia vence lo que la dicha no alcanza.`,
+`No esperes tener ganas: empieza, y las ganas llegan en el camino.`,
+`Cada pregunta que respondes te acerca a la bata blanca con tu nombre.`,
+`Lo difícil no es señal de que no puedes; es señal de que estás creciendo.`,
+`{n}, tus metas no tienen fecha de vencimiento, pero tu esfuerzo de hoy sí tiene recompensa.`,
+`Estudiar también es un acto de amor por ti misma y por tu futuro.`,
+`El conocimiento que ganas hoy nadie te lo puede quitar.`,
+`Un tema que hoy parece imposible es el que mañana dominas.`,
+`La diferencia entre soñar y lograr se llama disciplina.`,
+`Respira, enfócate y da el siguiente paso. Solo uno.`,
+`Ser constante no es estudiar perfecto; es volver aunque un día hayas fallado.`,
+`Tu esfuerzo silencioso de hoy será tu éxito visible mañana.`,
+`{n}, naciste para servir con ciencia y con corazón.`,
+`No te compares con el ritmo de otros: tu camino es tuyo y vas bien.`,
+`La química no se aprende de una vez: se entiende de a poquito, como tú lo estás haciendo.`,
+`Cada error corregido es un concepto que ya no se te olvida.`,
+`Hoy es un buen día para demostrarte de lo que eres capaz.`,
+`La excelencia no es un acto, es un hábito que se construye cada día.`,
+`Pequeños avances diarios forman grandes profesionales.`,
+`Que el miedo al examen se convierta en ganas de demostrar lo que sabes.`,
+`{n}, cuando termines tu carrera vas a recordar estas noches de estudio con orgullo.`,
+`Lo que haces con constancia termina haciéndose fácil.`,
+`Estudia como si alguien dependiera de tu precisión, porque algún día será así.`,
+`Un buen laboratorista no adivina: mide, calcula y verifica. Hoy estás entrenando eso.`,
+`Tu disciplina es tu superpoder.`,
+`No importa cuántas veces lo repitas; importa que cada vez lo entiendes mejor.`,
+`Si te sientes cansada, descansa, pero no abandones.`,
+`El parcial es solo una oportunidad para mostrar lo que ya practicaste.`,
+`Lo que entrenas en silencio se nota cuando más importa.`,
+`{n}, eres la prueba de que con esfuerzo sí se puede.`,
+`Hoy no tienes que ser perfecta, solo tienes que ser constante.`,
+`Cada pomodoro terminado es una promesa cumplida contigo misma.`,
+`Enfócate en lo que sí puedes controlar: tu esfuerzo de hoy.`,
+`Las grandes carreras se construyen en días comunes como este.`,
+`Una mente preparada no le teme a ningún examen.`,
+`Lo estás haciendo mejor de lo que piensas.`,
+`Repasar no es perder tiempo: es asegurar lo que ya ganaste.`,
+`Tu yo del futuro te va a agradecer este esfuerzo.`,
+`{n}, cada concepto que entiendes es una herramienta más para ayudar a otros.`,
+`No es suerte: es preparación.`,
+`Avanza aunque sea lento; lo importante es no detenerte.`,
+`La disciplina es elegir entre lo que quieres ahora y lo que más quieres.`,
+`Hoy estudias por un parcial; mañana trabajarás por la salud de muchas personas.`,
+`Tu capacidad no se mide por lo que te cuesta, sino por lo que logras a pesar de eso.`,
+`Cree en ti con la misma fuerza con la que estudias.`,
+`Cierra las distracciones, abre tus metas.`,
+`Un paso hoy, otro mañana, y de pronto ya llegaste.`,
+`{n}, tu dedicación es admirable. Sigue así.`,
+`El orgullo de aprobar sabe mejor cuando sabes cuánto te esforzaste.`,
+`No dejes que un mal día te haga olvidar todos tus buenos días.`,
+`La meta está más cerca cada vez que eliges estudiar.`,
+`Organizada, enfocada y constante: así se gana un ciclo.`,
+`Lo que te propones con disciplina, se cumple.`,
+`Un tubo a la vez, una muestra a la vez, una pregunta a la vez.`,
+`Entender la teoría hoy te dará seguridad en el laboratorio mañana.`,
+`Eres capaz de aprender cualquier cosa si le das el tiempo y la constancia que merece.`,
+`{n}, estás formando una profesional que hace las cosas bien.`,
+`Lo importante no es la velocidad, sino la dirección. Y vas en la correcta.`,
+`Cuando quieras rendirte, recuerda por qué empezaste.`,
+`El esfuerzo de hoy es el respaldo de tus decisiones de mañana.`,
+`Paciencia contigo misma: el aprendizaje profundo toma tiempo.`,
+`Estudiar con calma también es estudiar bien.`,
+`Una gota de esfuerzo diario llena el vaso del éxito.`,
+`Tienes todo lo necesario para lograrlo: cabeza, corazón y disciplina.`,
+`Cada sesión de estudio es una inversión que nunca pierde valor.`,
+`{n}, tu historia de éxito se está escribiendo con cada hora de estudio.`,
+`Haz hoy lo que otros no quieren, para lograr mañana lo que otros no pueden.`,
+`La seguridad en el examen se construye antes del examen.`,
+`Tus metas merecen tu mejor versión, y la estás dando.`,
+`Aprender ciencia es aprender a pensar con orden. Vas muy bien.`,
+`No hay atajos para lo que vale la pena, pero sí hay buenos métodos. Y aquí los tienes.`,
+`El mejor momento para estudiar era ayer; el segundo mejor es ahora.`,
+`Cada respuesta correcta es una pequeña victoria. Colecciónalas.`,
+`{n}, sigue adelante: lo mejor de tu carrera todavía está por venir.`,
+`El que persevera alcanza.`,
+`Tu constancia de hoy será tu tranquilidad el día del parcial.`,
+`Estudia con propósito: no para pasar, sino para saber.`,
+`Si lo entiendes, lo recuerdas. Si lo practicas, lo dominas.`,
+`Eres una mujer valiente, inteligente y capaz.`,
+`Descansar también es parte del plan. Vuelve con fuerza.`,
+`Cada concepto difícil que superas te hace más fuerte para el siguiente.`,
+`La mejor recompensa al esfuerzo es en lo que te conviertes mientras lo haces.`,
+`{n}, nadie puede hacer este camino por ti, y tú lo estás haciendo muy bien.`,
+`Concéntrate en el progreso, no en la perfección.`,
+`Lo que hoy es práctica, mañana será tu profesión.`,
+`Hoy das lo mejor de ti, y eso siempre es suficiente.`,
+`Tus manos van a procesar muestras que cambian diagnósticos. Prepáralas con conocimiento.`,
+`No es el talento, es la práctica constante la que marca la diferencia.`,
+`Un repaso más, una duda menos.`,
+`La disciplina convierte las metas en realidades.`,
+`Las metas claras y los hábitos firmes siempre ganan.`,
+`{n}, te estás convirtiendo en alguien de quien vas a estar muy orgullosa.`,
+`Cuando el camino se ponga cuesta arriba, recuerda que la vista desde arriba vale la pena.`,
+`Ponle tu sello a cada tarea: esfuerzo, orden y corazón.`,
+`Hoy cuenta. Cada día cuenta.`,
+`El éxito es la suma de días como este, en los que decides seguir.`,
+`No tienes que sentirte lista para empezar; empezar es lo que te prepara.`,
+`Tienes la capacidad. Tienes la disciplina. Ahora solo toca seguir.`,
+`{n}, que tu constancia sea más grande que tus excusas.`,
+`Cada página leída es una pregunta menos que temer.`,
+`Estudiar con constancia es la forma más segura de lograr tus sueños.`,
+`Lo que hoy parece un montón de fórmulas, mañana será tu herramienta de trabajo.`,
+`Celebra cada avance; los grandes logros están hechos de avances pequeños.`,
+`La calma también se entrena: respira y sigue.`,
+`Tu dedicación de hoy abre las puertas de mañana.`,
+`Eres capaz de cosas grandes. Este ciclo es una de ellas.`,
+`{n}, sigue brillando: tu esfuerzo ilumina tu camino.`,
+`Entre más practicas, más fácil se vuelve. Así funciona el cerebro.`,
+`Aprender es un regalo que te das a ti misma todos los días.`,
+`Hazlo con miedo si hace falta, pero hazlo.`,
+`Tu meta no se mueve; tú te acercas a ella cada día.`,
+`Con disciplina, hasta lo difícil se vuelve posible.`,
+`Mantente firme: los resultados llegan a quien no se rinde.`,
+`Lo vas a lograr. Ya lo estás logrando.`
+];
+const CITAS = [
+[`El éxito es la suma de pequeños esfuerzos repetidos día tras día.`, `Atribuida a Robert Collier`],
+[`La educación es el arma más poderosa que puedes usar para cambiar el mundo.`, `Nelson Mandela`],
+[`Siempre parece imposible hasta que se hace.`, `Atribuida a Nelson Mandela`],
+[`La disciplina es el puente entre las metas y los logros.`, `Jim Rohn`],
+[`En el campo de la observación, el azar solo favorece a la mente preparada.`, `Louis Pasteur`],
+[`Nada en la vida debe ser temido, solo comprendido.`, `Atribuida a Marie Curie`],
+[`Uno nunca se da cuenta de lo que se ha hecho; solo puede ver lo que queda por hacer.`, `Atribuida a Marie Curie`],
+[`El genio es un uno por ciento de inspiración y un noventa y nueve por ciento de transpiración.`, `Thomas A. Edison`],
+[`La perseverancia no es una carrera larga; son muchas carreras cortas, una tras otra.`, `Walter Elliot`],
+[`Nada grande se ha logrado jamás sin entusiasmo.`, `Ralph Waldo Emerson`],
+[`Haz lo que puedas, con lo que tengas, donde estés.`, `Theodore Roosevelt`],
+[`El conocimiento es poder.`, `Francis Bacon`],
+[`Aprender sin pensar es esfuerzo perdido; pensar sin aprender, peligroso.`, `Confucio`],
+[`No importa lo lento que vayas, siempre y cuando no te detengas.`, `Atribuida a Confucio`],
+[`El fracaso es la oportunidad de comenzar de nuevo con más inteligencia.`, `Atribuida a Henry Ford`],
+[`Tanto si crees que puedes como si crees que no puedes, estás en lo cierto.`, `Atribuida a Henry Ford`],
+[`No cuentes los días, haz que los días cuenten.`, `Atribuida a Muhammad Ali`],
+[`El que lee mucho y anda mucho, ve mucho y sabe mucho.`, `Miguel de Cervantes`],
+[`Atribuyo mi éxito a esto: nunca di ni acepté excusas.`, `Atribuida a Florence Nightingale`],
+[`Nada funcionará a menos que tú lo hagas.`, `Maya Angelou`],
+[`Gota a gota se horada la piedra.`, `Proverbio latino (Ovidio)`],
+[`Caer está permitido; levantarse es obligatorio.`, `Proverbio ruso`],
+[`La paciencia es amarga, pero su fruto es dulce.`, `Atribuida a Jean-Jacques Rousseau`],
+[`Quien se atreve a enseñar nunca debe dejar de aprender.`, `John Cotton Dana`],
+[`La ciencia es el alma de la prosperidad de las naciones y la fuente de todo progreso.`, `Atribuida a Louis Pasteur`],
+[`Más vale añadir vida a los días que días a la vida.`, `Atribuida a Rita Levi-Montalcini`],
+[`Es duro fracasar, pero es todavía peor no haber intentado nunca triunfar.`, `Theodore Roosevelt`],
+[`Lo que sabemos es una gota de agua; lo que ignoramos es el océano.`, `Atribuida a Isaac Newton`],
+[`Poco a poco se va lejos.`, `Refrán popular`],
+[`Querer es poder.`, `Refrán popular`]
+];
+const BIBLIA = [
+[`Todo lo puedo en Cristo que me fortalece.`, `Filipenses 4:13`],
+[`Mira que te mando que te esfuerces y seas valiente; no temas ni desmayes, porque Jehová tu Dios estará contigo en dondequiera que vayas.`, `Josué 1:9`],
+[`No temas, porque yo estoy contigo; no desmayes, porque yo soy tu Dios que te esfuerzo; siempre te ayudaré, siempre te sustentaré con la diestra de mi justicia.`, `Isaías 41:10`],
+[`Encomienda a Jehová tus obras, y tus pensamientos serán afirmados.`, `Proverbios 16:3`],
+[`Porque yo sé los pensamientos que tengo acerca de vosotros, dice Jehová, pensamientos de paz, y no de mal, para daros el fin que esperáis.`, `Jeremías 29:11`],
+[`Y todo lo que hagáis, hacedlo de corazón, como para el Señor y no para los hombres.`, `Colosenses 3:23`],
+[`No nos cansemos, pues, de hacer bien; porque a su tiempo segaremos, si no desmayamos.`, `Gálatas 6:9`],
+[`Y si alguno de vosotros tiene falta de sabiduría, pídala a Dios, el cual da a todos abundantemente y sin reproche, y le será dada.`, `Santiago 1:5`],
+[`Porque Jehová da la sabiduría, y de su boca viene el conocimiento y la inteligencia.`, `Proverbios 2:6`],
+[`Encomienda a Jehová tu camino, y confía en él; y él hará.`, `Salmos 37:5`],
+[`Pero los que esperan a Jehová tendrán nuevas fuerzas; levantarán alas como las águilas; correrán, y no se cansarán; caminarán, y no se fatigarán.`, `Isaías 40:31`],
+[`Porque no nos ha dado Dios espíritu de cobardía, sino de poder, de amor y de dominio propio.`, `2 Timoteo 1:7`],
+[`Fíate de Jehová de todo tu corazón, y no te apoyes en tu propia prudencia. Reconócelo en todos tus caminos, y él enderezará tus veredas.`, `Proverbios 3:5-6`],
+[`Te haré entender, y te enseñaré el camino en que debes andar; sobre ti fijaré mis ojos.`, `Salmos 32:8`],
+[`El que comenzó en vosotros la buena obra, la perfeccionará hasta el día de Jesucristo.`, `Filipenses 1:6`],
+[`Venid a mí todos los que estáis trabajados y cargados, y yo os haré descansar.`, `Mateo 11:28`],
+[`Los pensamientos del diligente ciertamente tienden a la abundancia.`, `Proverbios 21:5`],
+[`La mano de los diligentes señoreará.`, `Proverbios 12:24`],
+[`El alma del perezoso desea, y nada alcanza; mas el alma de los diligentes será prosperada.`, `Proverbios 13:4`],
+[`Sabiduría ante todo; adquiere sabiduría; y sobre todas tus posesiones adquiere inteligencia.`, `Proverbios 4:7`],
+[`Todo lo que te viniere a la mano para hacer, hazlo según tus fuerzas.`, `Eclesiastés 9:10`],
+[`Dios es nuestro amparo y fortaleza, nuestro pronto auxilio en las tribulaciones.`, `Salmos 46:1`],
+[`Alzaré mis ojos a los montes; ¿de dónde vendrá mi socorro? Mi socorro viene de Jehová, que hizo los cielos y la tierra.`, `Salmos 121:1-2`],
+[`Y sabemos que a los que aman a Dios, todas las cosas les ayudan a bien.`, `Romanos 8:28`],
+[`Estad firmes y constantes, creciendo en la obra del Señor siempre, sabiendo que vuestro trabajo en el Señor no es en vano.`, `1 Corintios 15:58`],
+[`Corramos con paciencia la carrera que tenemos por delante.`, `Hebreos 12:1`],
+[`Porque siete veces cae el justo, y vuelve a levantarse.`, `Proverbios 24:16`],
+[`Nunca decayeron sus misericordias. Nuevas son cada mañana; grande es tu fidelidad.`, `Lamentaciones 3:22-23`],
+[`Este es el día que hizo Jehová; nos gozaremos y alegraremos en él.`, `Salmos 118:24`],
+[`Esforzaos y cobrad ánimo; no temáis, ni tengáis miedo, porque Jehová tu Dios es el que va contigo; no te dejará, ni te desamparará.`, `Deuteronomio 31:6`],
+[`Echando toda vuestra ansiedad sobre él, porque él tiene cuidado de vosotros.`, `1 Pedro 5:7`],
+[`Por nada estéis afanosos, sino sean conocidas vuestras peticiones delante de Dios en toda oración y ruego, con acción de gracias.`, `Filipenses 4:6`],
+[`La paz os dejo, mi paz os doy. No se turbe vuestro corazón, ni tenga miedo.`, `Juan 14:27`],
+[`Oirá el sabio, y aumentará el saber, y el entendido adquirirá consejo.`, `Proverbios 1:5`],
+[`Da al sabio, y será más sabio; enseña al justo, y aumentará su saber.`, `Proverbios 9:9`],
+[`El corazón del entendido adquiere sabiduría; y el oído de los sabios busca la ciencia.`, `Proverbios 18:15`],
+[`¿Has visto hombre solícito en su trabajo? Delante de los reyes estará.`, `Proverbios 22:29`],
+[`Enséñanos de tal modo a contar nuestros días, que traigamos al corazón sabiduría.`, `Salmos 90:12`],
+[`A estos cuatro muchachos Dios les dio conocimiento e inteligencia en todas las letras y ciencias.`, `Daniel 1:17`],
+[`Tú guardarás en completa paz a aquel cuyo pensamiento en ti persevera; porque en ti ha confiado.`, `Isaías 26:3`],
+[`Jehová está en medio de ti, poderoso, él salvará.`, `Sofonías 3:17`],
+[`Jehová cumplirá su propósito en mí.`, `Salmos 138:8`],
+[`El gozo de Jehová es vuestra fuerza.`, `Nehemías 8:10`],
+[`Bástate mi gracia; porque mi poder se perfecciona en la debilidad.`, `2 Corintios 12:9`],
+[`No os afanéis por el día de mañana, porque el día de mañana traerá su afán. Basta a cada día su propio mal.`, `Mateo 6:34`],
+[`Jehová es mi luz y mi salvación; ¿de quién temeré?`, `Salmos 27:1`],
+[`El corazón del hombre piensa su camino; mas Jehová endereza sus pasos.`, `Proverbios 16:9`],
+[`Porque os es necesaria la paciencia, para que habiendo hecho la voluntad de Dios, obtengáis la promesa.`, `Hebreos 10:36`],
+[`Corred de tal manera que lo obtengáis.`, `1 Corintios 9:24`],
+[`En lo que requiere diligencia, no perezosos; fervientes en espíritu, sirviendo al Señor.`, `Romanos 12:11`]
+];
+const FELI = {
+  racha:[`¡{k} seguidas bien, {n}! Esa concentración se nota.`, `¡Racha de {k}! Estás en modo experta.`, `{k} correctas al hilo. Así se domina un tema.`, `¡Imparable! {k} respuestas correctas seguidas.`, `¡{k} de {k}! Tu esfuerzo está dando frutos.`, `Racha de {k}, {n}. Tu cerebro está en su mejor momento.`, `¡Qué buena racha! {k} seguidas sin fallar.`, `{k} aciertos seguidos: esto ya no es suerte, es preparación.`],
+  dia:[`¡Ya respondiste {k} hoy, {n}! Gran avance.`, `{k} preguntas hoy. Tu constancia es admirable.`, `¡{k} ejercicios en el día! Así se prepara un parcial.`, `Llevas {k} hoy. Cada una suma, ¡felicidades!`, `¡{k} respuestas hoy! Te estás ganando ese aprobado.`],
+  pomo:[`¡Pomodoro completado! Te ganaste ese descanso, {n}.`, `¡Pomodoro número {k} de hoy! Disciplina pura.`, `Otro bloque de enfoque terminado. ¡Bien hecho!`, `¡Lo lograste! 25 minutos de puro enfoque.`, `Pomodoro cumplido: una promesa más que te cumpliste.`, `¡Excelente sesión! Estira, toma agua y vuelve con fuerza.`, `¡Bloque terminado! Así, paso a paso, se llega a la meta.`],
+  repaso:[`¡Terminaste todo el repaso de este tema, {n}! Felicidades.`, `¡Repaso completo! Ahora ponlo a prueba con unas preguntas.`, `Leíste todas las tarjetas. Eso es compromiso de verdad.`, `¡Tema repasado de principio a fin! Estás lista para practicar.`],
+  tarjetas:[`¡{k} tarjetas de repaso hoy! Vas muy bien.`, `{k} tarjetas leídas hoy. Tu cerebro te lo agradece.`, `¡{k} tarjetas! Cada una es un concepto más asegurado.`],
+  simAlto:[`¡{k} en el simulacro, {n}! Estás lista. ¡Felicidades!`, `¡Excelente! {k} de nota. Tu disciplina se ve en los resultados.`, `¡Brillante! Un {k} no es casualidad: es preparación.`],
+  simBien:[`¡Buen simulacro! Sacaste {k}. Repasa tus errores y vas por el 9.`, `{k} en el simulacro: vas por muy buen camino, {n}.`, `¡Aprobado con {k}! Revisa lo que fallaste y sube un poco más.`],
+  simBajo:[`Sacaste {k}, y eso te dice exactamente qué repasar. ¡Ánimo, {n}!`, `Este simulacro es práctica, no sentencia. Repasa los errores y vuelve a intentarlo.`, `No es el resultado final: es tu mapa de lo que falta. Tú puedes, {n}.`],
+  nota:[`¡Felicidades por ese {k}, {n}! Tu esfuerzo rindió frutos.`, `¡Un {k}! Celebra este logro, te lo ganaste.`, `¡Qué buena nota! {k} es el reflejo de tu disciplina.`],
+  notaTop:[`¡¡{k}!! Excelente, {n}. ¡Eres increíble!`, `¡Notaza! Un {k} merece celebración.`],
+  error:[`Un error es solo un dato más. Lee la explicación y sigue.`, `Equivocarse aquí es aprender antes del examen. ¡Bien que lo encontraste!`, `Tranquila, {n}: de este error sale una pregunta que ya no vas a fallar.`, `Fallar en la práctica es parte del plan. Sigue.`, `Respira. Lee la explicación con calma: así se aprende de verdad.`],
+  rato:[`¡Llevas {k} minutos estudiando, {n}! Esa constancia vale oro.`, `{k} minutos de estudio. Recuerda tomar agua y estirarte.`, `¡{k} minutos enfocada! Tu disciplina es tu mejor aliada.`]
+};
+
+/* ======================= MOTIVACIÓN: frases y felicitaciones ======================= */
+function motCfg(){ if (!S.x.mot) S.x.mot = { open:true, every:25, bib:true, cel:true, used:{}, ans:{}, cards:{}, run:0 }; const m = S.x.mot; m.used = m.used || {}; return m; }
+const MOT = { streak:0, last:0, min:0, shownOpen:false };
+const nm = t => t.replace(/\{n\}/g, S.x.name || `Gaby`);
+/* elige sin repetir hasta agotar la lista */
+function pickFrom(key, n){
+  const m = motCfg(); let u = m.used[key] || [];
+  if (u.length >= n) u = u.slice(-Math.min(5, n - 1));
+  const free = []; for (let i = 0; i < n; i++) if (!u.includes(i)) free.push(i);
+  const i = free[Math.floor(Math.random() * free.length)];
+  u.push(i); m.used[key] = u; return i;
+}
+function frase(){
+  const m = motCfg(); const r = Math.random();
+  if (m.bib && r < .33) { const [t, s] = BIBLIA[pickFrom(`b`, BIBLIA.length)]; return { t, s, k:`b` }; }
+  if (r < (m.bib ? .5 : .25)) { const [t, s] = CITAS[pickFrom(`c`, CITAS.length)]; return { t, s, k:`c` }; }
+  return { t:nm(FRASES[pickFrom(`f`, FRASES.length)]), s:``, k:`f` };
+}
+function feli(kind, k){ const L = FELI[kind]; const t = L[pickFrom(`F_` + kind, L.length)]; return nm(t).replace(/\{k\}/g, k); }
+/* ---- toast ---- */
+function motToast(o){
+  const old = $(`#motoast`); if (old) old.remove();
+  const d = el(`div`, `motoast` + (o.big ? ` big` : ``)); d.id = `motoast`; d.setAttribute(`role`, `status`);
+  d.innerHTML = `<span class="me">${o.e || `✨`}</span><span class="mt"><b>${o.h || ``}</b>${o.t}${o.s ? `<small>${o.s}</small>` : ``}</span>`;
+  const x = btn(`×`, `xbtn`, () => d.remove()); x.setAttribute(`aria-label`, `Cerrar`); d.append(x);
+  document.body.append(d);
+  if (o.big) confetti();
+  const ms = 6000 + Math.min(8000, o.t.length * 45); setTimeout(() => d.classList.add(`out`), ms); setTimeout(() => d.remove(), ms + 400);
+}
+function confetti(){
+  if (matchMedia(`(prefers-reduced-motion: reduce)`).matches) return;
+  const w = el(`div`, `confw`); const cols = [`var(--acc)`, `#F2AA86`, `#ABA8F2`, `#8DBBE8`, `#F5C451`, `#7CC9B5`];
+  for (let i = 0; i < 26; i++){ const p = el(`i`); p.style.cssText = `left:${50 + (Math.random() - .5) * 40}%;background:${cols[i % cols.length]};--dx:${(Math.random() - .5) * 520}px;--dy:${-160 - Math.random() * 300}px;--r:${Math.random() * 720}deg;animation-delay:${Math.random() * .15}s`; w.append(p); }
+  document.body.append(w); setTimeout(() => w.remove(), 1800);
+}
+function celebrate(kind, k, big){
+  const m = motCfg(); if (!m.cel) return;
+  const now = Date.now(); if (!big && now - MOT.last < 20000) return; MOT.last = now;
+  const E = { racha:`🔥`, dia:`🎯`, pomo:`🍅`, repaso:`📚`, tarjetas:`📖`, simAlto:`🏆`, simBien:`🌟`, simBajo:`💪`, nota:`🎉`, notaTop:`🏆`, error:`🌱`, rato:`⏱️` };
+  const H = { racha:`¡Racha!`, dia:`¡Meta del día!`, pomo:`¡Pomodoro listo!`, repaso:`¡Repaso completo!`, tarjetas:`¡Gran avance!`, simAlto:`¡Felicidades!`, simBien:`¡Bien hecho!`, simBajo:`¡Ánimo!`, nota:`¡Felicidades!`, notaTop:`¡Felicidades!`, error:``, rato:`¡Sigue así!` };
+  const extra = kind === `error` || kind === `simBajo` ? frase() : null;
+  motToast({ e:E[kind], h:``, t:feli(kind, k) + (extra ? `<em>“${extra.t}”${extra.s ? ` — ${extra.s}` : ``}</em>` : ``), big });
+}
+function motPhrase(prefix){ const f = frase(); motToast({ e: f.k === `b` ? `🙏` : f.k === `c` ? `💬` : `✨`, h:prefix || ``, t:`“${f.t}”`, s:f.s }); }
+/* ---- ganchos ---- */
+const _record = record;
+record = function(it, ok){
+  _record(it, ok);
+  const m = motCfg(), d = todayStr(); if (m.ans.d !== d) m.ans = { d, n:0 }; m.ans.n++;
+  if (ok){ MOT.streak++; if ([5, 10, 15, 20, 30, 40, 50, 75, 100].includes(MOT.streak)) return celebrate(`racha`, MOT.streak, MOT.streak >= 10); }
+  else { const s = MOT.streak; MOT.streak = 0; if (s >= 3 || Math.random() < .2) return celebrate(`error`); }
+  if ([10, 25, 50, 75, 100, 150, 200].includes(m.ans.n)) celebrate(`dia`, m.ans.n, m.ans.n >= 50);
+};
+const _pomoFinish = pomoFinish;
+pomoFinish = function(){ const was = S.x.pst.phase === `study`; _pomoFinish(); if (was){ const n = ((S.x.plog || {})[todayStr()] || { n:1 }).n; celebrate(`pomo`, n, n % 4 === 0); } };
+function motSeen(all, it, before){
+  const m = motCfg(), d = todayStr(); if (m.cards.d !== d) m.cards = { d, n:0 };
+  if (!before){ m.cards.n++; if ([10, 25, 50, 80, 120].includes(m.cards.n)) celebrate(`tarjetas`, m.cards.n); }
+  const seen = all.filter(x => S.x.seen[hash(x.title)]).length;
+  if (!before && seen === all.length && all.length >= 5) celebrate(`repaso`, all.length, true);
+}
+function motSim(nota){ celebrate(nota >= 8.5 ? `simAlto` : nota >= 6 ? `simBien` : `simBajo`, String(nota).replace(`.`, `.`), nota >= 8.5); }
+function motNota(v, m){ if (v == null || !m) return; const min = m.min != null ? m.min : 6, sc = m.scale || 10; if (v >= sc * .9) celebrate(`notaTop`, nfmt(v), true); else if (v >= min) celebrate(`nota`, nfmt(v), true); }
+/* ---- tiempo de estudio activo ---- */
+setInterval(() => {
+  if (document.visibilityState !== `visible`) return; const m = motCfg(); if (!m.every) return;
+  MOT.min++; if (MOT.min % m.every === 0){ if (S.mode !== `simulacro` && !SIM.on) { if (MOT.min % (m.every * 2) === 0) celebrate(`rato`, MOT.min); else motPhrase(`Para ti, ${S.x.name || `Gaby`}: `); } }
+}, 60000);
+function greet(){ const h = new Date().getHours(); return h < 5 ? `Qué dedicación` : h < 12 ? `Buenos días` : h < 19 ? `Buenas tardes` : `Buenas noches`; }
+function motOpen(){ const m = motCfg(); if (!m.open || MOT.shownOpen) return; MOT.shownOpen = true; setTimeout(() => motPhrase(`${greet()}, ${S.x.name || `Gaby`}. `), 1800); }
+/* ---- tarjeta en Inicio ---- */
+function motCard(){
+  const m = motCfg(); if (!m.cur || Date.now() - (m.curT || 0) > 30 * 60000){ m.cur = frase(); m.curT = Date.now(); save(); }
+  const c = el(`article`, `card plain motcard`);
+  const paint = () => { const f = m.cur; c.innerHTML = `<div class="mk">${f.k === `b` ? `🙏 Palabra para hoy` : f.k === `c` ? `💬 Para inspirarte` : `✨ Para ti, ${S.x.name || `Gaby`}`}</div><p class="mq">“${f.t}”</p>${f.s ? `<p class="ms">— ${f.s}</p>` : ``}`;
+    const r = el(`div`, `btnrow`); r.append(btn(`Otra frase`, `btn ghost`, () => { m.cur = frase(); m.curT = Date.now(); save(); paint(); }), btn(`Ajustes`, `btn ghost`, openMotSettings)); c.append(r); };
+  paint(); return c;
+}
+const _vInicio = vInicio;
+vInicio = function(v){ _vInicio(v); const c = motCard(); const kids = [...v.children]; const at = kids.find(x => !x.classList.contains(`alert`) && !x.dataset.sync && x.tagName !== `P`); v.insertBefore(c, at || null); };
+const _openFocus2 = openFocus;
+openFocus = function(){ _openFocus2(); const f = $(`#focusroot .focus`); if (f && motCfg().open !== null){ const q = frase(); const p = el(`p`, `fquote`, `“${q.t}”${q.s ? `<small>— ${q.s}</small>` : ``}`); f.append(p); } };
+function openMotSettings(){
+  const m = motCfg(); const done = () => { save(); };
+  openSheet(`Frases y felicitaciones`, b => {
+    b.append(fld(`Frase al abrir la página`, toggleBtn(m.open, v => { m.open = v; done(); }), `Un saludo con una frase cada vez que entres`));
+    b.append(fld(`Incluir versículos bíblicos`, toggleBtn(m.bib, v => { m.bib = v; done(); }), `Reina-Valera 1960`));
+    b.append(fld(`Felicitaciones`, toggleBtn(m.cel, v => { m.cel = v; done(); }), `Rachas de aciertos, pomodoros, repasos completos, simulacros y buenas notas`));
+    const s = document.createElement(`select`); s.className = `nedit`; s.innerHTML = `<option value="0">Nunca</option><option value="15">Cada 15 min</option><option value="25">Cada 25 min</option><option value="40">Cada 40 min</option><option value="60">Cada hora</option>`; s.value = String(m.every || 0); s.onchange = () => { m.every = +s.value; done(); };
+    b.append(fld(`Frases mientras estudias`, s, `Aparecen abajo sin interrumpir`));
+    b.append(el(`p`, `muted`, `Hay ${FRASES.length} frases, ${BIBLIA.length} versículos y ${CITAS.length} citas. No se repiten hasta que salgan todas.`));
+  });
+}
 
 /* ======================= SINCRONIZACIÓN EN LA NUBE (Firebase) =======================
    Solo se activa si existe window.FB_CONFIG (archivo firebase-config.js del sitio).
@@ -2256,3 +2586,4 @@ document.addEventListener(`visibilitychange`, () => { if (!document.hidden) pomo
 window.__doc = (kind, code) => { const d = buildDoc(kind, code ? buildExam(code) : undefined); [...document.body.children].forEach(c => { if (![`STYLE`,`LINK`,`TITLE`,`META`].includes(c.tagName)) c.remove(); }); document.body.className = `printing`; document.body.append(d.root); return d.spec.file; };
 window.__buildExam = buildExam;
 syncInit();
+motOpen();

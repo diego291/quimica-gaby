@@ -405,7 +405,7 @@ function vRepaso(v){
   bar.append(btn(`Ver todas`, `btn ghost`, () => { S.x.rall = true; save(); renderView(); renderPanel(); }));
   v.append(bar);
   v.append(repCard(it));
-  S.x.seen[hash(it.title)] = 1; S.x.last = { mode:`repaso`, sel:selList(), i, n:all.length, title:it.title };
+  const _was = S.x.seen[hash(it.title)]; S.x.seen[hash(it.title)] = 1; motSeen(all, it, _was); S.x.last = { mode:`repaso`, sel:selList(), i, n:all.length, title:it.title };
   const q = checkQ(it);
   if (q){ const ck = el(`section`, `check`); ck.append(el(`h4`, ``, `Comprueba lo que leíste`)); ck.append(mcqCard(q, () => { S.st[`R_` + hash(it.title)] = (S.st[`R_` + hash(it.title)] || 0) + 1; })); v.append(ck); }
   const nav = el(`div`, `decknav`);

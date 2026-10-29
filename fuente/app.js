@@ -481,7 +481,7 @@ function vSimulacro(v){
   if (SIM.i >= SIM.qs.length){
     stopTick();
     const nota = (SIM.ok / Math.max(1, SIM.qs.length) * 10).toFixed(1);
-    if (!SIM.saved && SIM.qs.length){ SIM.saved = true; S.x.simLast = { d: todayStr(), nota: +nota, ts:[...new Set(SIM.qs.map(q => q.t))] }; save(); }
+    if (!SIM.saved && SIM.qs.length){ SIM.saved = true; S.x.simLast = { d: todayStr(), nota: +nota, ts:[...new Set(SIM.qs.map(q => q.t))] }; save(); setTimeout(() => motSim(+nota), 400); }
     const box = el(`div`,`simstart`);
     const used = Math.round((Date.now() - SIM.t0)/1000);
     box.append(el(`p`,`score`, `${nota} / 10`), el(`p`,``, `${SIM.ok} correctas de ${SIM.qs.length} · tiempo usado ${Math.floor(used/60)} min ${used%60} s.`));

@@ -248,3 +248,23 @@ body{background:var(--bg)}
 .nhelp{font-size:.85rem}
 .btnrow.col{flex-direction:column;align-items:stretch}
 @media (max-width:700px){ .nsum{grid-template-columns:repeat(2,1fr)} .nbig b{font-size:2rem} .nrow{padding-left:calc(var(--d) * 12px)} .nhint{padding-left:calc(var(--d) * 12px)} }
+/* motivación */
+.motcard{background:linear-gradient(135deg,var(--accSoft),var(--surface) 70%);border-color:color-mix(in srgb,var(--acc) 35%,var(--line))}
+.motcard .mk{font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--acc)}
+.motcard .mq{font-family:"Zilla Slab",serif;font-size:1.3rem;line-height:1.35;margin:8px 0 4px;font-weight:600}
+.motcard .ms{margin:0;color:var(--muted);font-size:.88rem}
+.motoast{text-align:left;position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;display:flex;gap:12px;align-items:flex-start;background:var(--surface);color:var(--ink);border:1px solid var(--acc);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px 12px 12px 16px;width:min(460px,calc(100vw - 32px));animation:motin .35s ease-out}
+.motoast.big{border-width:2px}
+.motoast.out{opacity:0;transform:translate(-50%,10px);transition:.35s}
+.motoast .me{font-size:1.6rem;line-height:1}
+.motoast .mt{flex:1;font-size:.95rem;line-height:1.4}
+.motoast .mt b{color:var(--acc)}
+.motoast .mt small{display:block;color:var(--muted);margin-top:3px}
+.motoast .mt em{display:block;margin-top:6px;color:var(--muted);font-size:.88rem}
+@keyframes motin{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
+.confw{position:fixed;left:0;right:0;bottom:90px;height:0;z-index:61;pointer-events:none}
+.confw i{position:absolute;bottom:0;width:9px;height:14px;border-radius:2px;animation:conf 1.5s cubic-bezier(.2,.7,.4,1) forwards}
+@keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}70%{opacity:1}100%{transform:translate(var(--dx),calc(var(--dy) + 260px)) rotate(var(--r));opacity:0}}
+.fquote{max-width:520px;color:var(--muted);font-family:"Zilla Slab",serif;font-size:1.1rem;margin-top:10px}
+.fquote small{display:block;font-family:inherit;font-size:.85rem;margin-top:4px}
+@media (max-width:700px){ .motoast{bottom:86px} .motcard .mq{font-size:1.12rem} }

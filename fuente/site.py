@@ -43,7 +43,7 @@ mats = sorted(glob.glob('material/*.js'))
 for m in mats: shutil.copy(m, f'{OUT}/material/')
 packs = '/* Material nuevo: un paquete por tema (carpeta material/). */\n' + cat(mats)
 open(f'{OUT}/packs.js', 'w', encoding='utf-8').write(packs)
-open(f'{OUT}/app.js', 'w', encoding='utf-8').write(cat('app.js org_app.js arom_app.js alc_app.js eter_app.js ask.js ui.js notas.js clock.js sync.js init.js'.split()))
+open(f'{OUT}/app.js', 'w', encoding='utf-8').write(cat('app.js org_app.js arom_app.js alc_app.js eter_app.js ask.js ui.js notas.js clock.js frases.js motiva.js sync.js init.js'.split()))
 
 # ---- iconos
 def icon(size, path, pad=0.0):
