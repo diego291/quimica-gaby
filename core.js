@@ -3122,7 +3122,7 @@ function vGuia(v){
   v.append(l);
 }
 
-const APPVER = `2026.10.28-2231`;
+const APPVER = `2026.10.28-2241`;
 /* ======================= PAQUETES DE MATERIAL =======================
    Cada tema nuevo llega como un archivo que llama a registerPack({...}).
    Formato:

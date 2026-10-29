@@ -598,3 +598,23 @@ body{background:var(--bg)}
   .head .tools .lbl{display:none}
 }
 @media (max-width:380px){ .st4{grid-template-columns:1fr 1fr} }
+/* reloj */
+.clockbig{display:flex;flex-direction:column;align-items:flex-end;gap:2px;padding:10px 16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);min-width:180px;color:var(--ink);text-align:right;cursor:pointer;font:inherit}
+.clockbig:hover{border-color:var(--acc)}
+.clockbig .t{font-family:"Zilla Slab",serif;font-weight:700;font-size:2.6rem;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.5px;white-space:nowrap}
+.clockbig .t small{font-size:1rem;font-weight:600;color:var(--muted);margin-left:5px}
+.clockbig .sec{font-size:1.1rem;color:var(--acc);margin-left:2px}
+.clockbig .side{display:flex;flex-direction:column;align-items:flex-end}
+.clockbig .d{font-size:.82rem;color:var(--muted)}
+.clockbig .n{font-size:.78rem;color:var(--acc);font-weight:700;margin-top:3px;max-width:240px}
+.clockbig .n.pr{color:var(--muted);font-weight:600}
+.hclock{font-weight:700;font-variant-numeric:tabular-nums;cursor:pointer}
+.fclock{position:absolute;top:22px;left:0;right:0;font-family:"Zilla Slab",serif;font-weight:700;font-size:1.6rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.fclock .sec{font-size:1rem;color:var(--acc)}.fclock small{font-size:.9rem}
+@media (max-width:700px){
+ .clockwrap{width:100%;margin-top:10px}
+ .clockbig{flex-direction:row;align-items:center;justify-content:space-between;width:100%;min-width:0;padding:10px 14px;gap:10px}
+ .clockbig .t{font-size:2rem}
+ .clockbig .n{font-size:.72rem;max-width:170px}
+ #head .hclock{font-size:.8rem;padding:6px 10px}
+}
