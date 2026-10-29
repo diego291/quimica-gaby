@@ -1,0 +1,10 @@
+const fs=require('fs');
+const h=fs.readFileSync(process.argv[2],'utf8');
+const s=h.split('<script>')[1].split('</script>')[0];
+const part1=s.split('/* ======================= EXPORTACIÓN')[0];
+const formM=s.match(/const FORM = \[[\s\S]*?\n\];/)[0];
+const code=part1+'\n'+formM+'\nmodule.exports={TOPICS,REPASO,MCQ,ABIERTAS,EJ,FORM};';
+fs.writeFileSync('build/old.js',code);
+const d=require('./old.js');
+fs.writeFileSync('build/old.json',JSON.stringify(d,null,1));
+for(const k in d) console.log(k, Array.isArray(d[k])?d[k].length:Object.keys(d[k]).length);
