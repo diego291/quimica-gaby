@@ -34,6 +34,7 @@ function paintClock(h){
 function updateClocks(){ document.querySelectorAll(`[data-clock]`).forEach(paintClock); }
 function addHeadClock(){
   const top = $(`#head .top`); if (!top) return; const tools = top.querySelector(`.tools`);
+  if (S.mode === `notas`){ const h1 = $(`#head h1`); if (h1) h1.textContent = `Mis notas`; const k = $(`#head .top .k`); if (k) k.textContent = `Inicio · ${curCiclo() ? curCiclo().name : `Notas`}`; document.querySelectorAll(`#head .chips, #head .hstat`).forEach(x => x.remove()); }
   if (S.mode === `inicio`){
     const k = $(`#head .top .k`); if (k) k.textContent = `Química · Laboratorio Clínico`;
     const w = el(`div`, `clockwrap`); w.append(clockBig());
