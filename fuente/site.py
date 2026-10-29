@@ -122,6 +122,8 @@ self.addEventListener(`fetch`, e => {
 '''.replace('__V__', v).replace('__A__', json.dumps(assets))
 open(f'{OUT}/sw.js', 'w', encoding='utf-8').write(sw)
 open(f'{OUT}/.nojekyll', 'w').write('')
+if os.path.isdir('audio_out'):
+    shutil.copytree('audio_out', f'{OUT}/audio')
 if os.path.isdir('gh'):
     shutil.rmtree(f'{OUT}/.github', ignore_errors=True); shutil.copytree('gh', f'{OUT}/.github')
 open(f'{OUT}/README.md', 'w', encoding='utf-8').write(f'''# Química · Laboratorio Clínico

@@ -1,0 +1,14 @@
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch({ args:['--autoplay-policy=no-user-gesture-required'] });
+ const ctx = await b.newContext({ viewport:{ width:390, height:850 }, serviceWorkers:'block' });
+ const p = await ctx.newPage(); p.on('pageerror', e => console.log('ERR', e.message));
+ await p.goto('http://localhost:8767/'); await p.waitForTimeout(800);
+ await p.evaluate(() => { S.x.mot.open = false; S.sel = new Set(['t21']); save(); go('escuchar'); }); await p.waitForTimeout(800);
+ await p.click('#auplay'); await p.waitForTimeout(3000);
+ await p.evaluate(() => { const a = AU.el; window.__ev = []; ['pause','play','seeking','ended','emptied','loadstart'].forEach(n => a.addEventListener(n, () => __ev.push(n + '@' + a.currentTime.toFixed(1)))); });
+ await p.click('#auplay'); await p.waitForTimeout(300); console.log('stopped resumeAt', await p.evaluate(() => AU.resumeAt));
+ await p.click('#auplay'); await p.waitForTimeout(1000);
+ console.log(await p.evaluate(() => __ev.join(' ')), 'now', await p.evaluate(() => AU.el.currentTime.toFixed(1)), 'dur', await p.evaluate(() => AU.el.duration));
+ await p.evaluate(() => { __ev = []; AU.el.currentTime = AU.el.duration - 0.3; }); await p.waitForTimeout(2500);
+ console.log(await p.evaluate(() => __ev.join(' ')), 'seg', await p.evaluate(() => AU.seg), 'on', await p.evaluate(() => AU.on));
+ await b.close(); })();

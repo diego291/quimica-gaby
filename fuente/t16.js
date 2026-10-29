@@ -1,0 +1,18 @@
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch({ args:['--autoplay-policy=no-user-gesture-required'] }); const errs = [];
+ const ctx = await b.newContext({ viewport:{ width:390, height:850 }, serviceWorkers:'block', deviceScaleFactor:2 });
+ const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message)); p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
+ await p.goto('http://localhost:8767/'); await p.waitForTimeout(800);
+ await p.evaluate(() => { S.x.mot.open = false; S.sel = new Set(['t21']); save(); go('escuchar'); }); await p.waitForTimeout(800);
+ console.log('voz opciones', await p.$$eval('.auopts select >> nth=1', s => s.length), await p.evaluate(() => [...document.querySelectorAll('.auopts select')][1].options[0].text));
+ await p.click('#auplay'); await p.waitForTimeout(4000);
+ console.log('nat', await p.evaluate(() => AU.nat), 'src', await p.evaluate(() => AU.el && AU.el.src.split('/').slice(-2).join('/')), 't', await p.evaluate(() => AU.el.currentTime.toFixed(1)), 'si', await p.evaluate(() => AU.si), 'cur:', await p.$eval('#auread .cur', e => e.textContent.slice(0, 60)).catch(() => 'none'));
+ await p.screenshot({ path:'shots/au_nat.png' });
+ await p.click('#auplay'); await p.waitForTimeout(300); const t1 = await p.evaluate(() => AU.el.currentTime); await p.click('#auplay'); await p.waitForTimeout(1500);
+ console.log('pausa/reanuda desde', t1.toFixed(1), '→', await p.evaluate(() => AU.el.currentTime.toFixed(1)));
+ await p.evaluate(() => { AU.el.currentTime = AU.el.duration - 0.3; }); await p.waitForTimeout(2500);
+ console.log('tras fin de cuerpo: seg', await p.evaluate(() => AU.seg), 'src', await p.evaluate(() => AU.el.src.split('/').pop()));
+ await p.evaluate(() => auJump(1)); await p.waitForTimeout(1500);
+ console.log('salto: tarjeta', await p.evaluate(() => AU.ci), await p.evaluate(() => AU.el.src.split('/').pop()), 'playing', await p.evaluate(() => !AU.el.paused));
+ await p.selectOption('.auopts select >> nth=0', '1.3'); await p.waitForTimeout(200); console.log('rate', await p.evaluate(() => AU.el.playbackRate));
+ console.log(errs.join('\n') || 'sin errores'); await b.close(); })();
