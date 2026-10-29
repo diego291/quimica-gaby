@@ -326,6 +326,7 @@ function reminders(){
 /* ======================= VISTA: INICIO ======================= */
 function vInicio(v){
   migrationHint(v);
+  if (syncAvailable() && !S.x.syncHide && !SY.user) v.prepend(syncCard(true));
   reminders().forEach(r => v.append(el(`div`, `alert`, icon(`bell`) + `<span>${r}</span>`)));
   const g = el(`div`, `hgrid`);
   const pc = el(`div`, `pomo`); pc.dataset.pomo = `card`; g.append(pc);
@@ -470,6 +471,7 @@ function importPack(msg){
 }
 function removePack(id){ let saved = {}; try { saved = JSON.parse(localStorage.getItem(PACK_KEY) || `{}`) || {}; } catch(e){} delete saved[id]; try { localStorage.setItem(PACK_KEY, JSON.stringify(saved)); } catch(e){} location.reload(); }
 function progresoExtras(box){
+  if (syncAvailable()) box.append(syncCard(false));
   const c = el(`article`, `card plain`); c.append(el(`h3`, ``, `Respaldo de tu progreso`), el(`p`, `muted`, `Guarda un archivo con tu progreso, fichas, agenda, Pomodoro y dudas. Sirve para pasarlo a otro navegador, a otro dispositivo o a la versión en línea de la página.`));
   const m = el(`p`, `muted`); m.setAttribute(`aria-live`, `polite`);
   const r = el(`div`, `btnrow`); r.append(btn(`Descargar respaldo`, `btn acc`, () => exportBackup(m)), btn(`Restaurar desde archivo`, `btn ghost`, () => importBackup(m))); c.append(r, m); box.append(c);

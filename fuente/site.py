@@ -30,6 +30,9 @@ open(f'{OUT}/app.css', 'w', encoding='utf-8').write(fcss + '\n' + cat(['base.css
 # ---- librerías PDF locales
 shutil.copy('node_modules/jspdf/dist/jspdf.umd.min.js', f'{OUT}/lib/')
 shutil.copy('node_modules/html2canvas/dist/html2canvas.min.js', f'{OUT}/lib/')
+for f in ('app', 'auth', 'firestore'): shutil.copy(f'node_modules/firebase/firebase-{f}-compat.js', f'{OUT}/lib/')
+HASFB = os.path.exists('firebase-config.js')
+if HASFB: shutil.copy('firebase-config.js', f'{OUT}/firebase-config.js')
 
 # ---- scripts
 consts = subprocess.check_output(['node', '-e', 'const d=require("./old.json");for(const k of ["TOPICS","REPASO","MCQ","ABIERTAS","EJ","FORM"]) console.log(`const ${k} = ${JSON.stringify(d[k])};`)'], text=True)
@@ -40,7 +43,7 @@ mats = sorted(glob.glob('material/*.js'))
 for m in mats: shutil.copy(m, f'{OUT}/material/')
 packs = '/* Material nuevo: un paquete por tema (carpeta material/). */\n' + cat(mats)
 open(f'{OUT}/packs.js', 'w', encoding='utf-8').write(packs)
-open(f'{OUT}/app.js', 'w', encoding='utf-8').write(cat('app.js org_app.js arom_app.js alc_app.js eter_app.js ask.js ui.js init.js'.split()))
+open(f'{OUT}/app.js', 'w', encoding='utf-8').write(cat('app.js org_app.js arom_app.js alc_app.js eter_app.js ask.js ui.js sync.js init.js'.split()))
 
 # ---- iconos
 def icon(size, path, pad=0.0):
@@ -78,6 +81,7 @@ index = f'''<!doctype html>
 </head><body>
 {open('body.html', encoding='utf-8').read()}
 <script>window.LIB_LOCAL = true;</script>
+{'<script src="firebase-config.js?v=' + v + '"></script>' if HASFB else ''}
 <script src="core.js?v={v}"></script>
 <script src="packs.js?v={v}"></script>
 <script src="app.js?v={v}"></script>
@@ -87,7 +91,7 @@ index = f'''<!doctype html>
 open(f'{OUT}/index.html', 'w', encoding='utf-8').write(index)
 
 assets = ['./', 'index.html', f'app.css?v={v}', f'core.js?v={v}', f'packs.js?v={v}', f'app.js?v={v}', 'manifest.webmanifest',
-          'lib/jspdf.umd.min.js', 'lib/html2canvas.min.js', 'icons/icon-192.png', 'icons/apple-touch-icon.png'] + ['fonts/' + n for n in sorted(os.listdir(f'{OUT}/fonts'))]
+          'lib/jspdf.umd.min.js', 'lib/html2canvas.min.js', 'lib/firebase-app-compat.js', 'lib/firebase-auth-compat.js', 'lib/firebase-firestore-compat.js', 'icons/icon-192.png', 'icons/apple-touch-icon.png'] + ([f'firebase-config.js?v={v}'] if HASFB else []) + ['fonts/' + n for n in sorted(os.listdir(f'{OUT}/fonts'))]
 sw = '''/* Service worker: siempre intenta la versión más nueva (red primero) y, sin internet, usa la copia guardada. */
 const VERSION = `__V__`;
 const CACHE = `quimica`;
