@@ -411,9 +411,27 @@ function checkPool(it){
     const otros = distractores(ALL.FICHAS.filter(x => x.t === it.t && x !== f).map(x => x.b), f.b, 3, seed + k + 1);
     if (otros.length >= 2) add({ id:`C` + hash(f.f), t:f.t, src:f.src, q:f.f, o:[f.b, ...otros], e:f.b, gen:1 });
   });
+  // Preguntas escritas para esta tarjeta (checks.js)
+  const extra = (typeof CHECK_EXTRA !== `undefined` && CHECK_EXTRA[it.title]) || [];
+  extra.forEach(([q, o, e]) => add({ id:`X` + hash(q), t:it.t, src:it.src, q, o, e }));
+  // Formulario de las mismas páginas: cada fila es una pregunta
+  ALL.FORM.filter(near).forEach((f, k) => {
+    const filas = ALL.FORM.filter(x => x.t === it.t).flatMap(x => x.rows.map(r => r[1]));
+    f.rows.forEach((r, j) => {
+      const otros = distractores(filas, r[1], 3, seed + 31 * k + j + 7);
+      if (otros.length >= 2) add({ id:`R` + hash(f.title + r[0]), t:f.t, src:f.src, q:`Formulario · ${f.title}: ¿qué corresponde a <b>${r[0]}</b>?`, o:[r[1], ...otros], e:`${r[0]}: ${r[1]}`, gen:1 });
+    });
+  });
   // Preguntas de desarrollo: se responden en voz alta y se compara con la respuesta modelo
   ALL.ABIERTAS.filter(near).forEach(add);
+  // Ejercicios de las mismas páginas, con solución paso a paso
+  ALL.EJ.filter(near).forEach(q => add(Object.assign({}, q, { ej:1 })));
   return out;
+}
+function ejCheck(q, onDone){
+  const c = ejCard(q);
+  c.addEventListener(`click`, e => { const b = e.target.closest(`.selfgrade .btn`); if (b) onDone(b.classList.contains(`ok`)); }, true);
+  return c;
 }
 function abiertaCheck(q, onDone){
   const c = card(q); c.append(el(`p`, `q`, q.q));
@@ -458,7 +476,7 @@ function checkBox(it){
     }
     const q = porId[st.orden[st.i]];
     const alResponder = ok => { st.res[q.id] = ok; S.st[`R_` + key] = (S.st[`R_` + key] || 0) + 1; save(); sig.textContent = st.i === total - 1 ? `Ver resultado` : `Siguiente pregunta`; sig.classList.add(`acc`); };
-    sec.append(q.o ? mcqCard(q, alResponder) : abiertaCheck(q, alResponder));
+    sec.append(q.ej ? ejCheck(q, alResponder) : q.o ? mcqCard(q, alResponder) : abiertaCheck(q, alResponder));
     const nav = el(`div`, `chknav`);
     const rep = btn(``, `btn ghost`, () => reiniciar(false)); rep.innerHTML = icon(`redo`) + ` Repetir preguntas`;
     const sig = btn(st.i === total - 1 ? `Ver resultado` : (q.id in st.res ? `Siguiente pregunta` : `Saltar pregunta`), `btn` + (q.id in st.res ? ` acc` : ` ghost`), () => { st.i++; draw(); });

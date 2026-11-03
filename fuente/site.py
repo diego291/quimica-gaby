@@ -43,6 +43,7 @@ mats = sorted(glob.glob('material/*.js'))
 for m in mats: shutil.copy(m, f'{OUT}/material/')
 packs = '/* Material nuevo: un paquete por tema (carpeta material/). */\n' + cat(mats)
 open(f'{OUT}/packs.js', 'w', encoding='utf-8').write(packs)
+shutil.copy('data_check.js', f'{OUT}/checks.js')
 open(f'{OUT}/app.js', 'w', encoding='utf-8').write(cat('app.js org_app.js arom_app.js alc_app.js eter_app.js ask.js ui.js notas.js clock.js frases.js motiva.js estudio.js audio.js push.js sync.js init.js'.split()))
 
 # ---- iconos
@@ -84,13 +85,14 @@ index = f'''<!doctype html>
 {'<script src="firebase-config.js?v=' + v + '"></script>' if HASFB else ''}
 <script src="core.js?v={v}"></script>
 <script src="packs.js?v={v}"></script>
+<script src="checks.js?v={v}"></script>
 <script src="app.js?v={v}"></script>
 <script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(function(){{}});</script>
 </body></html>
 '''
 open(f'{OUT}/index.html', 'w', encoding='utf-8').write(index)
 
-assets = ['./', 'index.html', f'app.css?v={v}', f'core.js?v={v}', f'packs.js?v={v}', f'app.js?v={v}', 'manifest.webmanifest',
+assets = ['./', 'index.html', f'app.css?v={v}', f'core.js?v={v}', f'packs.js?v={v}', f'checks.js?v={v}', f'app.js?v={v}', 'manifest.webmanifest',
           'lib/jspdf.umd.min.js', 'lib/html2canvas.min.js', 'lib/firebase-app-compat.js', 'lib/firebase-auth-compat.js', 'lib/firebase-firestore-compat.js', 'icons/icon-192.png', 'icons/apple-touch-icon.png'] + ([f'firebase-config.js?v={v}'] if HASFB else []) + ['fonts/' + n for n in sorted(os.listdir(f'{OUT}/fonts'))]
 sw = '''/* Service worker: siempre intenta la versión más nueva (red primero) y, sin internet, usa la copia guardada. */
 const VERSION = `__V__`;
