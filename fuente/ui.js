@@ -1,5 +1,6 @@
 /* ======================= INTERFAZ NUEVA: NAVEGACIÓN, INICIO, POMODORO, AGENDA ======================= */
 const ICONS = {
+  redo:`<path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/>`,
   home:`<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>`,
   book:`<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/>`,
   pencil:`<path d="M4 20h4L19 9l-4-4L4 16z"/>`,
@@ -381,6 +382,92 @@ function routeBox(){
 /* ======================= VISTA: REPASO POR TARJETAS ======================= */
 function pagesOf(src){ const out = new Set(); const m = String(src).match(/pág\.\s*([0-9–\-, y]+)/); if (!m) return out; m[1].split(/,|\by\b/).forEach(p => { const r = p.trim().split(/[–-]/).map(Number).filter(n => !isNaN(n)); if (r.length === 1) out.add(r[0]); else if (r.length === 2) for (let i = r[0]; i <= r[1]; i++) out.add(i); }); return out; }
 function checkQ(it){ const pg = pagesOf(it.src); const cand = ALL.MCQ.filter(q => q.t === it.t && [...pagesOf(q.src)].some(p => pg.has(p))); if (!cand.length) return null; const fresh = cand.filter(q => !(S.st[q.id] && S.st[q.id][0])); const pool = fresh.length ? fresh : cand; return pool[(hash(it.title).charCodeAt(0) + (S.st[`R_` + hash(it.title)] || 0)) % pool.length]; }
+/* ---------- "Comprueba lo que leíste": todas las preguntas de la tarjeta ----------
+   Junta, sin repetir, todo lo que corresponde a las páginas de la tarjeta:
+   opción múltiple, "¿qué fórmula uso?", fichas, la idea clave y preguntas de desarrollo.
+   Se avanza con "Siguiente pregunta" y se reinicia con "Repetir preguntas" sin cambiar de tarjeta. */
+const CHK = {};
+const normQ = s => String(s || ``).replace(/<[^>]+>/g, ``).toLowerCase().normalize(`NFD`).replace(/[̀-ͯ]/g, ``).replace(/[^a-z0-9]+/g, ` `).trim();
+function distractores(lista, correcta, n, semilla){
+  const c = normQ(correcta), vistos = new Set([c]), out = [];
+  for (const x of shufR(lista, mulberry(semilla))){ const k = normQ(x); if (!k || vistos.has(k)) continue; vistos.add(k); out.push(x); if (out.length === n) break; }
+  return out;
+}
+function checkPool(it){
+  const pg = pagesOf(it.src);
+  const near = q => q.t === it.t && [...pagesOf(q.src)].some(p => pg.has(p));
+  const seed = parseInt(hash(it.title), 36) || 1;
+  const vistos = new Set(), out = [];
+  const add = q => { const k = normQ(q.q); if (!k || vistos.has(k)) return; vistos.add(k); out.push(q); };
+  ALL.MCQ.filter(near).forEach(add);
+  ALL.FQ.filter(near).forEach(add);
+  // Idea clave de la tarjeta ("Para memorizar"), con distractores de otras tarjetas del mismo tema
+  if (it.memo){
+    const otros = distractores(ALL.REPASO.filter(r => r.t === it.t && r !== it && r.memo).map(r => r.memo), it.memo, 3, seed);
+    if (otros.length >= 2) add({ id:`K` + hash(it.title), t:it.t, src:it.src, q:`¿Cuál es la idea clave de “${it.title}”?`, o:[it.memo, ...otros], e:`Para memorizar: ${it.memo}`, gen:1 });
+  }
+  // Fichas de las mismas páginas, convertidas en opción múltiple
+  ALL.FICHAS.filter(near).forEach((f, k) => {
+    const otros = distractores(ALL.FICHAS.filter(x => x.t === it.t && x !== f).map(x => x.b), f.b, 3, seed + k + 1);
+    if (otros.length >= 2) add({ id:`C` + hash(f.f), t:f.t, src:f.src, q:f.f, o:[f.b, ...otros], e:f.b, gen:1 });
+  });
+  // Preguntas de desarrollo: se responden en voz alta y se compara con la respuesta modelo
+  ALL.ABIERTAS.filter(near).forEach(add);
+  return out;
+}
+function abiertaCheck(q, onDone){
+  const c = card(q); c.append(el(`p`, `q`, q.q));
+  c.append(el(`p`, `muted`, `Pregunta de desarrollo: respóndela en voz alta o en tu cuaderno y luego compara.`));
+  const row = el(`div`, `btnrow`);
+  const ver = btn(`Ver respuesta modelo`, `btn ghost`, () => {
+    ver.remove(); c.append(el(`div`, `fb`, `<strong>Respuesta modelo</strong>${q.a}<span class="fbsrc">Repasa: ${q.src}</span>`));
+    const self = el(`div`, `btnrow selfgrade`);
+    self.append(el(`span`, `muted`, `¿La respondiste bien?`), btn(`Sí`, `btn ok`, () => { record(q, true); self.innerHTML = `<span class="muted">Anotado como correcta.</span>`; onDone(true); }), btn(`No`, `btn ghost`, () => { record(q, false); self.innerHTML = `<span class="muted">Anotado. La verás de nuevo al repetir.</span>`; onDone(false); }));
+    c.append(self);
+  });
+  row.append(ver); c.append(row); return c;
+}
+function checkBox(it){
+  const pool = checkPool(it);
+  if (!pool.length) return null;
+  const key = hash(it.title);
+  const ordenar = lista => { const nuevas = lista.filter(q => !(S.st[q.id] && S.st[q.id][0])), resto = lista.filter(q => S.st[q.id] && S.st[q.id][0]); return shuf(nuevas).concat(shuf(resto)); };
+  let st = CHK[key];
+  if (!st || st.n !== pool.length) st = CHK[key] = { n: pool.length, orden: ordenar(pool).map(q => q.id), i: 0, res: {} };
+  const porId = Object.fromEntries(pool.map(q => [q.id, q]));
+  const sec = el(`section`, `check`);
+  const reiniciar = soloFalladas => {
+    const ids = soloFalladas ? st.orden.filter(id => st.res[id] === false) : pool.map(q => q.id);
+    st.orden = soloFalladas ? shuf(ids) : ordenar(ids.map(id => porId[id]).filter(Boolean)).map(q => q.id);
+    st.i = 0; st.res = {}; draw(); sec.scrollIntoView({ block: `nearest`, behavior: `smooth` });
+  };
+  function draw(){
+    sec.innerHTML = ``;
+    const total = st.orden.length, bien = Object.values(st.res).filter(Boolean).length, resp = Object.keys(st.res).length;
+    const head = el(`div`, `chkhead`);
+    head.append(el(`h4`, ``, `Comprueba lo que leíste`), el(`span`, `chkcnt`, st.i < total ? `Pregunta <b>${st.i + 1}</b> de ${total}` : `${total} de ${total}`));
+    sec.append(head);
+    sec.append(el(`div`, `chkbar`, `<i style="width:${Math.round(Math.min(st.i, total) / total * 100)}%"></i>`));
+    if (st.i >= total){
+      const mal = st.orden.filter(id => st.res[id] === false).length;
+      sec.append(el(`p`, `chkfin`, resp ? `Terminaste las preguntas de esta tarjeta: <b>${bien} de ${resp}</b> correctas${resp < total ? ` (${total - resp} sin responder)` : ``}.` : `Pasaste todas las preguntas sin responder.`));
+      const row = el(`div`, `btnrow`);
+      row.append(btn(`Repetir preguntas`, `btn acc`, () => reiniciar(false)));
+      if (mal) row.append(btn(`Repetir solo las falladas (${mal})`, `btn ghost`, () => reiniciar(true)));
+      sec.append(row); return;
+    }
+    const q = porId[st.orden[st.i]];
+    const alResponder = ok => { st.res[q.id] = ok; S.st[`R_` + key] = (S.st[`R_` + key] || 0) + 1; save(); sig.textContent = st.i === total - 1 ? `Ver resultado` : `Siguiente pregunta`; sig.classList.add(`acc`); };
+    sec.append(q.o ? mcqCard(q, alResponder) : abiertaCheck(q, alResponder));
+    const nav = el(`div`, `chknav`);
+    const rep = btn(``, `btn ghost`, () => reiniciar(false)); rep.innerHTML = icon(`redo`) + ` Repetir preguntas`;
+    const sig = btn(st.i === total - 1 ? `Ver resultado` : (q.id in st.res ? `Siguiente pregunta` : `Saltar pregunta`), `btn` + (q.id in st.res ? ` acc` : ` ghost`), () => { st.i++; draw(); });
+    nav.append(rep, el(`span`, `muted`, `${bien} correcta${bien === 1 ? `` : `s`}`), sig);
+    sec.append(nav);
+  }
+  draw();
+  return sec;
+}
 function repCard(it){ const c = card(it, `rep`); c.append(el(`h3`, ``, it.title)); const body = el(`div`, `repbody`); body.append(el(`div`, `reptext`, it.body)); const f = it.fig && figure(it.fig); if (f) body.append(f); c.append(body); if (it.memo) c.append(el(`p`, `memo`, `<b>Para memorizar:</b> ${it.memo}`)); const vids = VIDEOS.filter(x => x.rep.includes(it.title)); if (vids.length) c.append(vidLinks(vids)); return c; }
 function tocInto(box){
   const all = filt(ALL.REPASO); const i0 = Math.min(S.x.rpos[selKey()] || 0, Math.max(0, all.length - 1));
@@ -407,8 +494,7 @@ function vRepaso(v){
   v.append(bar);
   v.append(repCard(it));
   const _was = S.x.seen[hash(it.title)]; S.x.seen[hash(it.title)] = 1; motSeen(all, it, _was); S.x.last = { mode:`repaso`, sel:selList(), i, n:all.length, title:it.title };
-  const q = checkQ(it);
-  if (q){ const ck = el(`section`, `check`); ck.append(el(`h4`, ``, `Comprueba lo que leíste`)); ck.append(mcqCard(q, () => { S.st[`R_` + hash(it.title)] = (S.st[`R_` + hash(it.title)] || 0) + 1; })); v.append(ck); }
+  const ck = checkBox(it); if (ck) v.append(ck);
   const nav = el(`div`, `decknav`);
   const prev = btn(``, `btn ghost`, () => move(-1)); prev.innerHTML = icon(`left`) + ` Anterior`; prev.disabled = i === 0;
   const last = i === all.length - 1;

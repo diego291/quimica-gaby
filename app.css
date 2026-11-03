@@ -565,6 +565,13 @@ body{background:var(--bg)}
 .check{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
 .check > h4{margin:0 0 4px;font-size:12px;font-weight:700;color:var(--acc);letter-spacing:.05em;text-transform:uppercase}
 .check .card{border:none;padding:0;background:none}
+.chkhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.chkhead h4{margin:0;font-size:12px;font-weight:700;color:var(--acc);letter-spacing:.05em;text-transform:uppercase}
+.chkcnt{font-size:13px;color:var(--muted)}
+.chkbar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin:8px 0 10px}
+.chkbar>i{display:block;height:100%;background:var(--acc);border-radius:3px;transition:width .25s}
+.chknav{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.chkfin{margin:6px 0 12px;font-size:15px}
 .decknav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}
 .decknav .btn.acc{min-width:130px;justify-content:center}
 /* ======================= RESPONSIVO ======================= */
