@@ -48,7 +48,7 @@ function initX(){
   const x = S.x;
   x.pomo = Object.assign({ study:25, short:5, long:15, cycles:4, goal:6, sound:`campana`, autoBreak:true, autoStudy:false, focus:false, link:`` }, x.pomo || {});
   x.pst = x.pst || { phase:`study`, cycle:1, run:false, end:0, left:x.pomo.study * 60 };
-  x.plog = x.plog || {}; x.ev = x.ev || []; x.seen = x.seen || {}; x.days = x.days || []; x.sm = x.sm || {}; x.rpos = x.rpos || {}; x.ptab = x.ptab || {};
+  x.plog = x.plog || {}; x.ev = x.ev || []; x.seen = x.seen || {}; x.days = x.days || []; x.sm = x.sm || {}; x.rpos = x.rpos || {}; x.ptab = x.ptab || {}; x.chkModo = x.chkModo || {};
   if (!x.name) x.name = `Gaby`;
   if (x.pst.run && x.pst.end <= Date.now()){ if (x.pst.phase === `study`) logPomo(); x.pst.run = false; pomoAdvance(); }
 }
@@ -393,41 +393,79 @@ function distractores(lista, correcta, n, semilla){
   for (const x of shufR(lista, mulberry(semilla))){ const k = normQ(x); if (!k || vistos.has(k)) continue; vistos.add(k); out.push(x); if (out.length === n) break; }
   return out;
 }
-function checkPool(it){
-  const pg = pagesOf(it.src);
-  const near = q => q.t === it.t && [...pagesOf(q.src)].some(p => pg.has(p));
-  const seed = parseInt(hash(it.title), 36) || 1;
-  const vistos = new Set(), out = [];
-  const add = q => { const k = normQ(q.q); if (!k || vistos.has(k)) return; vistos.add(k); out.push(q); };
-  ALL.MCQ.filter(near).forEach(add);
-  ALL.FQ.filter(near).forEach(add);
-  // Idea clave de la tarjeta ("Para memorizar"), con distractores de otras tarjetas del mismo tema
-  if (it.memo){
-    const otros = distractores(ALL.REPASO.filter(r => r.t === it.t && r !== it && r.memo).map(r => r.memo), it.memo, 3, seed);
-    if (otros.length >= 2) add({ id:`K` + hash(it.title), t:it.t, src:it.src, q:`¿Cuál es la idea clave de “${it.title}”?`, o:[it.memo, ...otros], e:`Para memorizar: ${it.memo}`, gen:1 });
-  }
-  // Fichas de las mismas páginas, convertidas en opción múltiple
-  ALL.FICHAS.filter(near).forEach((f, k) => {
-    const otros = distractores(ALL.FICHAS.filter(x => x.t === it.t && x !== f).map(x => x.b), f.b, 3, seed + k + 1);
-    if (otros.length >= 2) add({ id:`C` + hash(f.f), t:f.t, src:f.src, q:f.f, o:[f.b, ...otros], e:f.b, gen:1 });
+/* Cada pregunta se asigna a UNA tarjeta: la de sus páginas; si varias tarjetas comparten
+   páginas, la que más se parece en texto. Así no salen preguntas de fichas que aún no se leen. */
+const PALABRAS = s => new Set(normQ(s).split(` `).filter(w => w.length > 3));
+let ASIG = null;
+function asignar(){
+  if (ASIG) return ASIG;
+  ASIG = new Map();
+  const porTema = {};
+  ALL.REPASO.forEach(r => (porTema[r.t] = porTema[r.t] || []).push(r));
+  const info = {};
+  Object.entries(porTema).forEach(([t, cards]) => {
+    let acum = 0;
+    info[t] = cards.map(c => { const pg = pagesOf(c.src); const mx = pg.size ? Math.max(...pg) : acum; acum = Math.max(acum, mx); return { c, pg, acum, pal: PALABRAS(c.title + ` ` + c.body + ` ` + (c.memo || ``)) }; });
   });
-  // Preguntas escritas para esta tarjeta (checks.js)
-  const extra = (typeof CHECK_EXTRA !== `undefined` && CHECK_EXTRA[it.title]) || [];
-  extra.forEach(([q, o, e]) => add({ id:`X` + hash(q), t:it.t, src:it.src, q, o, e }));
-  // Formulario de las mismas páginas: cada fila es una pregunta
-  ALL.FORM.filter(near).forEach((f, k) => {
-    const filas = ALL.FORM.filter(x => x.t === it.t).flatMap(x => x.rows.map(r => r[1]));
+  // porTexto: filas del formulario, que abarcan muchas páginas; cada fila va a la tarjeta que trata ese punto.
+  const elegir = (t, src, texto, porTexto) => {
+    const L = info[t]; if (!L || !L.length) return null;
+    const P = [...pagesOf(src)];
+    let cand;
+    if (!P.length) cand = L.filter(x => !x.pg.size);
+    else {
+      cand = L.filter(x => P.every(p => x.pg.has(p)));
+      // Si abarca varias tarjetas, sale cuando ya se leyó la última de ellas
+      if (!cand.length && porTexto) cand = L.filter(x => P.some(p => x.pg.has(p)));
+      if (!cand.length) return (L.find(x => x.acum >= Math.max(...P)) || L[L.length - 1]).c;
+    }
+    if (!cand.length) return null;
+    if (cand.length === 1) return cand[0].c;
+    const w = PALABRAS(texto); let best = cand[0], bs = -1;
+    cand.forEach(x => { let n = 0; w.forEach(k => { if (x.pal.has(k)) n++; }); const sc = n / Math.sqrt(x.pal.size + 1); if (sc > bs){ bs = sc; best = x; } });
+    return best.c;
+  };
+  const poner = (card, q) => { if (!card) return; if (!ASIG.has(card)) ASIG.set(card, []); ASIG.get(card).push(q); };
+  const opts = q => (q.o ? q.o[0] : ``) + ` ` + (q.e || ``) + ` ` + (q.a || ``);
+  ALL.MCQ.forEach(q => poner(elegir(q.t, q.src, q.q + ` ` + opts(q)), q));
+  ALL.FQ.forEach(q => poner(elegir(q.t, q.src, q.q + ` ` + opts(q)), q));
+  ALL.FICHAS.forEach(f => {
+    const otros = distractores(ALL.FICHAS.filter(x => x.t === f.t && x !== f).map(x => x.b), f.b, 3, parseInt(hash(f.f), 36) || 1);
+    if (otros.length >= 2) poner(elegir(f.t, f.src, f.f + ` ` + f.b), { id:`C` + hash(f.f), t:f.t, src:f.src, q:f.f, o:[f.b, ...otros], e:f.b, gen:1 });
+  });
+  ALL.FORM.forEach((f, k) => {
+    const filas = ALL.FORM.filter(x => x.t === f.t).flatMap(x => x.rows.map(r => r[1]));
     f.rows.forEach((r, j) => {
-      const otros = distractores(filas, r[1], 3, seed + 31 * k + j + 7);
-      if (otros.length >= 2) add({ id:`R` + hash(f.title + r[0]), t:f.t, src:f.src, q:`Formulario · ${f.title}: ¿qué corresponde a <b>${r[0]}</b>?`, o:[r[1], ...otros], e:`${r[0]}: ${r[1]}`, gen:1 });
+      const otros = distractores(filas, r[1], 3, 31 * k + j + 7);
+      if (otros.length >= 2) poner(elegir(f.t, f.src, r[0] + ` ` + r[1], true), { id:`R` + hash(f.title + r[0]), t:f.t, src:f.src, q:`Formulario · ${f.title}: ¿qué corresponde a <b>${r[0]}</b>?`, o:[r[1], ...otros], e:`${r[0]}: ${r[1]}`, gen:1 });
     });
   });
-  // Preguntas de desarrollo: se responden en voz alta y se compara con la respuesta modelo
-  ALL.ABIERTAS.filter(near).forEach(add);
-  // Ejercicios de las mismas páginas, con solución paso a paso
-  ALL.EJ.filter(near).forEach(q => add(Object.assign({}, q, { ej:1 })));
-  return out;
+  ALL.ABIERTAS.forEach(q => poner(elegir(q.t, q.src, q.q + ` ` + (q.a || ``)), q));
+  ALL.EJ.forEach(q => poner(elegir(q.t, q.src, [q.q, q.pide, q.r].join(` `)), Object.assign({}, q, { ej:1 })));
+  return ASIG;
 }
+/* Preguntas de UNA tarjeta: idea clave, preguntas escritas para ella y todo lo asignado. */
+function propias(it){
+  const seed = parseInt(hash(it.title), 36) || 1, out = [];
+  if (it.memo){
+    const otros = distractores(ALL.REPASO.filter(r => r.t === it.t && r !== it && r.memo).map(r => r.memo), it.memo, 3, seed);
+    if (otros.length >= 2) out.push({ id:`K` + hash(it.title), t:it.t, src:it.src, q:`¿Cuál es la idea clave de “${it.title}”?`, o:[it.memo, ...otros], e:`Para memorizar: ${it.memo}`, gen:1 });
+  }
+  ((typeof CHECK_EXTRA !== `undefined` && CHECK_EXTRA[it.title]) || []).forEach(([q, o, e]) => out.push({ id:`X` + hash(q), t:it.t, src:it.src, q, o, e }));
+  out.push(...(asignar().get(it) || []));
+  return out.map(q => Object.assign({}, q, { de: it.title }));
+}
+/* Bloques en orden de lectura: [tarjeta actual, primera tarjeta del tema, segunda, …]. */
+function checkBloques(it){
+  const vistos = new Set();
+  const limpia = l => l.filter(q => { const k = normQ(q.q); if (!k || vistos.has(k)) return false; vistos.add(k); return true; });
+  const tema = ALL.REPASO.filter(r => r.t === it.t), pos = tema.indexOf(it);
+  const previas = tema.slice(0, Math.max(0, pos));
+  const bloques = previas.map(c => ({ c, qs: limpia(propias(c)) }));
+  const actual = { c: it, qs: limpia(propias(it)), actual: true };
+  return [actual, ...bloques.filter(b => b.qs.length)];
+}
+function checkPool(it){ return checkBloques(it)[0].qs; }
 function ejCheck(q, onDone){
   const c = ejCard(q);
   c.addEventListener(`click`, e => { const b = e.target.closest(`.selfgrade .btn`); if (b) onDone(b.classList.contains(`ok`)); }, true);
@@ -446,18 +484,25 @@ function abiertaCheck(q, onDone){
   row.append(ver); c.append(row); return c;
 }
 function checkBox(it){
-  const pool = checkPool(it);
-  if (!pool.length) return null;
+  const bloques = checkBloques(it);
+  const propiasN = bloques[0].qs.length, repasoN = bloques.slice(1).reduce((n, b) => n + b.qs.length, 0);
+  if (!propiasN && !repasoN) return null;
   const key = hash(it.title);
+  if (!(key in S.x.chkModo)) S.x.chkModo[key] = repasoN ? `acum` : `ficha`;
+  const modo = () => repasoN ? S.x.chkModo[key] : `ficha`;
+  const pool = () => (modo() === `acum` ? bloques : bloques.slice(0, 1)).flatMap(b => b.qs);
   const ordenar = lista => { const nuevas = lista.filter(q => !(S.st[q.id] && S.st[q.id][0])), resto = lista.filter(q => S.st[q.id] && S.st[q.id][0]); return shuf(nuevas).concat(shuf(resto)); };
-  let st = CHK[key];
-  if (!st || st.n !== pool.length) st = CHK[key] = { n: pool.length, orden: ordenar(pool).map(q => q.id), i: 0, res: {} };
-  const porId = Object.fromEntries(pool.map(q => [q.id, q]));
+  // La tarjeta actual va primero; después el repaso en el orden en que se leyeron las tarjetas
+  const ordenBloques = ids => { const s = new Set(ids); return (modo() === `acum` ? bloques : bloques.slice(0, 1)).flatMap(b => ordenar(b.qs.filter(q => s.has(q.id)))).map(q => q.id); };
+  const porId = Object.fromEntries(bloques.flatMap(b => b.qs).map(q => [q.id, q]));
+  const nuevo = () => { const p = pool(); return CHK[key + modo()] = { n: p.length, orden: ordenBloques(p.map(q => q.id)), i: 0, res: {} }; };
+  let st = CHK[key + modo()];
+  if (!st || st.n !== pool().length) st = nuevo();
   const sec = el(`section`, `check`);
   const reiniciar = soloFalladas => {
-    const ids = soloFalladas ? st.orden.filter(id => st.res[id] === false) : pool.map(q => q.id);
-    st.orden = soloFalladas ? shuf(ids) : ordenar(ids.map(id => porId[id]).filter(Boolean)).map(q => q.id);
-    st.i = 0; st.res = {}; draw(); sec.scrollIntoView({ block: `nearest`, behavior: `smooth` });
+    if (soloFalladas){ const ids = st.orden.filter(id => st.res[id] === false); st.orden = ordenBloques(ids); st.i = 0; st.res = {}; }
+    else st = nuevo();
+    draw(); sec.scrollIntoView({ block: `nearest`, behavior: `smooth` });
   };
   function draw(){
     sec.innerHTML = ``;
@@ -465,16 +510,23 @@ function checkBox(it){
     const head = el(`div`, `chkhead`);
     head.append(el(`h4`, ``, `Comprueba lo que leíste`), el(`span`, `chkcnt`, st.i < total ? `Pregunta <b>${st.i + 1}</b> de ${total}` : `${total} de ${total}`));
     sec.append(head);
+    if (repasoN){
+      const seg = el(`div`, `chkmodo`);
+      const b1 = btn(`Solo esta ficha (${propiasN})`, modo() === `ficha` ? `on` : ``, () => { S.x.chkModo[key] = `ficha`; save(); st = CHK[key + `ficha`] || nuevo(); draw(); });
+      const b2 = btn(`Esta ficha + las anteriores (${propiasN + repasoN})`, modo() === `acum` ? `on` : ``, () => { S.x.chkModo[key] = `acum`; save(); st = CHK[key + `acum`] || nuevo(); draw(); });
+      seg.append(b1, b2); sec.append(seg);
+    }
     sec.append(el(`div`, `chkbar`, `<i style="width:${Math.round(Math.min(st.i, total) / total * 100)}%"></i>`));
     if (st.i >= total){
       const mal = st.orden.filter(id => st.res[id] === false).length;
-      sec.append(el(`p`, `chkfin`, resp ? `Terminaste las preguntas de esta tarjeta: <b>${bien} de ${resp}</b> correctas${resp < total ? ` (${total - resp} sin responder)` : ``}.` : `Pasaste todas las preguntas sin responder.`));
+      sec.append(el(`p`, `chkfin`, resp ? `Terminaste: <b>${bien} de ${resp}</b> correctas${resp < total ? ` (${total - resp} sin responder)` : ``}.` : `Pasaste todas las preguntas sin responder.`));
       const row = el(`div`, `btnrow`);
       row.append(btn(`Repetir preguntas`, `btn acc`, () => reiniciar(false)));
       if (mal) row.append(btn(`Repetir solo las falladas (${mal})`, `btn ghost`, () => reiniciar(true)));
       sec.append(row); return;
     }
     const q = porId[st.orden[st.i]];
+    sec.append(el(`p`, `chkde` + (q.de === it.title ? ` nueva` : ``), q.de === it.title ? `De esta ficha` : `Repaso · ${q.de}`));
     const alResponder = ok => { st.res[q.id] = ok; S.st[`R_` + key] = (S.st[`R_` + key] || 0) + 1; save(); sig.textContent = st.i === total - 1 ? `Ver resultado` : `Siguiente pregunta`; sig.classList.add(`acc`); };
     sec.append(q.ej ? ejCheck(q, alResponder) : q.o ? mcqCard(q, alResponder) : abiertaCheck(q, alResponder));
     const nav = el(`div`, `chknav`);
