@@ -1435,7 +1435,7 @@ function streak(){ const d = new Set(S.x.days || []); let s = todayStr(); if (!d
 /* ---------- navegación ---------- */
 function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`notas`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
 function goSec(k){ const sc = SECS.find(s => s.k === k); go(S.x.sm[k] || sc.modes[0][0]); }
-function topScroll(){ window.scrollTo({ top:0 }); const p = $(`#panel`); if (p) p.scrollTop = 0; }
+function topScroll(){ window.scrollTo({ top:0 }); const p = $(`#panel`); if (p && S.mode !== `repaso`) p.scrollTop = 0; }
 function setSel(set){ S.sel = new Set(set); save(); SIM.on = false; stopTick(); renderAll(); }
 function bp(){ return innerWidth >= 1100 ? `wide` : innerWidth > 700 ? `mid` : `phone`; }
 
@@ -1464,7 +1464,14 @@ function renderHead(){
   const ps = S.x.pst; if (ps.run || ps.left < pomoDur(ps.phase)){ const pb = btn(``, `hbtn pomoh`, () => goSec(`inicio`)); pb.innerHTML = `🍅 <span class="pomo-time">${fmtSec(pomoLeft())}</span>`; pb.title = `Pomodoro`; tools.append(pb); }
   const pb2 = btn(``, `hbtn`, openPalette); pb2.innerHTML = `<span style="width:14px;height:14px;border-radius:50%;background:var(--acc);display:inline-block"></span><span class="lbl">Colores</span>`; pb2.title = `Elegir colores`; tools.append(pb2);
   const tb = btn(``, `hbtn`, toggleTheme); tb.innerHTML = isDark() ? icon(`sun`) + `<span class="lbl">Día</span>` : icon(`moon`) + `<span class="lbl">Noche</span>`; tb.title = `Cambiar a modo ${isDark() ? `día` : `noche`}`; tools.append(tb);
+  if (S.mode === `inicio` && bp() === `phone`){ const np = typeof nextParcial === `function` && nextParcial();
+    if (np){ const dd = Math.round((new Date(np.date + `T00:00`) - new Date(todayStr() + `T00:00`)) / 864e5);
+      const cd = btn(``, `hbtn cdc`, openAgenda); cd.innerHTML = `📅 <span>${dd === 0 ? `Parcial hoy` : dd === 1 ? `Parcial mañana` : `Parcial en ${dd} días`}</span>`; cd.title = np.title; tools.prepend(cd); } }
   top.append(left, tools); h.append(top);
+  // En el Repaso, los temas se reducen a un solo botón para dejar espacio a la ficha
+  if (S.mode === `inicio`){ h.classList.add(`compact`); return; }
+  if (S.mode === `repaso` && !S.x.rall){ const ch = el(`div`, `chips`); const add = btn(``, `tchp add`, openTopics); add.innerHTML = icon(`plus`) + (sel.length === TORDER.length ? `Todos los temas` : `${sel.length} tema${sel.length === 1 ? `` : `s`}`) + ` · cambiar`; ch.append(add); h.append(ch); h.classList.add(`compact`); return; }
+  h.classList.remove(`compact`);
   const ch = el(`div`, `chips`);
   const mx = bp() === `phone` ? 3 : 6;
   sel.slice(0, mx).forEach(t => { const c = btn(``, `tchp`, openTopics); c.style.setProperty(`--c`, `var(--${t})`); c.innerHTML = `<i></i>${TOPICS[t].n}`; ch.append(c); });
@@ -1472,6 +1479,7 @@ function renderHead(){
   const add = btn(``, `tchp add`, openTopics); add.innerHTML = icon(`plus`) + `Temas`; ch.append(add); h.append(ch);
   const { a, o } = totals(); const st = el(`div`, `hstat`); st.innerHTML = `<span>Respondidas <b>${a}</b></span><span>Aciertos <b>${a ? Math.round(o / a * 100) + `%` : `—`}</b></span><span>Para repasar <b>${S.err.length}</b></span>`; h.append(st);
 }
+function openAgenda(){ if (bp() === `wide`){ S.x.ptab[panelCtx()] = `agenda`; save(); renderPanel(); $(`#panel`).scrollTop = 0; return; } openSheet(`Calendario y agenda`, b => agendaInto(b), true); }
 function editName(h1){ const i = el(`input`, `inp`); i.value = S.x.name; i.style.maxWidth = `260px`; i.setAttribute(`aria-label`, `Tu nombre`); const done = () => { S.x.name = i.value.trim() || `Gaby`; save(); renderHead(); }; i.onblur = done; i.onkeydown = e => { if (e.key === `Enter`) i.blur(); }; h1.replaceWith(i); i.focus(); i.select(); }
 function renderSub(){
   const w = $(`#subw`); w.innerHTML = ``; const sc = secOf(S.mode);
@@ -1487,12 +1495,13 @@ function renderPanel(){
   const p = $(`#panel`); p.innerHTML = ``; if (bp() !== `wide`) return;
   const ctx = panelCtx(); const tabs = ctx === `inicio` ? [[`agenda`,`Agenda`],[`temas`,`Temas`]] : ctx === `repaso` ? [[`indice`,`Índice del tema`],[`temas`,`Temas`]] : [[`temas`,`Temas`],[`agenda`,`Agenda`]];
   let cur = S.x.ptab[ctx]; if (!tabs.some(t => t[0] === cur)) cur = tabs[0][0];
-  if (ctx !== `inicio`){ const m = el(`div`); m.dataset.pomo = `mini`; p.append(m); }
+  { const m = el(`div`); m.dataset.pomo = `mini`; p.append(m); }
   const tb = el(`div`, `ptabs`); tb.setAttribute(`role`, `tablist`);
   tabs.forEach(([k, n]) => { const b = btn(n, ``, () => { S.x.ptab[ctx] = k; save(); renderPanel(); }); b.setAttribute(`role`, `tab`); b.setAttribute(`aria-selected`, cur === k); tb.append(b); });
   p.append(tb); const body = el(`div`); p.append(body);
   if (cur === `temas`) topicsInto(body); else if (cur === `indice`) tocInto(body); else agendaInto(body);
   paintPomo();
+  if (cur === `indice`){ const c = p.querySelector(`[aria-current="true"]`); if (c) p.scrollTop = Math.max(0, c.offsetTop - 180); }
 }
 function openTopics(){
   if (bp() === `wide`){ S.x.ptab[panelCtx()] = `temas`; save(); renderPanel(); $(`#panel`).scrollTop = 0; const f = $(`#panel .trow`); if (f) f.focus(); return; }
@@ -1567,7 +1576,7 @@ function pomoCardHTML(){ const p = S.x.pst, c = S.x.pomo, tp = todayPomo(), ln =
   <div style="flex:1;min-width:0"><h3>Pomodoro · ${PHN[p.phase]}</h3>${pomoDots()}<div class="pmt">Ciclo ${p.cycle} de ${c.cycles} · ${pomoNextTxt()}</div>${ln ? `<div class="pmt">Estudiando: <b style="color:var(--ink)">${ln}</b></div>` : ``}
   <div class="btnrow"><button type="button" class="btn acc" data-pa="toggle">${p.run ? `Pausar` : p.left < pomoDur(p.phase) ? `Seguir` : `Iniciar`}</button><button type="button" class="btn ghost" data-pa="skip">Saltar</button><button type="button" class="btn ghost" data-pa="cfg" aria-label="Ajustes del Pomodoro">${icon(`gear`)} Ajustes</button><button type="button" class="btn ghost" data-pa="focus" aria-label="Modo concentración" title="Modo concentración">${icon(`full`)}</button></div>
   <div class="pmt">Hoy: <b style="color:var(--ink)">${tp.n}</b> de ${c.goal} pomodoros · ${tp.min} min de estudio${p.cycle > 1 || p.phase !== `study` || p.left < pomoDur(p.phase) ? ` · <button type="button" class="linkbtn" data-pa="reset" style="font-size:13px">reiniciar</button>` : ``}</div></div>`; }
-function pomoMiniHTML(){ const p = S.x.pst; return `<div class="pmini" style="display:flex;align-items:center;gap:10px;background:var(--sunk);border-radius:12px;padding:8px 10px"><span style="font-size:20px">🍅</span><span style="flex:1;line-height:1.2"><b class="pomo-time" style="font:700 19px 'Zilla Slab',Georgia,serif;font-variant-numeric:tabular-nums">${fmtSec(pomoLeft())}</b><small style="display:block;color:var(--muted);font-size:12px">${PHN[p.phase]} · ciclo ${p.cycle}</small></span><button type="button" class="btn acc" data-pa="toggle" style="padding:6px 12px;font-size:13.5px">${p.run ? `Pausar` : `Iniciar`}</button><button type="button" class="btn ghost" data-pa="cfg" aria-label="Ajustes del Pomodoro" style="padding:6px 9px">${icon(`gear`)}</button></div>`; }
+function pomoMiniHTML(){ const p = S.x.pst; return `<div class="pmini" style="display:flex;align-items:center;gap:10px;background:var(--sunk);border-radius:12px;padding:8px 10px"><span style="font-size:20px">🍅</span><span style="flex:1;line-height:1.2"><b class="pomo-time" style="font:700 19px 'Zilla Slab',Georgia,serif;font-variant-numeric:tabular-nums">${fmtSec(pomoLeft())}</b><small style="display:block;color:var(--muted);font-size:12px">${PHN[p.phase]} · ciclo ${p.cycle}</small></span><button type="button" class="btn acc" data-pa="toggle" style="padding:6px 12px;font-size:13.5px">${p.run ? `Pausar` : `Iniciar`}</button><button type="button" class="btn ghost" data-pa="cfg" aria-label="Ajustes del Pomodoro" style="padding:6px 9px">${icon(`gear`)}</button><button type="button" class="btn ghost" data-pa="focus" aria-label="Modo concentración" title="Modo concentración" style="padding:6px 9px">${icon(`full`)}</button></div>`; }
 function focusHTML(){ const p = S.x.pst, c = S.x.pomo, ln = pomoLinkName(); return `<div class="muted" style="font-size:14px">Modo concentración</div>${ln ? `<div style="font:700 22px 'Zilla Slab',Georgia,serif">${ln}</div>` : ``}<div class="pring">${ringSvg(110, 14)}<div class="tm"><b class="pomo-time">${fmtSec(pomoLeft())}</b><span>${PHN[p.phase]} · ciclo ${p.cycle} de ${c.cycles}</span></div></div>${pomoDots()}<div class="btnrow center"><button type="button" class="btn acc" data-pa="toggle">${p.run ? `Pausar` : `Iniciar`}</button><button type="button" class="btn ghost" data-pa="skip">Saltar</button><button type="button" class="btn ghost" data-pa="exit">Salir</button></div><div class="muted" style="font-size:13px;max-width:300px">Siguiente: ${pomoNextTxt().replace(`luego `, ``)}.${c.sound !== `ninguno` ? ` Sonará un aviso.` : ``}</div>`; }
 function pomoRefresh(){
   document.querySelectorAll(`[data-pomo]`).forEach(h => { h.innerHTML = h.dataset.pomo === `mini` ? pomoMiniHTML() : h.dataset.pomo === `focus` ? focusHTML() : pomoCardHTML(); });
@@ -1707,35 +1716,86 @@ function vInicio(v){
   migrationHint(v);
   if (syncAvailable() && !S.x.syncHide && !SY.user) v.prepend(syncCard(true));
   reminders().forEach(r => v.append(el(`div`, `alert`, icon(`bell`) + `<span>${r}</span>`)));
-  const g = el(`div`, `hgrid`);
-  const pc = el(`div`, `pomo`); pc.dataset.pomo = `card`; g.append(pc);
-  g.append(heroCard()); v.append(g);
-  const qa = el(`div`, `qa`);
-  const qb = (ic, col, t, s, f) => { const b = btn(``, ``, f); b.style.setProperty(`--q`, col); b.innerHTML = `<span class="ib">${icon(ic)}</span><span>${t}<small>${s}</small></span>`; qa.append(b); };
-  const ne = S.err.length;
-  qb(`bolt`, `var(--bad)`, ne ? `Repasar ${ne} fallo${ne > 1 ? `s` : ``}` : `Preguntas`, ne ? `Las que fallaste` : `Sin fallos pendientes`, () => { S.onlyErr = ne > 0; if (ne) S.sel = new Set(TORDER); go(`preguntas`); });
-  qb(`pencil`, `var(--t24)`, `Práctica rápida`, `Números nuevos cada vez`, () => { PR.rand = true; PR.cur = null; const gs = GENS.filter(x => S.sel.has(x.t) || (x.ts && x.ts.some(t => S.sel.has(t)))); if (gs.length) PR.gen = pick(gs); go(`practica`); });
-  qb(`clip`, `var(--acc2,var(--t17))`, `Simulacro`, `Examen con nota`, () => go(`simulacro`));
-  qb(`play`, `var(--t16)`, `Videos`, `De los temas elegidos`, () => go(`videos`));
-  v.append(qa);
-  v.append(routeBox());
-  if (bp() !== `wide`){ const b = el(`div`, `boxc`); b.append(el(`h3`, ``, `Calendario y agenda`)); agendaInto(b); v.append(b); }
+  const wide = bp() === `wide`;
+  const g = el(`div`, `igrid`);
+  const c1 = el(`div`, `icol`), c2 = el(`div`, `icol`);
+  c1.append(heroCard());
+  if (wide){ c1.append(temasBox()); c2.append(planBox(true)); } else { c1.append(planBox(false), temasBox()); const pm = el(`div`, `ipomo`); pm.dataset.pomo = `mini`; c1.append(pm); }
+  g.append(c1); if (wide) g.append(c2); v.append(g);
+  if (wide) v.append(routeBox());
+  else { const ag = btn(``, `irow`, openAgenda); ag.innerHTML = `${icon(`cal`)}<span>Calendario y agenda</span>${icon(`right`)}`; v.append(ag); }
   pomoRefresh();
+}
+/* Plan de hoy: los pasos que convienen hoy, en orden; el primero sin hacer queda resaltado */
+function planBox(conAtajos){
+  const b = el(`div`, `boxc iplan`);
+  const all = filt(ALL.REPASO), L = S.x.last;
+  let desde = 0; if (L && L.mode === `repaso` && L.title){ const k = all.findIndex(x => x.title === L.title); if (k >= 0) desde = k; }
+  let sig = -1; for (let j = 0; j < all.length; j++){ const k = (desde + j) % all.length; if (!S.x.seen[hash(all[k].title)]){ sig = k; break; } }
+  const k = hoyCounts(), ne = S.err.length, simHoy = S.x.simLast && S.x.simLast.d === todayStr();
+  const items = [];
+  if (all.length){
+    if (sig >= 0){ const x = all[sig], tm = all.filter(y => y.t === x.t); items.push({ t:`Leer: ${x.title}`, s:`${TOPICS[x.t].n} · ficha ${tm.indexOf(x) + 1} de ${tm.length}`, ok:false, f:() => { S.x.rpos[selKey()] = sig; S.x.rall = false; go(`repaso`); } }); }
+    else items.push({ t:`Repaso leído completo`, s:`${all.length} tarjetas vistas`, ok:true, f:() => go(`repaso`) });
+  }
+  items.push(k.total ? { t:`Repaso espaciado: ${k.total} pendiente${k.total === 1 ? `` : `s`}`, s:`≈ ${Math.max(1, Math.round(k.total * .5))} min`, ok:false, f:() => go(`hoy`) } : { t:`Repaso espaciado al día`, s:`Sin pendientes hoy`, ok:true, f:() => go(`hoy`) });
+  items.push(ne ? { t:`Repasar ${ne} fallo${ne === 1 ? `` : `s`}`, s:`Las preguntas que fallaste`, ok:false, f:() => { S.onlyErr = true; S.sel = new Set(TORDER); go(`preguntas`); } } : { t:`Sin fallos pendientes`, s:`Preguntas`, ok:true, f:() => go(`preguntas`) });
+  const np = typeof nextParcial === `function` && nextParcial(), dd = np ? dayDiff(todayStr(), np.date) : 99;
+  if (np && dd <= 14) items.push({ t:simHoy ? `Simulacro hecho: ${S.x.simLast.nota} / 10` : `Simulacro del ${np.title}`, s:simHoy ? `Hoy` : `20 preguntas de sus temas · ${dd === 0 ? `es hoy` : dd === 1 ? `es mañana` : `faltan ${dd} días`}`, ok:!!simHoy, f:() => simParcial(np, 20) });
+  else items.push({ t:simHoy ? `Simulacro hecho: ${S.x.simLast.nota} / 10` : `Simulacro con nota`, s:simHoy ? `Hoy` : `Examen de práctica`, ok:!!simHoy, f:() => go(`simulacro`) });
+  const hechos = items.filter(x => x.ok).length, cur = items.findIndex(x => !x.ok);
+  const h = el(`div`, `ihd`); h.append(el(`h3`, ``, `Plan de hoy`), el(`span`, `muted`, `${hechos} de ${items.length}`)); b.append(h);
+  const tl = el(`div`, `itl`);
+  items.forEach((x, j) => { const r = btn(``, `itli` + (x.ok ? ` ok` : ``) + (j === cur ? ` cur` : ``), x.f);
+    r.innerHTML = `<span class="d">${x.ok ? `✓` : ``}</span><span class="tx">${x.t}<small>${x.s}</small></span>${j === cur ? `<span class="go">Empezar</span>` : icon(`right`)}`; tl.append(r); });
+  b.append(tl);
+  if (conAtajos){
+    const qa = el(`div`, `iqa`);
+    const qb = (ic, t, f) => { const x = btn(``, `btn ghost`, f); x.innerHTML = icon(ic) + ` ` + t; qa.append(x); };
+    qb(`bolt`, `Preguntas`, () => go(`preguntas`));
+    qb(`pencil`, `Práctica rápida`, () => { PR.rand = true; PR.cur = null; const gs = GENS.filter(x => S.sel.has(x.t) || (x.ts && x.ts.some(t => S.sel.has(t)))); if (gs.length) PR.gen = pick(gs); go(`practica`); });
+    qb(`clip`, `Simulacro`, () => go(`simulacro`));
+    qb(`play`, `Videos`, () => go(`videos`));
+    b.append(qa);
+  }
+  return b;
+}
+/* Avance por tema: % de fichas del Repaso leídas; tocar un tema abre su Repaso */
+function temasBox(){
+  const b = el(`div`, `boxc itemas`);
+  const { a, o } = totals();
+  const h = el(`div`, `ihd`); const et = btn(`Elegir temas`, `linkbtn`, openTopics); h.append(el(`h3`, ``, `Avance por tema`), et); b.append(h);
+  b.append(el(`p`, `muted istat`, `${a} respondidas · ${a ? Math.round(o / a * 100) + `%` : `—`} aciertos · ${streak()} día${streak() === 1 ? `` : `s`} seguido${streak() === 1 ? `` : `s`} · toca un tema para abrir su Repaso`));
+  const L = S.x.last, curT = L && L.title ? (ALL.REPASO.find(x => x.title === L.title) || {}).t : primary();
+  const ts = selList().length ? selList() : TORDER;
+  const row = el(`div`, `irings`);
+  ts.forEach(t => { const rep = ALL.REPASO.filter(x => x.t === t), vis = rep.filter(x => S.x.seen[hash(x.title)]).length, pc = rep.length ? Math.round(vis / rep.length * 100) : 0, ac = topicAcc(t);
+    const r = btn(``, `iring` + (t === curT ? ` on` : ``), () => { setSel([t]); go(`repaso`); });
+    r.style.setProperty(`--c`, `var(--${t})`); r.style.setProperty(`--p`, pc + `%`);
+    r.title = `${TOPICS[t].n} · ${TOPICS[t].name}: ${vis} de ${rep.length} fichas leídas${ac == null ? `` : ` · ${ac}% de aciertos`}`;
+    r.innerHTML = `<span class="rg"><b>${pc}%</b></span><span>${TOPICS[t].n.replace(`Tema `, `T`)}</span><small>${ac == null ? `—` : ac + `% ✓`}</small>`; row.append(r); });
+  b.append(row);
+  return b;
 }
 function heroCard(){
   const h = el(`div`, `hero`); const L = S.x.last; const sel = selList();
-  let t = primary(), title, line, frac = 0, go_;
-  if (L && L.mode){
+  let t = primary(), title, line, go_, seg = ``, frac = 0;
+  const card_ = L && L.mode === `repaso` && L.title ? ALL.REPASO.find(x => x.title === L.title) : null;
+  if (card_){
+    const tm = ALL.REPASO.filter(x => x.t === card_.t), j = tm.indexOf(card_);
+    title = card_.title; line = `${TOPICS[card_.t].n} · ${TOPICS[card_.t].name} · ficha ${j + 1} de ${tm.length}`;
+    seg = `<div class="hseg" style="--c:var(--${card_.t})">${tm.map(x => `<i class="${x === card_ ? `c` : S.x.seen[hash(x.title)] ? `d` : ``}"></i>`).join(``)}</div>`;
+    const ts = (L.sel || []).filter(x => TORDER.includes(x));
+    go_ = () => { if (ts.length) S.sel = new Set(ts); S.x.rall = false; go(`repaso`); };
+  } else if (L && L.mode){
     const ts = (L.sel || []).filter(x => TORDER.includes(x)); if (ts.length) t = ts[ts.length - 1];
     title = ts.length === 1 ? `${TOPICS[t].n} · ${TOPICS[t].name}` : ts.length ? `${ts.length} temas: ${ts.map(x => x.slice(1)).join(`, `)}` : `Química`;
-    if (L.mode === `repaso` && L.n){ line = `Repaso · tarjeta ${L.i + 1} de ${L.n}${L.title ? ` · ` + L.title : ``}`; frac = (L.i + 1) / L.n; } else line = `${secOf(L.mode).n} · ${modeName(L.mode)}`;
+    line = `${secOf(L.mode).n} · ${modeName(L.mode)}`;
     go_ = () => { if (ts.length) S.sel = new Set(ts); go(L.mode); };
   } else { title = t ? `${TOPICS[t].n} · ${TOPICS[t].name}` : `Elige tus temas`; line = `Empieza por el Repaso del tema`; go_ = () => go(`repaso`); }
-  if (!frac && t){ const all = ALL.REPASO.filter(x => sel.includes(x.t)); frac = all.length ? all.filter(x => S.x.seen[hash(x.title)]).length / all.length : 0; }
-  const { a, o } = totals();
-  h.innerHTML = `<div class="k">${L && L.mode ? `Continúa donde te quedaste` : `Para empezar`}</div><h2>${title}</h2><div style="font-size:13.5px;opacity:.9">${line}</div><div class="bar"><i style="width:${Math.round(frac * 100)}%"></i></div>`;
-  const b = btn(`${L && L.mode ? `Seguir` : `Empezar`} `, `go`, go_); b.innerHTML += icon(`right`); h.append(b);
-  const st = el(`div`, `st4`); st.innerHTML = `<div><b>${a}</b>respondidas</div><div><b>${a ? Math.round(o / a * 100) + `%` : `—`}</b>aciertos</div><div><b>${S.err.length}</b>por repasar</div><div><b>${streak()}</b>día${streak() === 1 ? `` : `s`} seguido${streak() === 1 ? `` : `s`}</div>`; h.append(st);
+  if (!seg && t){ const all = ALL.REPASO.filter(x => sel.includes(x.t)); frac = all.length ? all.filter(x => S.x.seen[hash(x.title)]).length / all.length : 0; seg = `<div class="bar"><i style="width:${Math.round(frac * 100)}%"></i></div>`; }
+  h.innerHTML = `<div class="k">${L && L.mode ? `Continúa donde quedaste` : `Para empezar`}</div><h2>${title}</h2><div class="hl">${line}</div>${seg}`;
+  const b = btn(card_ ? `Seguir leyendo ` : L && L.mode ? `Seguir ` : `Empezar `, `go`, go_); b.innerHTML += icon(`right`); h.append(b);
   return h;
 }
 function routeBox(){
@@ -2008,28 +2068,72 @@ function tocInto(box){
 }
 function vRepaso(v){
   const all = filt(ALL.REPASO);
-  const bar = el(`div`, `deckbar`);
   if (S.x.rall){
+    const bar = el(`div`, `deckbar`);
     intro(v, `Todas las tarjetas seguidas. Lee, mira el dibujo y tapa "Para memorizar" para comprobar si lo recuerdas.`);
     bar.append(btn(`Ver una por una`, `btn ghost`, () => { S.x.rall = false; save(); renderView(); renderPanel(); })); v.append(bar);
     const l = el(`div`, `list`); all.forEach(it => { l.append(repCard(it)); S.x.seen[hash(it.title)] = 1; }); v.append(l); save(); return;
   }
+  if (!all.length){ v.append(el(`p`, `muted`, `Elige uno o más temas para ver su Repaso.`)); return; }
   const key = selKey(); let i = Math.min(S.x.rpos[key] || 0, all.length - 1); if (i < 0) i = 0; S.x.rpos[key] = i;
-  const it = all[i]; const seenN = all.filter(x => S.x.seen[hash(x.title)]).length;
-  bar.append(el(`span`, `cnt2`, `Tarjeta <b>${i + 1}</b> de ${all.length}`), el(`div`, `bar`, `<i style="width:${Math.round(seenN / all.length * 100)}%"></i>`));
-  if (bp() !== `wide`){ const ix = btn(``, `btn ghost`, () => openSheet(`Índice del repaso`, tocInto)); ix.innerHTML = icon(`list`) + ` Índice`; bar.append(ix); }
-  bar.append(btn(`Ver todas`, `btn ghost`, () => { S.x.rall = true; save(); renderView(); renderPanel(); }));
-  v.append(bar);
-  v.append(repCard(it));
-  const _was = S.x.seen[hash(it.title)]; S.x.seen[hash(it.title)] = 1; motSeen(all, it, _was); S.x.last = { mode:`repaso`, sel:selList(), i, n:all.length, title:it.title };
-  const ck = checkBox(it); if (ck) v.append(ck);
-  const nav = el(`div`, `decknav`);
-  const prev = btn(``, `btn ghost`, () => move(-1)); prev.innerHTML = icon(`left`) + ` Anterior`; prev.disabled = i === 0;
-  const last = i === all.length - 1;
-  const next = btn(``, `btn acc`, () => last ? go(`fichas`) : move(1)); next.innerHTML = last ? `Ir a Fichas ` + icon(`right`) : `Siguiente ` + icon(`right`);
-  nav.append(prev, el(`span`, `muted`, `${i + 1} / ${all.length}`), next); v.append(nav);
+  const it = all[i], th = hash(it.title);
+  const tema = all.filter(x => x.t === it.t), ti = tema.indexOf(it);
+  const jump = j => { S.x.rpos[key] = Math.max(0, Math.min(all.length - 1, j)); save(); renderView(); renderPanel(); topScroll(); };
+  const move = d => jump(i + d);
+  // Arriba: tema, herramientas y cuadritos de fichas
+  const top = el(`div`, `rtop`);
+  const lb = el(`div`, `rtema`); lb.style.setProperty(`--c`, `var(--${it.t})`); lb.innerHTML = `<i></i>${TOPICS[it.t].n} · ${TOPICS[it.t].name}`;
+  const tools = el(`div`, `deckbar rtools`);
+  if (bp() !== `wide`){ const ix = btn(``, `btn ghost`, () => openSheet(`Índice del repaso`, tocInto)); ix.innerHTML = icon(`list`) + ` Índice`; tools.append(ix); }
+  tools.append(btn(`Ver todas`, `btn ghost`, () => { S.x.rall = true; save(); renderView(); renderPanel(); }));
+  top.append(lb, tools); v.append(top);
+  const sq = el(`nav`, `rsq`); sq.setAttribute(`aria-label`, `Fichas del ${TOPICS[it.t].n}`); sq.style.setProperty(`--c`, `var(--${it.t})`);
+  tema.forEach((x, j) => { const b = btn(String(j + 1), (S.x.seen[hash(x.title)] ? `ok` : ``) + (x === it ? ` cur` : ``), () => jump(all.indexOf(x)));
+    b.title = x.title; b.setAttribute(`aria-label`, `Ficha ${j + 1}: ${x.title}`); if (x === it) b.setAttribute(`aria-current`, `true`); sq.append(b); });
+  v.append(sq); requestAnimationFrame(() => { const c = sq.querySelector(`.cur`); if (c && sq.scrollWidth > sq.clientWidth) sq.scrollLeft = c.offsetLeft - sq.clientWidth / 2 + c.offsetWidth / 2; });
+  v.append(el(`h2`, `rtit`, it.title));
+  v.append(el(`p`, `rsub`, `Ficha ${ti + 1} de ${tema.length} · Fuente: ${it.src}${all.length > tema.length ? ` · tarjeta ${i + 1} de ${all.length}` : ``}`));
+  const _was = S.x.seen[th]; S.x.seen[th] = 1; motSeen(all, it, _was); S.x.last = { mode:`repaso`, sel:selList(), i, n:all.length, title:it.title };
+  // Pestañas de la ficha
+  const fig = it.fig && figure(it.fig), vids = VIDEOS.filter(x => x.rep.includes(it.title));
+  const nChk = (() => { const bl = checkBloques(it); return bl[0].qs.length; })();
+  const ck = checkBox(it);
+  const TABS = [[`leer`, `Leer`]]; if (fig) TABS.push([`dibujo`, `Dibujo`]); if (it.memo) TABS.push([`memo`, `Memorizar`]); if (ck) TABS.push([`comp`, `Comprobar · ${nChk}`]); if (vids.length) TABS.push([`video`, `Video`]);
+  if (S.x.rtabFor !== th){ S.x.rtabFor = th; S.x.rtab = `leer`; }
+  if (!TABS.some(t => t[0] === S.x.rtab)) S.x.rtab = `leer`;
+  const tabs = el(`div`, `rtabs`); tabs.setAttribute(`role`, `tablist`);
+  const panel = el(`div`, `rpanel`); panel.setAttribute(`role`, `tabpanel`);
+  const dock = el(`div`, `decknav rdock`);
+  function pinta(){
+    const t = S.x.rtab; tabs.innerHTML = ``; panel.innerHTML = ``;
+    TABS.forEach(([k, n]) => { const b = btn(n, k === `comp` ? `k` : ``, () => { S.x.rtab = k; save(); pinta(); if (tabs.getBoundingClientRect().top < 0) tabs.scrollIntoView({ block:`start`, behavior:`smooth` }); });
+      b.setAttribute(`role`, `tab`); b.setAttribute(`aria-selected`, t === k); tabs.append(b); });
+    if (t === `leer`){
+      panel.append(el(`div`, `reptext rleer`, it.body));
+      const más = el(`div`, `rmas`);
+      if (fig) más.append(btn(`Ver el dibujo →`, `linkbtn`, () => { S.x.rtab = `dibujo`; pinta(); }));
+      if (it.memo) más.append(btn(`Memorizar →`, `linkbtn`, () => { S.x.rtab = `memo`; pinta(); }));
+      if (más.children.length) panel.append(más);
+    } else if (t === `dibujo`) panel.append(fig);
+    else if (t === `memo`){
+      panel.append(el(`p`, `muted rmemoh`, `Antes de verla, intenta decir la idea clave en voz alta.`));
+      const m = el(`div`, `rmemo`); const r = btn(`Mostrar la idea clave`, `btn acc`, () => { m.innerHTML = `<b>Para memorizar</b><p>${it.memo}</p>`; });
+      m.append(r); panel.append(m);
+    } else if (t === `comp`) panel.append(ck);
+    else if (t === `video`) panel.append(vidLinks(vids));
+    // Barra fija: anterior · acción central · siguiente
+    dock.innerHTML = ``;
+    const last = i === all.length - 1;
+    const prev = btn(``, `btn ghost`, () => move(-1)); prev.dataset.nav = `prev`; prev.innerHTML = icon(`left`) + `<span class="rl">Anterior</span>`; prev.disabled = i === 0; prev.setAttribute(`aria-label`, `Ficha anterior`);
+    const mid = t === `comp` ? btn(`Volver a leer la ficha`, `btn ghost rmid`, () => { S.x.rtab = `leer`; pinta(); topScroll(); })
+      : ck ? btn(`Comprobar lo leído · ${nChk}`, `btn acc rmid`, () => { S.x.rtab = `comp`; save(); pinta(); tabs.scrollIntoView({ block:`start`, behavior:`smooth` }); })
+      : btn(last ? `Ir a Fichas` : `Siguiente ficha`, `btn acc rmid`, () => last ? go(`fichas`) : move(1));
+    const next = btn(``, t === `comp` ? `btn acc` : `btn ghost`, () => last ? go(`fichas`) : move(1)); next.dataset.nav = `next`; next.innerHTML = `<span class="rl">${last ? `Ir a Fichas` : `Siguiente`}</span>` + icon(`right`); next.setAttribute(`aria-label`, last ? `Ir a Fichas` : `Ficha siguiente`);
+    dock.append(prev, mid, next);
+  }
+  pinta();
+  v.append(tabs, panel, dock);
   save();
-  function move(d){ S.x.rpos[key] = Math.max(0, Math.min(all.length - 1, i + d)); save(); renderView(); renderPanel(); topScroll(); }
 }
 function vImpreso(v){ v.append(examBuilder(filt(ALL.MCQ))); }
 
@@ -2348,7 +2452,10 @@ function addHeadClock(){
   if (S.mode === `inicio`){
     const k = $(`#head .top .k`); if (k) k.textContent = `Química · Laboratorio Clínico`;
     const w = el(`div`, `clockwrap`); w.append(clockBig()); if (typeof motLine === `function`) w.append(motLine());
-    if (innerWidth <= 700) top.after(w); else top.insertBefore(w, tools);
+    if (innerWidth <= 700){ // en el teléfono: hora pequeña junto a los botones y solo la frase debajo
+      w.innerHTML = ``; if (typeof motLine === `function`) w.append(motLine()); top.after(w);
+      const d = new Date(); if (k){ k.textContent = `${DIAS[d.getDay()][0].toUpperCase() + DIAS[d.getDay()].slice(1)} ${d.getDate()} ${MESES[d.getMonth()].slice(0, 3)} · `; const c = el(`span`, ``); c.dataset.clock = `chip`; c.className = `kclock`; c.onclick = openClockSettings; paintClock(c); k.append(c); }
+    } else top.insertBefore(w, tools);
   } else if (clkCfg().chip && tools){ const c = btn(``, `hbtn hclock`); c.dataset.clock = `chip`; c.title = `Hora · ajustes del reloj`; c.onclick = openClockSettings; paintClock(c); tools.prepend(c); }
 }
 const _renderHead = renderHead;
@@ -2900,7 +3007,8 @@ function hoyCard(){
   const r = el(`div`, `btnrow`); r.append(btn(k.total ? `Empezar` : `Practicar puntos débiles`, `btn acc`, () => k.total ? startHoy() : startWeak())); c.append(r); return c;
 }
 const _vInicioE = vInicio;
-vInicio = function(v){ _vInicioE(v); const w = el(`div`, `twocol`); w.append(hoyCard()); const p = parcialCard(); if (p) w.append(p); const kids = [...v.children]; const at = kids.find(x => !x.classList.contains(`alert`) && !x.dataset.sync && x.tagName !== `P`); v.insertBefore(w, at || null); };
+// El repaso de hoy y el parcial ahora forman parte del "Plan de hoy" del Inicio (ui.js)
+vInicio = function(v){ _vInicioE(v); };
 
 /* ======================= AUDIO-REPASO (lectura en voz alta) ======================= */
 const AU = { on:false, cards:[], ci:0, si:0, seg:0, sents:[], voices:[], sleepEnd:0, token:0 };
@@ -3213,7 +3321,7 @@ setInterval(pomoTick, 1000);
 document.addEventListener(`keydown`, e => {
   if (e.key === `Escape`){ if ($(`#focusroot`).children.length) closeFocus(); else if (SH) closeSheet(); return; }
   const tag = (document.activeElement && document.activeElement.tagName) || ``;
-  if (S.mode === `repaso` && !S.x.rall && !SH && !/INPUT|SELECT|TEXTAREA/.test(tag) && (e.key === `ArrowRight` || e.key === `ArrowLeft`)){ const bs = document.querySelectorAll(`.decknav .btn`); const b = e.key === `ArrowRight` ? bs[1] : bs[0]; if (b && !b.disabled){ e.preventDefault(); b.click(); } }
+  if (S.mode === `repaso` && !S.x.rall && !SH && !/INPUT|SELECT|TEXTAREA/.test(tag) && (e.key === `ArrowRight` || e.key === `ArrowLeft`)){ const b = document.querySelector(e.key === `ArrowRight` ? `.decknav [data-nav=next]` : `.decknav [data-nav=prev]`); if (b && !b.disabled){ e.preventDefault(); b.click(); } }
 });
 try { matchMedia(`(prefers-color-scheme: dark)`).addEventListener(`change`, () => renderHead()); } catch(e){}
 let BPNOW = bp(); addEventListener(`resize`, () => { const b = bp(); if (b !== BPNOW){ BPNOW = b; renderAll(); } });

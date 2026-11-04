@@ -38,7 +38,10 @@ function addHeadClock(){
   if (S.mode === `inicio`){
     const k = $(`#head .top .k`); if (k) k.textContent = `Química · Laboratorio Clínico`;
     const w = el(`div`, `clockwrap`); w.append(clockBig()); if (typeof motLine === `function`) w.append(motLine());
-    if (innerWidth <= 700) top.after(w); else top.insertBefore(w, tools);
+    if (innerWidth <= 700){ // en el teléfono: hora pequeña junto a los botones y solo la frase debajo
+      w.innerHTML = ``; if (typeof motLine === `function`) w.append(motLine()); top.after(w);
+      const d = new Date(); if (k){ k.textContent = `${DIAS[d.getDay()][0].toUpperCase() + DIAS[d.getDay()].slice(1)} ${d.getDate()} ${MESES[d.getMonth()].slice(0, 3)} · `; const c = el(`span`, ``); c.dataset.clock = `chip`; c.className = `kclock`; c.onclick = openClockSettings; paintClock(c); k.append(c); }
+    } else top.insertBefore(w, tools);
   } else if (clkCfg().chip && tools){ const c = btn(``, `hbtn hclock`); c.dataset.clock = `chip`; c.title = `Hora · ajustes del reloj`; c.onclick = openClockSettings; paintClock(c); tools.prepend(c); }
 }
 const _renderHead = renderHead;

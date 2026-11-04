@@ -6,7 +6,7 @@ setInterval(pomoTick, 1000);
 document.addEventListener(`keydown`, e => {
   if (e.key === `Escape`){ if ($(`#focusroot`).children.length) closeFocus(); else if (SH) closeSheet(); return; }
   const tag = (document.activeElement && document.activeElement.tagName) || ``;
-  if (S.mode === `repaso` && !S.x.rall && !SH && !/INPUT|SELECT|TEXTAREA/.test(tag) && (e.key === `ArrowRight` || e.key === `ArrowLeft`)){ const bs = document.querySelectorAll(`.decknav .btn`); const b = e.key === `ArrowRight` ? bs[1] : bs[0]; if (b && !b.disabled){ e.preventDefault(); b.click(); } }
+  if (S.mode === `repaso` && !S.x.rall && !SH && !/INPUT|SELECT|TEXTAREA/.test(tag) && (e.key === `ArrowRight` || e.key === `ArrowLeft`)){ const b = document.querySelector(e.key === `ArrowRight` ? `.decknav [data-nav=next]` : `.decknav [data-nav=prev]`); if (b && !b.disabled){ e.preventDefault(); b.click(); } }
 });
 try { matchMedia(`(prefers-color-scheme: dark)`).addEventListener(`change`, () => renderHead()); } catch(e){}
 let BPNOW = bp(); addEventListener(`resize`, () => { const b = bp(); if (b !== BPNOW){ BPNOW = b; renderAll(); } });

@@ -191,4 +191,5 @@ function hoyCard(){
   const r = el(`div`, `btnrow`); r.append(btn(k.total ? `Empezar` : `Practicar puntos débiles`, `btn acc`, () => k.total ? startHoy() : startWeak())); c.append(r); return c;
 }
 const _vInicioE = vInicio;
-vInicio = function(v){ _vInicioE(v); const w = el(`div`, `twocol`); w.append(hoyCard()); const p = parcialCard(); if (p) w.append(p); const kids = [...v.children]; const at = kids.find(x => !x.classList.contains(`alert`) && !x.dataset.sync && x.tagName !== `P`); v.insertBefore(w, at || null); };
+// El repaso de hoy y el parcial ahora forman parte del "Plan de hoy" del Inicio (ui.js)
+vInicio = function(v){ _vInicioE(v); };
