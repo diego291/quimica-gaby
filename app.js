@@ -1919,6 +1919,7 @@ function checkBox(it){
     sec.append(el(`p`, `chkde` + (q.de === it.title ? ` nueva` : ``), q.de === it.title ? `De esta ficha` : `Repaso · ${q.de}`));
     const alResponder = ok => { st.res[q.id] = ok; S.st[`R_` + key] = (S.st[`R_` + key] || 0) + 1; save(); sig.textContent = st.i === total - 1 ? `Ver resultado` : `Siguiente pregunta`; sig.classList.add(`acc`); };
     sec.append(q.ej ? ejCheck(q, alResponder) : q.o ? mcqCard(q, alResponder) : abiertaCheck(q, alResponder));
+    if (q.id[0] === `R`) sec.append(el(`p`, `chknota`, `<b>Nota:</b> esta pregunta sale del formulario de resumen del tema, por eso la fuente dice ${q.src.replace(/^Tema \d+,\s*/, ``)}. La respuesta correcta es de ${q.de === it.title ? `esta ficha` : `la ficha «${q.de}»`}; las otras opciones son filas del mismo formulario y pueden ser de fichas que aún no has leído.`));
     const nav = el(`div`, `chknav`);
     const rep = btn(``, `btn ghost`, () => reiniciar(false)); rep.innerHTML = icon(`redo`) + ` Repetir preguntas`;
     const sig = btn(st.i === total - 1 ? `Ver resultado` : (q.id in st.res ? `Siguiente pregunta` : `Saltar pregunta`), `btn` + (q.id in st.res ? ` acc` : ` ghost`), () => { st.i++; draw(); });
