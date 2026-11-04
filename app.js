@@ -1865,16 +1865,26 @@ function checkBox(it){
   const propiasN = bloques[0].qs.length, repasoN = bloques.slice(1).reduce((n, b) => n + b.qs.length, 0);
   if (!propiasN && !repasoN) return null;
   const key = hash(it.title);
-  if (!(key in S.x.chkModo)) S.x.chkModo[key] = repasoN ? `acum` : `ficha`;
-  const modo = () => repasoN ? S.x.chkModo[key] : `ficha`;
-  const pool = () => (modo() === `acum` ? bloques : bloques.slice(0, 1)).flatMap(b => b.qs);
+  // Máximo de preguntas de repaso (fichas anteriores). Las de la ficha estudiada salen siempre todas.
+  const OPC = [0, 10, 20, 30, 50].filter(n => n < repasoN).concat([`todas`]);
+  const maxRep = () => { const m = S.x.chkMax == null ? `todas` : S.x.chkMax; return !repasoN ? 0 : m === `todas` ? repasoN : Math.min(m, repasoN); };
+  const modo = () => `m` + maxRep();
+  const correcta = q => S.st[q.id] && S.st[q.id][0];
+  // Reparte el repaso entre todas las fichas anteriores (por turnos), primero las que aún no domina
+  const elegirRepaso = n => {
+    const colas = bloques.slice(1).map(b => { const l = b.qs.filter(q => !correcta(q)), r = b.qs.filter(correcta); return shuf(l).concat(shuf(r)); });
+    const sel = new Set(); let k = 0;
+    while (sel.size < n && colas.some(c => c.length)){ const c = colas[k % colas.length]; if (c.length) sel.add(c.shift().id); k++; }
+    return sel;
+  };
+  const pool = () => { const n = maxRep(); const sel = n >= repasoN ? null : elegirRepaso(n); return bloques[0].qs.concat(bloques.slice(1).flatMap(b => b.qs.filter(q => !sel || sel.has(q.id)))); };
   const ordenar = lista => { const nuevas = lista.filter(q => !(S.st[q.id] && S.st[q.id][0])), resto = lista.filter(q => S.st[q.id] && S.st[q.id][0]); return shuf(nuevas).concat(shuf(resto)); };
   // La tarjeta actual va primero; después el repaso en el orden en que se leyeron las tarjetas
-  const ordenBloques = ids => { const s = new Set(ids); return (modo() === `acum` ? bloques : bloques.slice(0, 1)).flatMap(b => ordenar(b.qs.filter(q => s.has(q.id)))).map(q => q.id); };
+  const ordenBloques = ids => { const s = new Set(ids); return bloques.flatMap(b => ordenar(b.qs.filter(q => s.has(q.id)))).map(q => q.id); };
   const porId = Object.fromEntries(bloques.flatMap(b => b.qs).map(q => [q.id, q]));
   const nuevo = () => { const p = pool(); return CHK[key + modo()] = { n: p.length, orden: ordenBloques(p.map(q => q.id)), i: 0, res: {} }; };
   let st = CHK[key + modo()];
-  if (!st || st.n !== pool().length) st = nuevo();
+  if (!st || st.n !== Math.min(propiasN + maxRep(), propiasN + repasoN)) st = nuevo();
   const sec = el(`section`, `check`);
   const reiniciar = soloFalladas => {
     if (soloFalladas){ const ids = st.orden.filter(id => st.res[id] === false); st.orden = ordenBloques(ids); st.i = 0; st.res = {}; }
@@ -1888,10 +1898,13 @@ function checkBox(it){
     head.append(el(`h4`, ``, `Comprueba lo que leíste`), el(`span`, `chkcnt`, st.i < total ? `Pregunta <b>${st.i + 1}</b> de ${total}` : `${total} de ${total}`));
     sec.append(head);
     if (repasoN){
+      sec.append(el(`p`, `chkmodot`, `Esta ficha: <b>${propiasN}</b> (salen todas) · Repaso de fichas anteriores, máximo:`));
       const seg = el(`div`, `chkmodo`);
-      const b1 = btn(`Solo esta ficha (${propiasN})`, modo() === `ficha` ? `on` : ``, () => { S.x.chkModo[key] = `ficha`; save(); st = CHK[key + `ficha`] || nuevo(); draw(); });
-      const b2 = btn(`Esta ficha + las anteriores (${propiasN + repasoN})`, modo() === `acum` ? `on` : ``, () => { S.x.chkModo[key] = `acum`; save(); st = CHK[key + `acum`] || nuevo(); draw(); });
-      seg.append(b1, b2); sec.append(seg);
+      const actual = maxRep();
+      OPC.forEach(o => { const n = o === `todas` ? repasoN : o;
+        const b = btn(o === 0 ? `Ninguna` : o === `todas` ? `Todas (${repasoN})` : `${o}`, actual === n ? `on` : ``, () => { S.x.chkMax = o; save(); st = CHK[key + modo()] || nuevo(); draw(); });
+        b.setAttribute(`aria-pressed`, actual === n); seg.append(b); });
+      sec.append(seg);
     }
     sec.append(el(`div`, `chkbar`, `<i style="width:${Math.round(Math.min(st.i, total) / total * 100)}%"></i>`));
     if (st.i >= total){
