@@ -24,6 +24,34 @@ export function localNow(tz, d = new Date()){
 const dayDiff = (a, b) => Math.round((Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 864e5);
 const fmtTime = t => { if (!t) return ''; let [h, m] = t.split(':').map(Number); const ap = h >= 12 ? 'p. m.' : 'a. m.'; h = h % 12 || 12; return `${h}:${String(m).padStart(2, '0')} ${ap}`; };
 const GRACE = 120; // minutos de tolerancia por si GitHub se retrasa
+const addD = (s, n) => { const d = new Date(Date.parse(s + 'T00:00:00Z') + n * 864e5); return d.toISOString().slice(0, 10); };
+const tmin = t => { if (!t) return 0; const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+/* repeticiones (mismo formato RRULE que la página): fechas de inicio entre from y to */
+export function rrDates(start, rr, from, to){
+  const o = {}; String(rr || '').replace(/^RRULE:/, '').split(';').forEach(p => { const [k, v] = p.split('='); if (k && v) o[k] = v; });
+  const f = o.FREQ, iv = Math.max(1, +(o.INTERVAL || 1)), cnt = o.COUNT ? +o.COUNT : null, until = o.UNTIL ? `${o.UNTIL.slice(0, 4)}-${o.UNTIL.slice(4, 6)}-${o.UNTIL.slice(6, 8)}` : null;
+  const BYD = ['SU','MO','TU','WE','TH','FR','SA'], out = []; let n = 0;
+  const take = ds => { if (until && ds > until) return false; if (cnt && n >= cnt) return false; n++; if (ds >= from && ds <= to) out.push(ds); return ds <= to; };
+  const dow = s => new Date(s + 'T00:00:00Z').getUTCDay();
+  if (f === 'WEEKLY'){
+    const days = (o.BYDAY ? o.BYDAY.split(',') : [BYD[dow(start)]]).map(d => BYD.indexOf(d.slice(-2))).filter(x => x >= 0);
+    let wk = addD(start, -((dow(start) + 6) % 7));
+    for (let w = 0; w < 600; w++){ for (const wd of [1, 2, 3, 4, 5, 6, 0]){ if (!days.includes(wd)) continue; const ds = addD(wk, (wd + 6) % 7); if (ds < start) continue; if (!take(ds)) return out; } wk = addD(wk, 7 * iv); }
+    return out;
+  }
+  const [Y, M, D] = start.split('-').map(Number);
+  for (let i = 0; i < 2000; i++){
+    let d;
+    if (f === 'DAILY') d = addD(start, i * iv);
+    else if (f === 'MONTHLY'){ const x = new Date(Date.UTC(Y, M - 1 + i * iv, D)); if (x.getUTCDate() !== D) continue; d = x.toISOString().slice(0, 10); }
+    else if (f === 'YEARLY'){ const x = new Date(Date.UTC(Y + i * iv, M - 1, D)); if (x.getUTCDate() !== D) continue; d = x.toISOString().slice(0, 10); }
+    else { take(start); break; }
+    if (!take(d)) break;
+  }
+  return out;
+}
+const occStarts = (e, from, to) => (e.rrule ? rrDates(e.date, e.rrule, from, to) : (e.date >= from && e.date <= to ? [e.date] : [])).filter(d => !(e.ex || []).includes(d));
+const remTxt = m => m === 0 ? 'ahora' : m < 60 ? `en ${m} min` : m < 1440 ? `en ${m / 60} h` : m < 2880 ? 'mañana' : `en ${Math.round(m / 1440)} días`;
 
 /* decide qué avisos tocan ahora para una estudiante (función pura, se puede probar) */
 export function plan(docData, now = new Date()){
@@ -36,7 +64,7 @@ export function plan(docData, now = new Date()){
   const idx = Math.floor(Date.parse(day) / 864e5);
   // 1) mañana: frase + lo que hay hoy
   if (inWin(c.am * 60) && !sent['am:' + day]){
-    const hoy = (x.ev || []).filter(e => e.date === day);
+    const hoy = (x.ev || []).filter(e => occStarts(e, day, day).length).concat((x.agn || []).filter(n => n.kind === 'task' && !n.done && n.date === day).map(n => ({ title:n.text.split('\n')[0], time:n.time })));
     if (c.motiv || hoy.length){
       const pool = idx % 3 === 0 && FR.B.length ? FR.B.map(([t, s]) => `“${t}” (${s})`) : FR.F.map(nm);
       const fr = pool[idx % pool.length];
@@ -45,7 +73,20 @@ export function plan(docData, now = new Date()){
     }
   }
   // 2) eventos de la agenda (según el recordatorio elegido) y parcial mañana
+  // 2a) recordatorios en minutos (agenda nueva): uno por cada ocurrencia y cada recordatorio
   if (c.ev) (x.ev || []).forEach(e => {
+    if (!e.date || !Array.isArray(e.rems) || !e.rems.length) return;
+    const allDay = e.allDay != null ? e.allDay : !e.time, maxR = Math.max(...e.rems);
+    occStarts(e, addD(day, -1), addD(day, Math.ceil(maxR / 1440) + 1)).forEach(d => {
+      const start = dayDiff(day, d) * 1440 + (allDay ? c.am * 60 : tmin(e.time));
+      e.rems.forEach(m => { const at = start - m, k = `evm:${e.id}:${d}:${m}`;
+        if (min >= at && min < Math.min(at + GRACE, start + 10) && !sent[k]) out.push({ key:k, title:`${e.title} ${allDay ? (m >= 1440 ? remTxt(m) : 'hoy') : remTxt(m)}`, body:[allDay ? '' : 'Hora: ' + fmtTime(e.time), e.loc ? 'Lugar: ' + e.loc : '', e.type === 'parcial' ? `Haz un simulacro y repasa lo débil. ¡Tú puedes, ${name}!` : ''].filter(Boolean).join(' · ') || 'Revisa tu agenda.' }); });
+    });
+  });
+  // 2b) pendientes con hora
+  if (c.ev) (x.agn || []).forEach(n => { if (n.kind !== 'task' || n.done || n.date !== day || !n.time) return; const t = tmin(n.time), k = `tk:${n.id}:${day}`; if (min >= t && min < t + GRACE && !sent[k]) out.push({ key:k, title:`Pendiente: ${n.text.split('\n')[0]}`, body:`Lo anotaste para las ${fmtTime(n.time)}.` }); });
+  if (c.ev) (x.ev || []).forEach(e => {
+    if (Array.isArray(e.rems) && e.rems.length) return;
     if (!e.date || e.rem == null || e.rem < 0) return; const dd = dayDiff(day, e.date); if (dd < 0) return;
     const when = dd === 0 ? 'hoy' : dd === 1 ? 'mañana' : `en ${dd} días`;
     const due = dd >= 1 && (dd === e.rem || (dd === 1 && e.rem >= 1));

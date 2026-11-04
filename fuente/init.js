@@ -1,5 +1,5 @@
 /* ======================= ARRANQUE ======================= */
-initX(); if (Array.isArray(S.x.known)) TORDER.forEach(t => { if (!S.x.known.includes(t)) S.sel.add(t); }); S.x.known = TORDER.slice(); applyTheme(); injectPackCss(); versionNotice();
+initX(); syncETYPE(); if (Array.isArray(S.x.known)) TORDER.forEach(t => { if (!S.x.known.includes(t)) S.sel.add(t); }); S.x.known = TORDER.slice(); applyTheme(); injectPackCss(); versionNotice();
 if (!SECS.some(sc => sc.modes.some(m => m[0] === S.mode))) S.mode = `inicio`;
 renderAll();
 setInterval(pomoTick, 1000);

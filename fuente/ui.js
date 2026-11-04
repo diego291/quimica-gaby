@@ -18,10 +18,11 @@ const ICONS = {
 };
 const icon = (n, cls = `ic`) => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ``}</svg>`;
 const SECS = [
-  { k:`inicio`, n:`Inicio`, ic:`home`, modes:[[`inicio`,`Hoy`],[`guia`,`Cómo estudiar`],[`progreso`,`Mi progreso`],[`notas`,`Mis notas`]] },
+  { k:`inicio`, n:`Inicio`, ic:`home`, modes:[[`inicio`,`Hoy`],[`guia`,`Cómo estudiar`],[`progreso`,`Mi progreso`]] },
   { k:`estudiar`, n:`Estudiar`, ic:`book`, modes:[[`repaso`,`Repaso`],[`escuchar`,`Escuchar`],[`fichas`,`Fichas`],[`videos`,`Videos`],[`formulario`,`Formulario`]] },
   { k:`practicar`, n:`Practicar`, ic:`pencil`, modes:[[`hoy`,`Para hoy`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`practica`,`Práctica`],[`formula`,`¿Qué fórmula?`],[`lab`,`Laboratorio`]] },
   { k:`examen`, n:`Examen`, ic:`clip`, modes:[[`simulacro`,`Simulacro`],[`impreso`,`Parcial impreso`]] },
+  { k:`organizar`, n:`Organizar`, ic:`cal`, modes:[[`agenda`,`Agenda`],[`pendientes`,`Pendientes`],[`notasr`,`Notas`],[`cuaderno`,`Cuaderno`],[`notas`,`Mis notas`]] },
   { k:`preguntar`, n:`Preguntar`, ic:`chat`, modes:[[`preguntar`,`Preguntar`]] }
 ];
 const NEWT = [TORDER[TORDER.length - 1]];
@@ -50,13 +51,14 @@ function initX(){
   x.pst = x.pst || { phase:`study`, cycle:1, run:false, end:0, left:x.pomo.study * 60 };
   x.plog = x.plog || {}; x.ev = x.ev || []; x.seen = x.seen || {}; x.days = x.days || []; x.sm = x.sm || {}; x.rpos = x.rpos || {}; x.ptab = x.ptab || {}; x.chkModo = x.chkModo || {};
   if (!x.name) x.name = `Gaby`;
+  if (x.sm.inicio === `notas`) delete x.sm.inicio; // "Mis notas" pasó a Organizar
   if (x.pst.run && x.pst.end <= Date.now()){ if (x.pst.phase === `study`) logPomo(); x.pst.run = false; pomoAdvance(); }
 }
 function markDay(){ const t = todayStr(), d = S.x.days || (S.x.days = []); if (!d.includes(t)){ d.push(t); if (d.length > 90) d.splice(0, d.length - 90); } }
 function streak(){ const d = new Set(S.x.days || []); let s = todayStr(); if (!d.has(s)) s = addDays(s, -1); let n = 0; while (d.has(s)){ n++; s = addDays(s, -1); } return n; }
 
 /* ---------- navegación ---------- */
-function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`notas`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
+function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`notas`,`agenda`,`pendientes`,`notasr`,`cuaderno`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
 function goSec(k){ const sc = SECS.find(s => s.k === k); go(S.x.sm[k] || sc.modes[0][0]); }
 function topScroll(){ window.scrollTo({ top:0 }); const p = $(`#panel`); if (p && S.mode !== `repaso`) p.scrollTop = 0; }
 function setSel(set){ S.sel = new Set(set); save(); SIM.on = false; stopTick(); renderAll(); }
@@ -93,6 +95,8 @@ function renderHead(){
   top.append(left, tools); h.append(top);
   // En el Repaso, los temas se reducen a un solo botón para dejar espacio a la ficha
   if (S.mode === `inicio`){ h.classList.add(`compact`); return; }
+  if (sc.k === `organizar`){ const h1 = $(`#head h1`); if (h1) h1.textContent = { agenda:`Agenda`, pendientes:`Pendientes`, notasr:`Notas`, cuaderno:`Cuaderno`, notas:`Mis notas` }[S.mode] || sc.n; const k = $(`#head .top .k`); if (k) k.textContent = `Organizar`; h.classList.add(`compact`, `nochips`); return; }
+  h.classList.remove(`nochips`);
   if (S.mode === `repaso` && !S.x.rall){ const ch = el(`div`, `chips`); const add = btn(``, `tchp add`, openTopics); add.innerHTML = icon(`plus`) + (sel.length === TORDER.length ? `Todos los temas` : `${sel.length} tema${sel.length === 1 ? `` : `s`}`) + ` · cambiar`; ch.append(add); h.append(ch); h.classList.add(`compact`); return; }
   h.classList.remove(`compact`);
   const ch = el(`div`, `chips`);
@@ -113,9 +117,9 @@ function renderSub(){
 function renderStatus(){ renderHead(); renderRail(); renderBnav(); }
 
 /* ---------- panel derecho ---------- */
-function panelCtx(){ return S.mode === `inicio` ? `inicio` : S.mode === `repaso` && !S.x.rall ? `repaso` : `otro`; }
+function panelCtx(){ return S.mode === `inicio` || secOf(S.mode).k === `organizar` ? `inicio` : S.mode === `repaso` && !S.x.rall ? `repaso` : `otro`; }
 function renderPanel(){
-  const p = $(`#panel`); p.innerHTML = ``; if (bp() !== `wide`) return;
+  const p = $(`#panel`); p.innerHTML = ``; const np = [`agenda`, `cuaderno`].includes(S.mode); $(`#app`).classList.toggle(`nopanel`, np); if (bp() !== `wide` || np) return;
   const ctx = panelCtx(); const tabs = ctx === `inicio` ? [[`agenda`,`Agenda`],[`temas`,`Temas`]] : ctx === `repaso` ? [[`indice`,`Índice del tema`],[`temas`,`Temas`]] : [[`temas`,`Temas`],[`agenda`,`Agenda`]];
   let cur = S.x.ptab[ctx]; if (!tabs.some(t => t[0] === cur)) cur = tabs[0][0];
   { const m = el(`div`); m.dataset.pomo = `mini`; p.append(m); }
@@ -343,10 +347,10 @@ function vInicio(v){
   const g = el(`div`, `igrid`);
   const c1 = el(`div`, `icol`), c2 = el(`div`, `icol`);
   c1.append(heroCard());
-  if (wide){ c1.append(temasBox()); c2.append(planBox(true)); } else { c1.append(planBox(false), temasBox()); const pm = el(`div`, `ipomo`); pm.dataset.pomo = `mini`; c1.append(pm); }
+  const fj = typeof fijadasCard === `function` ? fijadasCard() : null;
+  if (wide){ c1.append(temasBox()); c2.append(planBox(true), agendaHoyCard()); if (fj) c2.append(fj); } else { c1.append(planBox(false), agendaHoyCard()); if (fj) c1.append(fj); c1.append(temasBox()); const pm = el(`div`, `ipomo`); pm.dataset.pomo = `mini`; c1.append(pm); }
   g.append(c1); if (wide) g.append(c2); v.append(g);
   if (wide) v.append(routeBox());
-  else { const ag = btn(``, `irow`, openAgenda); ag.innerHTML = `${icon(`cal`)}<span>Calendario y agenda</span>${icon(`right`)}`; v.append(ag); }
   pomoRefresh();
 }
 /* Plan de hoy: los pasos que convienen hoy, en orden; el primero sin hacer queda resaltado */
@@ -722,6 +726,7 @@ function vRepaso(v){
   const nChk = (() => { const bl = checkBloques(it); return bl[0].qs.length; })();
   const ck = checkBox(it);
   const TABS = [[`leer`, `Leer`]]; if (fig) TABS.push([`dibujo`, `Dibujo`]); if (it.memo) TABS.push([`memo`, `Memorizar`]); if (ck) TABS.push([`comp`, `Comprobar · ${nChk}`]); if (vids.length) TABS.push([`video`, `Video`]);
+  const apun = typeof cnPagesFor === `function` ? cnPagesFor(it.t) : []; TABS.push([`apuntes`, apun.length ? `Mis apuntes · ${apun.length}` : `Mis apuntes`]);
   if (S.x.rtabFor !== th){ S.x.rtabFor = th; S.x.rtab = `leer`; }
   if (!TABS.some(t => t[0] === S.x.rtab)) S.x.rtab = `leer`;
   const tabs = el(`div`, `rtabs`); tabs.setAttribute(`role`, `tablist`);
@@ -744,6 +749,11 @@ function vRepaso(v){
       m.append(r); panel.append(m);
     } else if (t === `comp`) panel.append(ck);
     else if (t === `video`) panel.append(vidLinks(vids));
+    else if (t === `apuntes`){
+      if (!apun.length) panel.append(el(`p`, `muted`, `Aún no tienes apuntes de este tema. Crea una página en el Cuaderno: queda enlazada aquí.`));
+      apun.forEach(pg => panel.append(btn(`<span class="row"><b>${esc(pg.title || `Sin título`)}</b><small>${esc(cnPath(pg))}</small></span><span>${esc(cnText(pg.html).slice(0, 110))}</span>`, `cnpg`, () => cnOpenPage(pg.id))));
+      const nb = btn(`+ Página de apuntes de este tema`, `btn ghost`, () => { let s = cn().sec.find(x => x.t === it.t); if (!s){ const q = cn().nb[0]; s = { id:nid(), nb:q.id, name:`${TOPICS[it.t].n} · ${TOPICS[it.t].name}`, color:q.color, order:cn().sec.length, t:it.t }; cn().sec.push(s); } const p = cnNewPage(s.id, `apuntes`, `Apuntes · ${it.title}`); cnOpenPage(p.id); }); nb.style.marginTop = `10px`; panel.append(nb);
+    }
     // Barra fija: anterior · acción central · siguiente
     dock.innerHTML = ``;
     const last = i === all.length - 1;
@@ -780,7 +790,7 @@ function openPalette(){
 }
 
 /* ======================= RESPALDO, MATERIAL ADICIONAL Y VERSIÓN ======================= */
-const BACKUP_KEYS = [KEY, `parcialM4_vids`, `parcialM4_dudas`, PACK_KEY];
+const BACKUP_KEYS = [KEY, `parcialM4_vids`, `parcialM4_dudas`, PACK_KEY, `quimica_cuaderno`];
 function saveFile(name, text, type){
   const blob = new Blob([text], { type: type || `application/json` });
   return dlP.then(dl => { if (dl) return dl.save({ filename:name, data:blob }); const a = document.createElement(`a`); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000); });
