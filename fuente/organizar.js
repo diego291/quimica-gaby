@@ -160,6 +160,7 @@ function openMas(){
       b.append(g);
       const r1 = el(`div`, `fld`); r1.append(el(`span`, ``, `Accesos de la barra inferior<small>${fav.map(k => SECS.find(s => s.k === k).n).join(` · `)}</small>`), btn(`Elegir 4`, `btn ghost`, () => { edit = true; drawSheet(); })); b.append(r1);
       const r2 = el(`div`, `fld`); r2.append(el(`span`, ``, `Google Calendar<small>${gcOn() ? (gcReady() ? `Conectado` : `Conectado · toca para actualizar`) : `Sin conectar`}</small>`), gcOn() ? btn(`Desconectar`, `btn ghost`, () => { if (confirm(`¿Dejar de sincronizar con Google Calendar? Tus eventos siguen aquí y en Google.`)){ gcDisconnect(); drawSheet(); } }) : btn(`Conectar`, `btn acc`, () => { closeSheet(); gcConnect(); })); b.append(r2);
+      b.append(fld(`Recordatorios también por correo`, toggleBtn(!!S.x.agMail, v => { S.x.agMail = v; save(); (S.x.ev || []).filter(e => e.gid && (e.rems || []).length).forEach(e => gcQueue({ op:`up`, id:e.id }, true)); gcSync(); }), `Los manda Google Calendar`));
     } else {
       b.append(el(`p`, `muted`, `Elige hasta 4 secciones para la barra de abajo. Las demás quedan en “Más”.`));
       const sel = S.x.navFav ? S.x.navFav.slice() : NAVDEF.slice();

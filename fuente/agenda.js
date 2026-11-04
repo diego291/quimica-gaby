@@ -23,6 +23,9 @@ const mtime = m => { m = Math.max(0, Math.min(24 * 60 - 1, Math.round(m))); retu
 const nowMin = () => { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); };
 const remTxt = m => m === 0 ? `A la hora` : m < 60 ? `${m} min antes` : m < 1440 ? `${m / 60} h antes` : m % 10080 === 0 ? `${m / 10080} semana${m > 10080 ? `s` : ``} antes` : `${m / 1440} día${m > 1440 ? `s` : ``} antes`;
 const REMS = [0, 5, 10, 15, 30, 60, 120, 1440, 2880, 10080];
+function gRems(rems){ const ms = [...new Set(rems || [])].sort((x, y) => x - y), out = [];
+  ms.forEach(m => { if (out.length < 5) out.push({ method:`popup`, minutes:m }); if (S.x.agMail && out.length < 5) out.push({ method:`email`, minutes:m }); });
+  return { useDefault:false, overrides:out }; }
 
 /* ---------- repeticiones (RRULE) ---------- */
 const BYD = [`SU`,`MO`,`TU`,`WE`,`TH`,`FR`,`SA`];
@@ -179,7 +182,7 @@ function openEv(ev, o = {}){
     const ad = el(`select`, `inp sm`); ad.setAttribute(`aria-label`, `Agregar recordatorio`); const o0 = el(`option`, ``, `+ Agregar`); o0.value = ``; ad.append(o0);
     REMS.filter(m => !e.rems.includes(m)).forEach(m => { const op = el(`option`, ``, remTxt(m)); op.value = m; ad.append(op); });
     ad.onchange = () => { if (ad.value !== ``){ e.rems.push(+ad.value); drawSheet(); } }; rw.append(ad);
-    b.append(fld(`Recordatorios`, rw, `Llegan como notificación al teléfono`));
+    b.append(fld(`Recordatorios`, rw, S.x.agMail && gcOn() ? `Llegan al teléfono y por correo` : `Llegan como notificación al teléfono`));
     if (!e._g && [`parcial`,`estudio`,`tarea`,`lab`,`clase`].includes(e.type)){
       const tp = el(`div`, `pills`);
       TORDER.forEach(k => { const x = btn(k.slice(1), ``, () => { e.topics = (e.topics || []).includes(k) ? e.topics.filter(y => y !== k) : (e.topics || []).concat(k); drawSheet(); }); x.setAttribute(`aria-pressed`, (e.topics || []).includes(k)); x.title = TOPICS[k].name; tp.append(x); });
@@ -217,7 +220,9 @@ function buildRR(o){ return [`FREQ=${o.FREQ}`, +o.INTERVAL > 1 ? `INTERVAL=${o.I
 
 /* ---------- categorías ---------- */
 function openCats(){
-  openSheet(`Categorías`, b => {
+  openSheet(`Ajustes de la agenda`, b => {
+    b.append(fld(`Recordatorios también por correo`, toggleBtn(!!S.x.agMail, v => { S.x.agMail = v; save(); (S.x.ev || []).filter(e => e.gid && (e.rems || []).length).forEach(e => gcQueue({ op:`up`, id:e.id }, true)); gcSync(); drawSheet(); }), gcOn() ? `Google Calendar te manda un correo con cada recordatorio de los eventos de la agenda` : `Funciona cuando conectes tu Google Calendar: Google manda el correo`));
+    b.append(el(`h4`, `agh4`, `Categorías`));
     b.append(el(`p`, `muted`, `Toca el color para cambiarlo (son los colores de Google Calendar). El ojo muestra u oculta la categoría en el calendario.`));
     const a = agcal();
     a.cats.forEach(c => {
@@ -272,7 +277,7 @@ function vAgenda(v){
   const cf = el(`div`, `agfilt`); const a = agcal();
   a.cats.filter(c => c.k !== `google` || gcOn() || gcItems().length).forEach(c => { const off = a.hidden.includes(c.k); const x = btn(`<i style="background:${GPAL[c.c]}"></i>${esc(c.n)}`, off ? `off` : ``, () => { a.hidden = off ? a.hidden.filter(y => y !== c.k) : a.hidden.concat(c.k); save(); renderView(); }); x.setAttribute(`aria-pressed`, !off); x.title = off ? `Mostrar ${c.n}` : `Ocultar ${c.n}`; cf.append(x); });
   const offA = a.hidden.includes(`app`); const xa = btn(`<i class="dash"></i>De la app`, offA ? `off` : ``, () => { a.hidden = offA ? a.hidden.filter(y => y !== `app`) : a.hidden.concat(`app`); save(); renderView(); }); xa.setAttribute(`aria-pressed`, !offA); cf.append(xa);
-  const ed = btn(icon(`gear`), `agcfg`, openCats); ed.setAttribute(`aria-label`, `Editar categorías`); ed.title = `Editar categorías`; cf.append(ed);
+  const ed = btn(icon(`gear`), `agcfg`, openCats); ed.setAttribute(`aria-label`, `Ajustes de la agenda`); ed.title = `Ajustes de la agenda: categorías y correo`; cf.append(ed);
   v.append(cf);
   if (GC.err) v.append(el(`div`, `alert`, icon(`bell`) + `<span>${esc(GC.err)}</span>`));
   const r = agRange(), items = agItems(r.from, r.to);
@@ -487,7 +492,7 @@ function toG(e){
     start: ad ? { date:e.date } : { dateTime:`${e.date}T${e.time}:00`, timeZone:tz },
     end: ad ? { date:addDays(edate, 1) } : { dateTime:`${edate}T${etime}:00`, timeZone:tz },
     recurrence: e.rrule ? [`RRULE:` + e.rrule] : [],
-    reminders:{ useDefault:false, overrides:(e.rems || []).slice(0, 5).map(m => ({ method:`popup`, minutes:m })) },
+    reminders:gRems(e.rems),
     extendedProperties:{ private:{ mf:e.id, qtype:e.type || `otro` } } };
 }
 function fromG(g){
@@ -499,7 +504,7 @@ function fromG(g){
   const cats = agcal().cats, pv = (g.extendedProperties && g.extendedProperties.private) || {};
   const cat = pv.qtype && cats.some(c => c.k === pv.qtype) ? pv.qtype : g.colorId ? ((cats.find(c => c.c === +g.colorId && c.k !== `google`) || {}).k || `google`) : `google`;
   return { id:g.id, recId:g.recurringEventId || null, mf:pv.mf || null, title:g.summary || ``, date, edate, time, etime, allDay:ad, cat, loc:g.location || ``, desc:g.description || ``,
-    rems: g.reminders && g.reminders.overrides ? g.reminders.overrides.map(o => o.minutes) : [], rrule:(g.recurrence || []).map(x => x.replace(/^RRULE:/, ``)).find(x => /FREQ=/.test(x)) || ``, updated:g.updated, link:g.htmlLink };
+    rems: g.reminders && g.reminders.overrides ? [...new Set(g.reminders.overrides.map(o => o.minutes))] : [], rrule:(g.recurrence || []).map(x => x.replace(/^RRULE:/, ``)).find(x => /FREQ=/.test(x)) || ``, updated:g.updated, link:g.htmlLink };
 }
 async function gcFlush(){
   const q = (S.x.gq || []).slice();
@@ -555,7 +560,7 @@ async function gcSync(force){
 function gcEditGoogle(g, e){
   const tz = tzName(), body = { summary:e.title, location:e.loc || ``, description:e.desc || ``,
     start: e.allDay ? { date:e.date } : { dateTime:`${e.date}T${e.time}:00`, timeZone:tz }, end: e.allDay ? { date:addDays(e.edate || e.date, 1) } : { dateTime:`${e.edate || e.date}T${e.etime}:00`, timeZone:tz },
-    reminders:{ useDefault:false, overrides:(e.rems || []).slice(0, 5).map(m => ({ method:`popup`, minutes:m })) } };
+    reminders:gRems(e.rems) };
   if (e.type && e.type !== `google`) body.colorId = String(catOf(e.type).c);
   // se ve al instante; luego se confirma con Google
   try { const c = JSON.parse(localStorage.getItem(`quimica_gcal`) || `{}`); const it = (c.items || []).find(x => x.id === g.id); if (it) Object.assign(it, { title:e.title, date:e.date, edate:e.edate || e.date, time:e.allDay ? `` : e.time, etime:e.allDay ? `` : e.etime, allDay:e.allDay, loc:e.loc, desc:e.desc, rems:e.rems, cat:e.type }); localStorage.setItem(`quimica_gcal`, JSON.stringify(c)); } catch(x){}

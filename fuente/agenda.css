@@ -246,3 +246,4 @@ textarea.inp{width:100%;resize:vertical;margin-top:8px;font:inherit}
 
 @media (min-width:1100px){ .app.nopanel{grid-template-columns:92px minmax(0,1fr)} .app.nopanel .panel{display:none} }
 .app.nopanel .bodyw{max-width:1400px}
+.agh4{margin:16px 0 4px;font-size:1rem}
