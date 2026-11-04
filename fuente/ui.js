@@ -483,71 +483,138 @@ function abiertaCheck(q, onDone){
   });
   row.append(ver); c.append(row); return c;
 }
+/* Ajustes del repaso (son los mismos para todas las fichas) */
+function chkAj(){
+  const x = S.x;
+  return { max: x.chkMax == null ? 20 : x.chkMax, fallo: x.chkFallo !== false, final: x.chkFinal !== false, excl: (x.chkExcl = x.chkExcl || {}) };
+}
+function dominio(qs){ let ok = 0, n = 0; qs.forEach(q => { const v = S.st[q.id]; if (v){ ok += v[0]; n += v[0] + v[1]; } }); return n ? ok / n : null; }
 function checkBox(it){
   const bloques = checkBloques(it);
-  const propiasN = bloques[0].qs.length, repasoN = bloques.slice(1).reduce((n, b) => n + b.qs.length, 0);
-  if (!propiasN && !repasoN) return null;
+  const propia = bloques[0].qs, previas = bloques.slice(1);
+  if (!propia.length && !previas.length) return null;
   const key = hash(it.title);
-  // Máximo de preguntas de repaso (fichas anteriores). Las de la ficha estudiada salen siempre todas.
-  const OPC = [0, 10, 20, 30, 50].filter(n => n < repasoN).concat([`todas`]);
-  const maxRep = () => { const m = S.x.chkMax == null ? `todas` : S.x.chkMax; return !repasoN ? 0 : m === `todas` ? repasoN : Math.min(m, repasoN); };
-  const modo = () => `m` + maxRep();
   const correcta = q => S.st[q.id] && S.st[q.id][0];
-  // Reparte el repaso entre todas las fichas anteriores (por turnos), primero las que aún no domina
-  const elegirRepaso = n => {
-    const colas = bloques.slice(1).map(b => { const l = b.qs.filter(q => !correcta(q)), r = b.qs.filter(correcta); return shuf(l).concat(shuf(r)); });
-    const sel = new Set(); let k = 0;
-    while (sel.size < n && colas.some(c => c.length)){ const c = colas[k % colas.length]; if (c.length) sel.add(c.shift().id); k++; }
-    return sel;
+  const ordenar = lista => shuf(lista.filter(q => !correcta(q))).concat(shuf(lista.filter(correcta)));
+  const activas = () => { const aj = chkAj(); return previas.filter(b => !aj.excl[hash(b.c.title)]); };
+  const repasoDisp = () => activas().reduce((n, b) => n + b.qs.length, 0);
+  const cuantoRep = () => { const aj = chkAj(), d = repasoDisp(); return aj.max === `todas` ? d : Math.min(aj.max, d); };
+  // Reparte el repaso entre las fichas elegidas; con "más de lo que fallo", las de menos aciertos reciben más
+  const elegirRepaso = () => {
+    const aj = chkAj(), n = cuantoRep(), L = activas();
+    const colas = L.map(b => ordenar(b.qs)), toma = L.map(() => 0);
+    const peso = L.map(b => { if (!aj.fallo) return 1; const d = dominio(b.qs); return d == null ? 0.8 : 1.15 - d; });
+    const sel = new Set();
+    while (sel.size < n){
+      let best = -1, bv = -1;
+      colas.forEach((c, k) => { if (!c.length) return; const v = peso[k] / (toma[k] + 1); if (v > bv){ bv = v; best = k; } });
+      if (best < 0) break; sel.add(colas[best].shift().id); toma[best]++;
+    }
+    // En el orden en que se leyeron las fichas
+    return L.flatMap(b => b.qs.filter(q => sel.has(q.id))).map(q => q.id);
   };
-  const pool = () => { const n = maxRep(); const sel = n >= repasoN ? null : elegirRepaso(n); return bloques[0].qs.concat(bloques.slice(1).flatMap(b => b.qs.filter(q => !sel || sel.has(q.id)))); };
-  const ordenar = lista => { const nuevas = lista.filter(q => !(S.st[q.id] && S.st[q.id][0])), resto = lista.filter(q => S.st[q.id] && S.st[q.id][0]); return shuf(nuevas).concat(shuf(resto)); };
-  // La tarjeta actual va primero; después el repaso en el orden en que se leyeron las tarjetas
-  const ordenBloques = ids => { const s = new Set(ids); return bloques.flatMap(b => ordenar(b.qs.filter(q => s.has(q.id)))).map(q => q.id); };
   const porId = Object.fromEntries(bloques.flatMap(b => b.qs).map(q => [q.id, q]));
-  const nuevo = () => { const p = pool(); return CHK[key + modo()] = { n: p.length, orden: ordenBloques(p.map(q => q.id)), i: 0, res: {} }; };
-  let st = CHK[key + modo()];
-  if (!st || st.n !== Math.min(propiasN + maxRep(), propiasN + repasoN)) st = nuevo();
-  const sec = el(`section`, `check`);
-  const reiniciar = soloFalladas => {
-    if (soloFalladas){ const ids = st.orden.filter(id => st.res[id] === false); st.orden = ordenBloques(ids); st.i = 0; st.res = {}; }
-    else st = nuevo();
-    draw(); sec.scrollIntoView({ block: `nearest`, behavior: `smooth` });
+  const firma = () => JSON.stringify(chkAj()) + `|` + propia.length + `|` + repasoDisp();
+  const nuevo = () => {
+    const aj = chkAj(), a = ordenar(propia).map(q => q.id), r = elegirRepaso();
+    const mezcla = !aj.final && r.length;
+    return CHK[key] = { f: firma(), a: mezcla ? shuf(a.concat(r)) : a, b: mezcla ? [] : r, fase: `a`, i: 0, res: {}, mezcla };
   };
+  let st = CHK[key];
+  if (!st) st = nuevo();
+  const sec = el(`section`, `check`);
+  const cuenta = ids => { const r = ids.filter(id => id in st.res); return { bien: r.filter(id => st.res[id]).length, resp: r.length, mal: r.filter(id => st.res[id] === false) }; };
+  const subir = () => sec.scrollIntoView({ block: `nearest`, behavior: `smooth` });
+  const ajustes = () => openSheet(`Ajustes del repaso`, cuerpoAjustes);
+  function cuerpoAjustes(box){
+    const aj = chkAj();
+    box.append(el(`p`, `muted chkajnota`, `Las <b>${propia.length}</b> preguntas de la ficha estudiada salen siempre.`));
+    if (!previas.length){ box.append(el(`p`, `chkajnota`, `Esta es la primera ficha del tema: todavía no hay fichas anteriores para repasar.`)); }
+    else {
+      const s1 = el(`div`, `chkaj`); s1.append(el(`b`, ``, `Preguntas de repaso (máximo)`));
+      const chips = el(`div`, `chkmodo`); const disp = repasoDisp();
+      [0, 10, 20, 30, 50, `todas`].filter(o => o === `todas` || o === 0 || o < disp).forEach(o => {
+        const on = aj.max === o || (o === `todas` && typeof aj.max === `number` && aj.max > 0 && aj.max >= disp);
+        const b = btn(o === 0 ? `Ninguna` : o === `todas` ? `Todas (${disp})` : `${o}`, on ? `on` : ``, () => { S.x.chkMax = o; save(); drawSheet(); });
+        b.setAttribute(`aria-pressed`, on); chips.append(b); });
+      s1.append(chips); box.append(s1);
+      const sw = (tit, sub, val, fn) => { const r = el(`div`, `chkaj row`); const t = el(`div`); t.append(el(`b`, ``, tit), el(`div`, `xs muted`, sub));
+        const b = btn(``, `sw` + (val ? ` on` : ``), fn); b.setAttribute(`role`, `switch`); b.setAttribute(`aria-checked`, val); b.setAttribute(`aria-label`, tit); r.append(t, b); return r; };
+      box.append(sw(`Más preguntas de lo que fallo`, `Las fichas con menos aciertos reciben más`, aj.fallo, () => { S.x.chkFallo = !aj.fallo; save(); drawSheet(); }));
+      box.append(sw(`Repaso al final`, aj.final ? `Primero la ficha nueva, luego el repaso` : `Apagado: el repaso se mezcla con la ficha nueva`, aj.final, () => { S.x.chkFinal = !aj.final; save(); drawSheet(); }));
+      const s3 = el(`div`, `chkaj`); const h = el(`div`, `row`); h.append(el(`b`, ``, `Fichas que entran al repaso`), el(`span`, `xs muted`, `aciertos`)); s3.append(h);
+      previas.forEach(b => { const k = hash(b.c.title), on = !aj.excl[k], d = dominio(b.qs);
+        const r = btn(``, `chkfl`, () => { if (on) S.x.chkExcl[k] = 1; else delete S.x.chkExcl[k]; save(); drawSheet(); });
+        r.setAttribute(`aria-pressed`, on);
+        const col = d == null ? `var(--muted)` : d >= .7 ? `var(--ok)` : d >= .5 ? `var(--t20)` : `var(--bad)`;
+        r.innerHTML = `<span class="ck">${on ? `✓` : ``}</span><span class="nm">${b.c.title}</span><span class="pc" style="color:${col}">${d == null ? `—` : Math.round(d * 100) + `%`}</span>`;
+        s3.append(r); });
+      box.append(s3);
+    }
+    box.append(btn(`Listo · ${propia.length}${previas.length ? ` + ${cuantoRep()}` : ``} preguntas`, `btn acc chklisto`, () => { closeSheet(); aplicarAjustes(); draw(); }));
+  }
+  // Al cambiar ajustes se conserva lo respondido de la ficha nueva; solo se rehace el repaso
+  function aplicarAjustes(){
+    if (st.f === firma()) return;
+    const aj = chkAj(), mezcla = !aj.final && cuantoRep() > 0;
+    if (mezcla || st.mezcla){ st = nuevo(); return; }
+    st.b.forEach(id => delete st.res[id]); st.b = elegirRepaso(); st.f = firma();
+    if (st.fase === `b` || st.fase === `fin`){ st.fase = `pausa`; st.i = 0; }
+    if (st.fase === `pausa` && !st.b.length) st.fase = `fin`;
+  }
+  function pasos(){
+    const conRep = st.mezcla || st.b.length;
+    const P = st.mezcla ? [[`a`, `Preguntas`], [`fin`, `Resultado`]] : conRep ? [[`a`, `Ficha nueva`], [`b`, `Repaso`], [`fin`, `Resultado`]] : [[`a`, `Ficha nueva`], [`fin`, `Resultado`]];
+    const orden = P.map(x => x[0]), cur = st.fase === `pausa` ? `b` : st.fase, ci = orden.indexOf(cur);
+    const w = el(`div`, `chkpasos`);
+    P.forEach(([k, t], j) => { if (j) w.append(el(`span`, `ln` + (j <= ci ? ` on` : ``)));
+      w.append(el(`span`, `s` + (j < ci ? ` done` : j === ci ? ` cur` : ``), `<b>${j < ci ? `✓` : j + 1}</b>${t}`)); });
+    return w;
+  }
   function draw(){
+    aplicarAjustes();
     sec.innerHTML = ``;
-    const total = st.orden.length, bien = Object.values(st.res).filter(Boolean).length, resp = Object.keys(st.res).length;
     const head = el(`div`, `chkhead`);
-    head.append(el(`h4`, ``, `Comprueba lo que leíste`), el(`span`, `chkcnt`, st.i < total ? `Pregunta <b>${st.i + 1}</b> de ${total}` : `${total} de ${total}`));
-    sec.append(head);
-    if (repasoN){
-      sec.append(el(`p`, `chkmodot`, `Esta ficha: <b>${propiasN}</b> (salen todas) · Repaso de fichas anteriores, máximo:`));
-      const seg = el(`div`, `chkmodo`);
-      const actual = maxRep();
-      OPC.forEach(o => { const n = o === `todas` ? repasoN : o;
-        const b = btn(o === 0 ? `Ninguna` : o === `todas` ? `Todas (${repasoN})` : `${o}`, actual === n ? `on` : ``, () => { S.x.chkMax = o; save(); st = CHK[key + modo()] || nuevo(); draw(); });
-        b.setAttribute(`aria-pressed`, actual === n); seg.append(b); });
-      sec.append(seg);
+    const g = btn(``, `gear`, ajustes); g.innerHTML = icon(`gear`) + ` Ajustes`; g.setAttribute(`aria-label`, `Ajustes del repaso`);
+    head.append(el(`h4`, ``, `Comprueba lo que leíste`), g); sec.append(head, pasos());
+    if (st.fase === `pausa`){
+      const c = cuenta(st.a);
+      sec.append(el(`div`, `chkbig`, `<b>${c.bien}</b><span> / ${st.a.length}</span><div>correctas en esta ficha</div>`));
+      sec.append(el(`p`, `chkfin`, `Sigue el repaso: <b>${st.b.length} pregunta${st.b.length === 1 ? `` : `s`}</b> de ${new Set(st.b.map(id => porId[id].de)).size} ficha${new Set(st.b.map(id => porId[id].de)).size === 1 ? `` : `s`} anterior${new Set(st.b.map(id => porId[id].de)).size === 1 ? `` : `es`}.`));
+      const col = el(`div`, `chkcol`);
+      col.append(btn(`Empezar repaso`, `btn acc`, () => { st.fase = `b`; st.i = 0; draw(); subir(); }));
+      if (c.mal.length) col.append(btn(`Repetir las ${c.mal.length} falladas`, `btn ghost`, () => { c.mal.forEach(id => delete st.res[id]); st.a = shuf(c.mal); st.fase = `a`; st.i = 0; draw(); subir(); }));
+      col.append(btn(`Terminar aquí`, `btn link`, () => { st.fase = `fin`; draw(); subir(); }));
+      sec.append(col); return;
     }
-    sec.append(el(`div`, `chkbar`, `<i style="width:${Math.round(Math.min(st.i, total) / total * 100)}%"></i>`));
-    if (st.i >= total){
-      const mal = st.orden.filter(id => st.res[id] === false).length;
-      sec.append(el(`p`, `chkfin`, resp ? `Terminaste: <b>${bien} de ${resp}</b> correctas${resp < total ? ` (${total - resp} sin responder)` : ``}.` : `Pasaste todas las preguntas sin responder.`));
-      const row = el(`div`, `btnrow`);
-      row.append(btn(`Repetir preguntas`, `btn acc`, () => reiniciar(false)));
-      if (mal) row.append(btn(`Repetir solo las falladas (${mal})`, `btn ghost`, () => reiniciar(true)));
-      sec.append(row); return;
+    if (st.fase === `fin`){
+      const ca = cuenta(st.a), cb = cuenta(st.b);
+      sec.append(el(`div`, `chkbig`, `<b>${ca.bien + cb.bien}</b><span> / ${ca.resp + cb.resp}</span><div>correctas${ca.resp + cb.resp < st.a.length + st.b.length ? ` (${st.a.length + st.b.length - ca.resp - cb.resp} sin responder)` : ``}</div>`));
+      if (st.b.length) sec.append(el(`p`, `chkfin`, `Ficha nueva: <b>${ca.bien} de ${ca.resp}</b> · Repaso: <b>${cb.bien} de ${cb.resp}</b>`));
+      const mal = ca.mal.concat(cb.mal);
+      const col = el(`div`, `chkcol`);
+      col.append(btn(`Repetir preguntas`, `btn acc`, () => { st = nuevo(); draw(); subir(); }));
+      if (mal.length) col.append(btn(`Repetir solo las falladas (${mal.length})`, `btn ghost`, () => { mal.forEach(id => delete st.res[id]); st.a = shuf(ca.mal); st.b = shuf(cb.mal); st.fase = st.a.length ? `a` : `b`; st.i = 0; draw(); subir(); }));
+      sec.append(col); return;
     }
-    const q = porId[st.orden[st.i]];
+    const lista = st.fase === `a` ? st.a : st.b;
+    if (!lista.length){ st.fase = st.fase === `a` && st.b.length ? `pausa` : `fin`; return draw(); }
+    const c = cuenta(lista);
+    const cnt = el(`div`, `row chkcnt`); cnt.append(el(`span`, ``, `Pregunta <b>${st.i + 1}</b> de ${lista.length}`), el(`span`, ``, `${c.bien} correcta${c.bien === 1 ? `` : `s`}`)); sec.append(cnt);
+    sec.append(el(`div`, `chkbar`, `<i style="width:${Math.round(st.i / lista.length * 100)}%"></i>`));
+    const q = porId[lista[st.i]];
+    const ultima = st.i === lista.length - 1;
+    const sigTxt = () => ultima ? (st.fase === `a` && st.b.length ? `Continuar` : `Ver resultado`) : `Siguiente pregunta`;
     sec.append(el(`p`, `chkde` + (q.de === it.title ? ` nueva` : ``), q.de === it.title ? `De esta ficha` : `Repaso · ${q.de}`));
-    const alResponder = ok => { st.res[q.id] = ok; S.st[`R_` + key] = (S.st[`R_` + key] || 0) + 1; save(); sig.textContent = st.i === total - 1 ? `Ver resultado` : `Siguiente pregunta`; sig.classList.add(`acc`); };
+    const alResponder = ok => { st.res[q.id] = ok; S.st[`R_` + key] = (S.st[`R_` + key] || 0) + 1; save(); sig.textContent = sigTxt(); sig.classList.add(`acc`); sig.classList.remove(`ghost`); };
     sec.append(q.ej ? ejCheck(q, alResponder) : q.o ? mcqCard(q, alResponder) : abiertaCheck(q, alResponder));
     if (q.id[0] === `R`) sec.append(el(`p`, `chknota`, `<b>Nota:</b> esta pregunta sale del formulario de resumen del tema, por eso la fuente dice ${q.src.replace(/^Tema \d+,\s*/, ``)}. La respuesta correcta es de ${q.de === it.title ? `esta ficha` : `la ficha «${q.de}»`}; las otras opciones son filas del mismo formulario y pueden ser de fichas que aún no has leído.`));
     const nav = el(`div`, `chknav`);
-    const rep = btn(``, `btn ghost`, () => reiniciar(false)); rep.innerHTML = icon(`redo`) + ` Repetir preguntas`;
-    const sig = btn(st.i === total - 1 ? `Ver resultado` : (q.id in st.res ? `Siguiente pregunta` : `Saltar pregunta`), `btn` + (q.id in st.res ? ` acc` : ` ghost`), () => { st.i++; draw(); });
-    nav.append(rep, el(`span`, `muted`, `${bien} correcta${bien === 1 ? `` : `s`}`), sig);
-    sec.append(nav);
+    const rep = btn(``, `btn ghost`, () => { st = nuevo(); draw(); subir(); }); rep.innerHTML = icon(`redo`) + ` Repetir`;
+    const sig = btn(q.id in st.res ? sigTxt() : (ultima ? sigTxt() : `Saltar pregunta`), `btn` + (q.id in st.res ? ` acc` : ` ghost`), () => {
+      if (!ultima){ st.i++; return draw(); }
+      st.i = 0; st.fase = st.fase === `a` && st.b.length ? `pausa` : `fin`; draw(); subir(); });
+    nav.append(rep, sig); sec.append(nav);
   }
   draw();
   return sec;

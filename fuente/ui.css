@@ -334,3 +334,34 @@ body{background:var(--bg)}
 .chkmodo button{min-width:44px}
 .chknota{margin:8px 0 0;padding:8px 12px;border-left:3px solid var(--line2);background:var(--sunk);border-radius:6px;font-size:12.5px;line-height:1.5;color:var(--muted)}
 .chknota b{color:var(--ink)}
+.check .chkhead{align-items:center}
+.check .gear{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;color:var(--ink);border:1px solid var(--line2);background:transparent;border-radius:999px;padding:5px 12px;min-height:34px;cursor:pointer}
+.check .gear svg{width:16px;height:16px}
+.chkpasos{display:flex;align-items:center;gap:8px;margin:10px 0 8px;font-size:12.5px;color:var(--muted)}
+.chkpasos .s{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.chkpasos .s b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line2);font-size:11px}
+.chkpasos .s.done{color:var(--ink)} .chkpasos .s.done b{background:var(--acc);border-color:var(--acc);color:var(--onAcc)}
+.chkpasos .s.cur{color:var(--acc);font-weight:700} .chkpasos .s.cur b{border-color:var(--acc)}
+.chkpasos .ln{flex:1;height:1.5px;background:var(--line);min-width:12px} .chkpasos .ln.on{background:var(--acc)}
+.check .chkcnt{display:flex;justify-content:space-between;margin-bottom:4px}
+.chkbig{text-align:center;margin:16px 0 4px}
+.chkbig b{font-size:40px;line-height:1} .chkbig span{font-size:22px;color:var(--muted);font-weight:700} .chkbig div{font-size:14px;color:var(--muted);margin-top:4px}
+.check .chkfin{text-align:center}
+.chkcol{display:grid;gap:8px;margin-top:12px}
+.chkcol .btn{justify-content:center;width:100%}
+.btn.link{border-color:transparent;background:transparent;color:var(--muted)}
+.chkajnota{font-size:13px;margin:0 0 6px}
+.chkaj{padding:12px 0;border-top:1px solid var(--line)}
+.chkaj.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.chkaj .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.chkaj .xs{font-size:12px}
+.chkaj .chkmodo{margin-top:8px}
+.sw{position:relative;width:46px;height:28px;border-radius:14px;border:0;background:var(--line2);flex:none;cursor:pointer;padding:0}
+.sw::after{content:"";position:absolute;left:4px;top:4px;width:20px;height:20px;border-radius:50%;background:var(--surface);transition:left .15s}
+.sw.on{background:var(--acc)} .sw.on::after{left:22px;background:var(--onAcc)}
+.chkfl{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;font-size:14px;color:var(--ink);background:transparent;border:0;padding:7px 0;min-height:40px;cursor:pointer}
+.chkfl .ck{width:20px;height:20px;border-radius:5px;border:2px solid var(--line2);flex:none;display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--onAcc)}
+.chkfl[aria-pressed="true"] .ck{background:var(--acc);border-color:var(--acc)}
+.chkfl[aria-pressed="false"] .nm{color:var(--muted)}
+.chkfl .pc{margin-left:auto;font-weight:700;font-size:13px}
+.chklisto{width:100%;justify-content:center;margin-top:10px}
