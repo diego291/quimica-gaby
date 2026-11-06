@@ -142,7 +142,8 @@ function renderPanel(){
   if (cur === `indice`){ const c = p.querySelector(`[aria-current="true"]`); if (c) p.scrollTop = Math.max(0, c.offsetTop - 180); }
 }
 function openTopics(){
-  if (bp() === `wide`){ S.x.ptab[panelCtx()] = `temas`; save(); renderPanel(); $(`#panel`).scrollTop = 0; const f = $(`#panel .trow`); if (f) f.focus(); return; }
+  const pv = $(`#panel`), visible = bp() === `wide` && !S.x.panelOff && !S.x.lect && pv && pv.offsetWidth > 120 && !$(`#app`).classList.contains(`nopanel`);
+  if (visible){ S.x.ptab[panelCtx()] = `temas`; save(); renderPanel(); $(`#panel`).scrollTop = 0; const f = $(`#panel .trow`); if (f) f.focus(); return; }
   openSheet(`Elegir temas`, b => { topicsInto(b); const d = btn(`Listo`, `btn acc wide`, closeSheet); d.style.marginTop = `8px`; b.append(d); }, true);
 }
 
