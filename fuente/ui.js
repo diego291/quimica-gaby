@@ -718,9 +718,10 @@ function checkBox(it){
 /* ---------- Leer con el dibujo a la vista: al lado, fijo arriba o en ventana flotante que se mueve ---------- */
 function leerConDibujo(it, fig, rehacer){
   const z = +S.x.zoom || 1, libre = (innerWidth - 92 - (S.x.panelOff ? 58 : 330)) / z;
-  const phone = bp() === `phone` || libre < 820, mode = S.x.figMode || `lado`, min = !!S.x.figMin && mode !== `lado`;
+  const libro = !!S.x.lect && bp() !== `phone` && innerWidth / z >= 820;   // pantalla completa en PC: libro abierto
+  const phone = !libro && (bp() === `phone` || libre < 820), mode = libro ? `lado` : (S.x.figMode || `lado`), min = !!S.x.figMin && mode !== `lado`;
   document.querySelectorAll(`body > .rfig.flt`).forEach(x => x.remove());
-  const w = el(`div`, `rlc m-${mode}` + (phone ? ` ph` : ``));
+  const w = el(`div`, `rlc m-${mode}` + (phone ? ` ph` : ``) + (libro ? ` libro` : ``));
   const txt = el(`div`, `reptext rleer`, it.body);
   const box = el(`div`, `rfig` + (min ? ` min` : ``)); box.setAttribute(`role`, `region`); box.setAttribute(`aria-label`, `Dibujo de la ficha`);
   const bar = el(`div`, `rfigbar`);
@@ -728,9 +729,11 @@ function leerConDibujo(it, fig, rehacer){
   const ctl = el(`div`, `rfigc`);
   const b = (txt_, t, f, on) => { const x = btn(txt_, on ? `on` : ``, f); x.title = t; x.setAttribute(`aria-label`, t); if (on != null) x.setAttribute(`aria-pressed`, !!on); ctl.append(x); return x; };
   const set = k => { S.x.figMode = k; S.x.figMin = false; save(); rehacer(); };
-  b(`◧`, phone ? `Junto al texto` : `Al lado del texto`, () => set(`lado`), mode === `lado`);
-  b(`📌`, `Fijar arriba mientras lees`, () => set(`fijo`), mode === `fijo`);
-  b(`⧉`, `Ventana flotante que puedes mover`, () => set(`flota`), mode === `flota`);
+  if (!libro){
+    b(`◧`, phone ? `Junto al texto` : `Al lado del texto`, () => set(`lado`), mode === `lado`);
+    b(`📌`, `Fijar arriba mientras lees`, () => set(`fijo`), mode === `fijo`);
+    b(`⧉`, `Ventana flotante que puedes mover`, () => set(`flota`), mode === `flota`);
+  }
   if (mode === `flota`){
     const sz = d => { const p = S.x.figPos || {}; p.w = Math.max(200, Math.min(innerWidth - 16, (p.w || 340) + d)); S.x.figPos = p; save(); box.style.width = `${p.w}px`; clamp(); };
     b(`−`, `Más pequeño`, () => sz(-80)); b(`+`, `Más grande`, () => sz(80));
@@ -738,11 +741,12 @@ function leerConDibujo(it, fig, rehacer){
   if (mode !== `lado`) b(min ? `▾` : `▴`, min ? `Mostrar el dibujo` : `Minimizar el dibujo`, () => { S.x.figMin = !min; save(); rehacer(); });
   { const lz = btn(`🔍`, ``, () => lupa(fig)); lz.title = `Ver el dibujo en grande`; lz.setAttribute(`aria-label`, lz.title); ctl.prepend(lz); }
   bar.append(lab, ctl); box.append(bar, fig);
+  if (libro){ txt.prepend(el(`h2`, `ltit`, it.title)); }
   w.append(box, txt);
   // la ventana flotante vive fuera del contenido para que el tamaño de letra no la desplace
   if (mode === `flota`){ box.classList.add(`flt`); document.body.append(box); }
   // fijo y "al lado" quedan debajo de la barra de secciones, que también es fija
-  requestAnimationFrame(() => { const sw = document.querySelector(`.subw`); const h = sw && getComputedStyle(sw).position === `sticky` ? Math.round(sw.getBoundingClientRect().height) : 0; w.style.setProperty(`--stk`, `${h}px`); });
+  requestAnimationFrame(() => { const sw = document.querySelector(S.x.lect ? `.lbar` : `.subw`); const h = sw && getComputedStyle(sw).position === `sticky` ? Math.round(sw.getBoundingClientRect().height) : 0; w.style.setProperty(`--stk`, `${h}px`); });
   // ventana flotante: se arrastra desde la barra y recuerda dónde la dejaste
   function clamp(){ const r = box.getBoundingClientRect(), p = S.x.figPos || {}; let x = Math.max(8, Math.min(innerWidth - r.width - 8, p.x)), y = Math.max(8, Math.min(innerHeight - Math.min(r.height, 120) - 8, p.y)); p.x = x; p.y = y; box.style.left = `${x}px`; box.style.top = `${y}px`; }
   if (mode === `flota`){

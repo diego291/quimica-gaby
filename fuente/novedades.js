@@ -2,6 +2,12 @@
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06d`, d:`2026-11-06`, t:`Repaso en pantalla completa`, l:[
+    `En Repaso toca “Pantalla completa”: desaparece todo lo demás y queda solo la ficha.`,
+    `En computadora se ve como un libro abierto: texto a la izquierda y dibujo a la derecha. Cambias de ficha con las flechas grandes de los lados (o con ← → del teclado).`,
+    `“☰ Fichas” abre la lista de todas las fichas del tema para saltar a cualquiera (✓ = ya leída).`,
+    `Arriba tienes A− / A+ para la letra, el modo día/noche y ✕ Salir (o Esc).`,
+    `En el teléfono: el texto y el dibujo quedan uno sobre otro, con la barra para pasar de ficha abajo.`] },
   { id:`2026-11-06c`, d:`2026-11-06`, t:`🔍 Ver más grande`, l:[
     `Arriba tienes el botón 🔍. Con A+ / A− (o eligiendo 115 %, 130 %, 150 %, 175 % o 200 %) se agranda la letra, los botones y los dibujos de toda la página.`,
     `Se guarda en cada dispositivo: puedes tener la letra grande en el teléfono y normal en la computadora.`,

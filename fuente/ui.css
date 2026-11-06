@@ -507,3 +507,52 @@ figure.fig{position:relative}
 .lupai svg{width:100%;height:100%;max-width:100%;max-height:100%}
 .lupac{max-height:30vh;overflow:auto;padding:10px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);font-size:16px;line-height:1.5}
 .lupac .figsrc{display:block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+/* ======== Pantalla completa del Repaso ======== */
+html.lect .rail, html.lect #head, html.lect #subw, html.lect #panel, html.lect .bnav, html.lect .bodyw > footer, html.lect .hnov{display:none!important}
+html.lect .app{grid-template-columns:minmax(0,1fr)!important}
+html.lect .bodyw{max-width:1600px;margin:0 auto;padding:0 90px 30px}
+html.lect body{padding-bottom:0}
+.lbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:8px;padding:10px 0;background:var(--bg)}
+.lb{min-width:44px;height:44px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 15px/1 inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}
+.lb svg{width:18px;height:18px}.lb:hover{border-color:var(--acc)}
+.ltt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;margin:0 6px}
+.ltt b{font-family:"Zilla Slab",Georgia,serif;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ltt small{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lprog{height:4px;border-radius:4px;background:var(--line);overflow:hidden;margin:0 0 14px}.lprog i{display:block;height:100%;background:var(--acc);transition:width .3s}
+html.lect .rtabs{margin-top:0}
+/* libro abierto */
+.rlc.libro{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:0!important;align-items:stretch!important;--stk:64px}
+.rlc.libro .rleer{order:1;background:var(--surface);border:1px solid var(--line);border-right:0;border-radius:20px 4px 4px 20px;padding:30px 40px 40px;font-size:1.08em;box-shadow:inset -16px 0 22px -20px rgba(0,0,0,.55)}
+.rlc.libro .rfig{order:2;position:static!important;border-radius:4px 20px 20px 4px;border-left:1px solid var(--line2);padding:16px 26px 26px;box-shadow:inset 16px 0 22px -20px rgba(0,0,0,.55)}
+.rlc.libro .rfig > *{position:sticky;top:calc(var(--stk) + 14px)}
+.rlc.libro .rfig .rfigbar{top:var(--stk);z-index:2;background:var(--surface);padding-top:8px}
+.rlc.libro .rfig .fig{top:calc(var(--stk) + 58px)}
+.rlc.libro .rfig .fig svg{max-height:calc(100vh - 260px)}
+.ltit{font-family:"Zilla Slab",Georgia,serif;font-size:1.65em;line-height:1.2;margin:0 0 14px}
+html.lect .rleer{max-width:none}
+html.lect:not(.lph) .reptext.rleer:only-child{max-width:820px;margin:0 auto}
+.lside{position:fixed;top:50%;transform:translateY(-50%);z-index:25;width:52px;height:140px;border-radius:16px;border:1px solid var(--line2);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.lside svg{width:26px;height:26px}.lside.l{left:18px}.lside.r{right:18px}.lside:disabled{opacity:.3;cursor:default}
+.lside:not(:disabled):hover{border-color:var(--acc);color:var(--acc)}
+@media (min-width:700px){ html.lect .rdock [data-nav]{display:none} html.lect .rdock{max-width:420px} }
+/* lista de fichas desplegable */
+.lfichas{position:fixed;z-index:60;width:min(380px,calc(100vw - 16px));max-height:min(70vh,560px);overflow:auto;background:var(--surface);border:1px solid var(--line2);border-radius:16px;padding:8px;box-shadow:0 18px 50px rgba(0,0,0,.45);zoom:min(var(--z,1),1.3)}
+.lfh{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 8px 4px}
+.lfi{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;padding:9px 10px;border-radius:10px;border:0;background:none;color:var(--ink);font:inherit;font-size:14.5px;line-height:1.35;cursor:pointer}
+.lfi:hover{background:var(--sunk)}
+.lfi .n{flex:none;width:24px;height:24px;border-radius:7px;border:1px solid var(--line2);display:grid;place-items:center;font-size:12px;font-weight:700}
+.lfi.ok .n{background:color-mix(in srgb,var(--acc) 22%,transparent);border-color:transparent;color:var(--acc)}
+.lfi.on{background:color-mix(in srgb,var(--acc) 16%,transparent);font-weight:700}.lfi.on .n{background:var(--acc);color:var(--onAcc);border-color:var(--acc)}
+@media (max-width:699px){
+  html.lect .bodyw{padding:0 12px 20px}
+  .lbar{padding:8px 0;gap:6px}.lb{min-width:40px;height:40px;padding:0 9px}
+  .ltt b{font-size:16px}.ltt small{font-size:12px}
+  html.lect .rdock{bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+}
+.lbar > .btn{height:44px;border-radius:12px}
+html.lect .pdfbar, html.lect .rmas{display:none}
+@media (max-width:699px){
+  .lrl, .lbar > .btn{display:none}
+  html.lect .rlc.m-lado.ph{display:flex;flex-direction:column}
+  html.lect .rlc.m-lado.ph .rfig{order:2;margin:16px 0 0}
+}

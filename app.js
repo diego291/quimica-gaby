@@ -2095,9 +2095,10 @@ function checkBox(it){
 /* ---------- Leer con el dibujo a la vista: al lado, fijo arriba o en ventana flotante que se mueve ---------- */
 function leerConDibujo(it, fig, rehacer){
   const z = +S.x.zoom || 1, libre = (innerWidth - 92 - (S.x.panelOff ? 58 : 330)) / z;
-  const phone = bp() === `phone` || libre < 820, mode = S.x.figMode || `lado`, min = !!S.x.figMin && mode !== `lado`;
+  const libro = !!S.x.lect && bp() !== `phone` && innerWidth / z >= 820;   // pantalla completa en PC: libro abierto
+  const phone = !libro && (bp() === `phone` || libre < 820), mode = libro ? `lado` : (S.x.figMode || `lado`), min = !!S.x.figMin && mode !== `lado`;
   document.querySelectorAll(`body > .rfig.flt`).forEach(x => x.remove());
-  const w = el(`div`, `rlc m-${mode}` + (phone ? ` ph` : ``));
+  const w = el(`div`, `rlc m-${mode}` + (phone ? ` ph` : ``) + (libro ? ` libro` : ``));
   const txt = el(`div`, `reptext rleer`, it.body);
   const box = el(`div`, `rfig` + (min ? ` min` : ``)); box.setAttribute(`role`, `region`); box.setAttribute(`aria-label`, `Dibujo de la ficha`);
   const bar = el(`div`, `rfigbar`);
@@ -2105,9 +2106,11 @@ function leerConDibujo(it, fig, rehacer){
   const ctl = el(`div`, `rfigc`);
   const b = (txt_, t, f, on) => { const x = btn(txt_, on ? `on` : ``, f); x.title = t; x.setAttribute(`aria-label`, t); if (on != null) x.setAttribute(`aria-pressed`, !!on); ctl.append(x); return x; };
   const set = k => { S.x.figMode = k; S.x.figMin = false; save(); rehacer(); };
-  b(`◧`, phone ? `Junto al texto` : `Al lado del texto`, () => set(`lado`), mode === `lado`);
-  b(`📌`, `Fijar arriba mientras lees`, () => set(`fijo`), mode === `fijo`);
-  b(`⧉`, `Ventana flotante que puedes mover`, () => set(`flota`), mode === `flota`);
+  if (!libro){
+    b(`◧`, phone ? `Junto al texto` : `Al lado del texto`, () => set(`lado`), mode === `lado`);
+    b(`📌`, `Fijar arriba mientras lees`, () => set(`fijo`), mode === `fijo`);
+    b(`⧉`, `Ventana flotante que puedes mover`, () => set(`flota`), mode === `flota`);
+  }
   if (mode === `flota`){
     const sz = d => { const p = S.x.figPos || {}; p.w = Math.max(200, Math.min(innerWidth - 16, (p.w || 340) + d)); S.x.figPos = p; save(); box.style.width = `${p.w}px`; clamp(); };
     b(`−`, `Más pequeño`, () => sz(-80)); b(`+`, `Más grande`, () => sz(80));
@@ -2115,11 +2118,12 @@ function leerConDibujo(it, fig, rehacer){
   if (mode !== `lado`) b(min ? `▾` : `▴`, min ? `Mostrar el dibujo` : `Minimizar el dibujo`, () => { S.x.figMin = !min; save(); rehacer(); });
   { const lz = btn(`🔍`, ``, () => lupa(fig)); lz.title = `Ver el dibujo en grande`; lz.setAttribute(`aria-label`, lz.title); ctl.prepend(lz); }
   bar.append(lab, ctl); box.append(bar, fig);
+  if (libro){ txt.prepend(el(`h2`, `ltit`, it.title)); }
   w.append(box, txt);
   // la ventana flotante vive fuera del contenido para que el tamaño de letra no la desplace
   if (mode === `flota`){ box.classList.add(`flt`); document.body.append(box); }
   // fijo y "al lado" quedan debajo de la barra de secciones, que también es fija
-  requestAnimationFrame(() => { const sw = document.querySelector(`.subw`); const h = sw && getComputedStyle(sw).position === `sticky` ? Math.round(sw.getBoundingClientRect().height) : 0; w.style.setProperty(`--stk`, `${h}px`); });
+  requestAnimationFrame(() => { const sw = document.querySelector(S.x.lect ? `.lbar` : `.subw`); const h = sw && getComputedStyle(sw).position === `sticky` ? Math.round(sw.getBoundingClientRect().height) : 0; w.style.setProperty(`--stk`, `${h}px`); });
   // ventana flotante: se arrastra desde la barra y recuerda dónde la dejaste
   function clamp(){ const r = box.getBoundingClientRect(), p = S.x.figPos || {}; let x = Math.max(8, Math.min(innerWidth - r.width - 8, p.x)), y = Math.max(8, Math.min(innerHeight - Math.min(r.height, 120) - 8, p.y)); p.x = x; p.y = y; box.style.left = `${x}px`; box.style.top = `${y}px`; }
   if (mode === `flota`){
@@ -4277,6 +4281,12 @@ addEventListener(`pagehide`, () => { cnFlush(); });
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06d`, d:`2026-11-06`, t:`Repaso en pantalla completa`, l:[
+    `En Repaso toca “Pantalla completa”: desaparece todo lo demás y queda solo la ficha.`,
+    `En computadora se ve como un libro abierto: texto a la izquierda y dibujo a la derecha. Cambias de ficha con las flechas grandes de los lados (o con ← → del teclado).`,
+    `“☰ Fichas” abre la lista de todas las fichas del tema para saltar a cualquiera (✓ = ya leída).`,
+    `Arriba tienes A− / A+ para la letra, el modo día/noche y ✕ Salir (o Esc).`,
+    `En el teléfono: el texto y el dibujo quedan uno sobre otro, con la barra para pasar de ficha abajo.`] },
   { id:`2026-11-06c`, d:`2026-11-06`, t:`🔍 Ver más grande`, l:[
     `Arriba tienes el botón 🔍. Con A+ / A− (o eligiendo 115 %, 130 %, 150 %, 175 % o 200 %) se agranda la letra, los botones y los dibujos de toda la página.`,
     `Se guarda en cada dispositivo: puedes tener la letra grande en el teléfono y normal en la computadora.`,
@@ -4403,6 +4413,86 @@ applyZoom();
 /* la ventana flotante del dibujo se quita al salir del Repaso */
 const _renderViewL = renderView;
 renderView = function(){ _renderViewL.apply(this, arguments); if (!document.querySelector(`#view .rlc.m-flota`)) document.querySelectorAll(`body > .rfig.flt`).forEach(x => x.remove()); };
+
+/* ======================= PANTALLA COMPLETA DEL REPASO =======================
+   Solo la ficha: sin menú, sin panel ni pestañas de sección.
+   PC: libro abierto (texto a la izquierda, dibujo a la derecha) con flechas a los lados y lista de fichas desplegable.
+   Teléfono: lectura enfocada (texto y dibujo uno sobre otro) con barra fija abajo.                                   */
+let LECT_FS = false;
+function lectOn(){
+  S.x.lect = true; save();
+  const d = document.documentElement;
+  if (d.requestFullscreen && !document.fullscreenElement) d.requestFullscreen({ navigationUI:`hide` }).then(() => { LECT_FS = true; }).catch(() => {});
+  if (S.mode !== `repaso`) go(`repaso`); else { renderAll(); topScroll(); }
+}
+function lectOff(){
+  S.x.lect = false; save(); lectCerrarLista();
+  if (document.fullscreenElement && LECT_FS) document.exitFullscreen().catch(() => {}); LECT_FS = false;
+  renderAll(); topScroll();
+}
+document.addEventListener(`fullscreenchange`, () => { if (!document.fullscreenElement && LECT_FS){ LECT_FS = false; if (S.x.lect) lectOff(); } });
+document.addEventListener(`keydown`, e => {
+  if (!S.x.lect || S.mode !== `repaso` || document.querySelector(`.lupa`) || SH) return;
+  const t = e.target; if (t && (t.isContentEditable || /INPUT|TEXTAREA|SELECT/.test(t.tagName))) return;
+  if (e.key === `Escape` && !document.fullscreenElement) lectOff();   // ← → ya los maneja init.js
+});
+function lectCerrarLista(){ document.querySelectorAll(`.lfichas`).forEach(x => x.remove()); }
+function lectLista(anchor){
+  if (document.querySelector(`.lfichas`)){ lectCerrarLista(); return; }
+  const all = filt(ALL.REPASO), key = selKey(), cur = all[Math.min(S.x.rpos[key] || 0, all.length - 1)];
+  const box = el(`div`, `lfichas`); box.setAttribute(`role`, `dialog`); box.setAttribute(`aria-label`, `Fichas`);
+  const temas = [...new Set(all.map(x => x.t))];
+  temas.forEach(t => {
+    box.append(el(`div`, `lfh`, `${TOPICS[t].n} · ${TOPICS[t].name}`));
+    all.filter(x => x.t === t).forEach((x, j) => {
+      const b = btn(`<span class="n">${S.x.seen[hash(x.title)] ? `✓` : j + 1}</span><span>${x.title}</span>`, `lfi` + (x === cur ? ` on` : ``) + (S.x.seen[hash(x.title)] ? ` ok` : ``), () => { lectCerrarLista(); S.x.rpos[key] = all.indexOf(x); save(); renderView(); topScroll(); });
+      if (x === cur) b.setAttribute(`aria-current`, `true`); box.append(b);
+    });
+  });
+  document.body.append(box);
+  const r = anchor.getBoundingClientRect(), z = +S.x.zoom || 1;
+  box.style.top = `${Math.round(r.bottom + 8)}px`; const bw = box.getBoundingClientRect().width; box.style.left = `${Math.round(Math.max(8, Math.min(r.right - bw, innerWidth - bw - 8)))}px`;
+  const c = box.querySelector(`.on`); if (c) box.scrollTop = c.offsetTop - box.clientHeight / 2;
+  setTimeout(() => { const f = e => { if (!box.contains(e.target) && !anchor.contains(e.target)){ lectCerrarLista(); document.removeEventListener(`pointerdown`, f, true); } }; document.addEventListener(`pointerdown`, f, true); }, 0);
+}
+const _vRepasoL = vRepaso;
+vRepaso = function(v){
+  _vRepasoL(v);
+  const all = filt(ALL.REPASO);
+  if (!S.x.lect){
+    const tools = v.querySelector(`.rtools`);
+    if (tools && all.length && !S.x.rall){ const b = btn(icon(`full`) + ` Pantalla completa`, `btn ghost`, lectOn); b.title = `Leer en pantalla completa, solo la ficha`; tools.append(b); }
+    return;
+  }
+  if (!all.length || S.x.rall) return;
+  const key = selKey(), i = Math.min(S.x.rpos[key] || 0, all.length - 1), it = all[i];
+  const tema = all.filter(x => x.t === it.t), ti = tema.indexOf(it), phone = bp() === `phone`;
+  v.querySelectorAll(`.rtop, .rsq, .rtit, .rsub, .intro`).forEach(x => x.remove());
+  // barra de arriba
+  const bar = el(`div`, `lbar`);
+  const x = btn(`✕<span class="lrl"> Salir</span>`, `lb`, lectOff); x.title = `Salir de pantalla completa`; x.setAttribute(`aria-label`, x.title);
+  const tt = el(`div`, `ltt`, `<b>${it.title}</b><small>${TOPICS[it.t].n} · Ficha ${ti + 1} de ${tema.length} · ${it.src}</small>`);
+  bar.append(x, tt);
+  const fl = btn(`☰<span class="lrl"> Fichas</span>`, `lb`, e => lectLista(fl)); fl.title = `Ver todas las fichas`; fl.setAttribute(`aria-label`, fl.title); fl.setAttribute(`aria-haspopup`, `dialog`);
+  const zm = (+S.x.zoom || 1);
+  const am = btn(`A−`, `lb`, () => { const k = ZOOMS.findIndex(v => v >= zm - .001); setZoom(ZOOMS[Math.max(0, k - 1)] || .9); }); am.setAttribute(`aria-label`, `Letra más pequeña`);
+  const ap = btn(`A+`, `lb`, () => { const k = ZOOMS.findIndex(v => v > zm + .001); setZoom(k < 0 ? 2 : ZOOMS[k]); }); ap.setAttribute(`aria-label`, `Letra más grande`);
+  const th = btn(icon(isDark() ? `sun` : `moon`), `lb`, () => { toggleTheme(); renderView(); }); th.setAttribute(`aria-label`, `Cambiar a modo ${isDark() ? `día` : `noche`}`);
+  bar.append(fl, am, ap); if (!phone) bar.append(th);
+  const pr = el(`div`, `lprog`, `<i style="width:${Math.round((ti + 1) / tema.length * 100)}%"></i>`);
+  v.prepend(bar, pr);
+  // flechas grandes a los lados (PC)
+  if (!phone){
+    const mk = (d, lbl) => { const b = btn(icon(d < 0 ? `left` : `right`), `lside ${d < 0 ? `l` : `r`}`, () => { const n = $(`.rdock [data-nav="${d < 0 ? `prev` : `next`}"]`); if (n && !n.disabled) n.click(); }); b.setAttribute(`aria-label`, lbl); b.disabled = d < 0 ? i === 0 : false; return b; };
+    v.append(mk(-1, `Ficha anterior`), mk(1, i === all.length - 1 ? `Ir a Fichas` : `Ficha siguiente`));
+  }
+};
+/* salir del modo al cambiar de sección */
+const _goL = go;
+go = function(mode){ if (S.x.lect && mode !== `repaso`){ S.x.lect = false; lectCerrarLista(); if (document.fullscreenElement && LECT_FS) document.exitFullscreen().catch(() => {}); LECT_FS = false; } return _goL.apply(this, arguments); };
+const _renderAllL = renderAll;
+renderAll = function(){ const on = !!S.x.lect && S.mode === `repaso`; document.documentElement.classList.toggle(`lect`, on); if (!on) lectCerrarLista(); return _renderAllL.apply(this, arguments); };
+document.documentElement.classList.toggle(`lect`, !!S.x.lect && S.mode === `repaso`);
 
 /* ======================= AUDIO-REPASO (lectura en voz alta) ======================= */
 const AU = { on:false, cards:[], ci:0, si:0, seg:0, sents:[], voices:[], sleepEnd:0, token:0 };
@@ -4646,7 +4736,7 @@ function docRef(){ return SY.db.collection(`users`).doc(SY.user.uid); }
    · Lo que es solo de la pantalla (temas elegidos, pestañas abiertas, vista de la agenda): se queda el de cada dispositivo.
    · Todo lo demás: gana el valor del dispositivo que cambió más recientemente.                                      */
 const DEVID = (() => { try { let d = localStorage.getItem(`quimica_dev`); if (!d){ d = Math.random().toString(36).slice(2, 10); localStorage.setItem(`quimica_dev`, d); } return d; } catch(e){ return `x`; } })();
-const LOCAL_X = [`sm`, `ptab`, `agv`, `cn`, `nrq`, `nrt`, `rtab`, `rtabFor`, `qw`, `qd`, `syncHide`, `figMode`, `figPos`, `figMin`, `panelOff`, `zoom`];
+const LOCAL_X = [`sm`, `ptab`, `agv`, `cn`, `nrq`, `nrt`, `rtab`, `rtabFor`, `qw`, `qd`, `syncHide`, `figMode`, `figPos`, `figMin`, `panelOff`, `zoom`, `lect`];
 const tsOf = o => (o && (o.upd || o.updated || o.t || o.created)) || 0;
 function mergeVal(a, b, bn, del){
   if (a === undefined) return b; if (b === undefined) return a;
