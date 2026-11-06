@@ -2,6 +2,10 @@
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06f`, d:`2026-11-06`, t:`Imágenes y dibujos que se mueven libremente`, l:[
+    `Toca una imagen o dibujo del Cuaderno: aparece un marco con 8 puntos. Las esquinas cambian el tamaño sin deformar; los puntos de los lados la estiran.`,
+    `Arrástrala desde el centro y la colocas donde quieras en la página (modo ✥ Libre). Con ☰ En el texto vuelve a acomodarse entre los párrafos.`,
+    `⤒ / ⤓ la pone delante o detrás, ↺ recupera su forma original y 🗑 (o la tecla Suprimir) la quita.`] },
   { id:`2026-11-06e`, d:`2026-11-06`, t:`Marcar texto, apuntes y videos dentro del Repaso`, l:[
     `Selecciona cualquier parte de una ficha: sale un menú para marcarla con color o ⭐ Importante, guardarla como ❓ Duda en tu Cuaderno, pasarla 📝 a tus apuntes, agregarla a 📅 Pendientes para repasar mañana, 💬 preguntar, 🔊 escucharla o 📋 copiarla con la fuente.`,
     `Tus marcados se quedan guardados en la ficha. Tócalos para cambiar el color o quitarlos.`,

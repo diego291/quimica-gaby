@@ -1293,3 +1293,14 @@ a.ytt{font-weight:700;text-decoration:none;background:color-mix(in srgb,var(--ac
 .cnph.row .btn{white-space:nowrap;flex:none}
 .vnotes .cntb .sep, .vnotes .tbb[data-k="table"], .vnotes .tbb[data-k="link"], .vnotes .tbb[data-k="justifyLeft"], .vnotes .tbb[data-k="justifyCenter"], .vnotes .tbb[data-k="cam"], .vnotes .tbb[data-k="draw"], .vnotes .tbb[data-k="strikeThrough"], .vnotes .tbb[data-k="removeFormat"]{display:none}
 .vnotes .cnpath{display:none}
+/* imágenes: modo libre y marco con 8 puntos */
+.cnedit img.free{position:absolute;margin:0;float:none;z-index:2;max-width:none;object-fit:fill}
+.cnfrm{position:absolute;z-index:5;border:2px solid var(--acc);border-radius:4px;cursor:move;touch-action:none;background:transparent;width:auto;height:auto}
+.cnh{position:absolute;width:14px;height:14px;background:var(--surface);border:2px solid var(--acc);border-radius:50%;touch-action:none}
+.cnh.h-nw{left:-8px;top:-8px;cursor:nwse-resize}.cnh.h-n{left:calc(50% - 7px);top:-8px;cursor:ns-resize}.cnh.h-ne{right:-8px;top:-8px;cursor:nesw-resize}
+.cnh.h-e{right:-8px;top:calc(50% - 7px);cursor:ew-resize}.cnh.h-se{right:-8px;bottom:-8px;cursor:nwse-resize}.cnh.h-s{left:calc(50% - 7px);bottom:-8px;cursor:ns-resize}
+.cnh.h-sw{left:-8px;bottom:-8px;cursor:nesw-resize}.cnh.h-w{left:-8px;top:calc(50% - 7px);cursor:ew-resize}
+@media (pointer:coarse){ .cnh{width:22px;height:22px}.cnh.h-nw,.cnh.h-sw,.cnh.h-w{left:-12px}.cnh.h-ne,.cnh.h-se,.cnh.h-e{right:-12px}.cnh.h-nw,.cnh.h-n,.cnh.h-ne{top:-12px}.cnh.h-sw,.cnh.h-s,.cnh.h-se{bottom:-12px}.cnh.h-n,.cnh.h-s{left:calc(50% - 11px)}.cnh.h-e,.cnh.h-w{top:calc(50% - 11px)} }
+.cntbx .tbb.on{background:var(--acc);color:var(--onAcc)}
+.cntbx .sep{width:1px;align-self:stretch;background:var(--line2);margin:3px 2px}
+.cnedit img.sel{outline:0}

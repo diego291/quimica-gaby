@@ -4059,7 +4059,7 @@ function cnPaneEd(single, pid, opt = {}){
   const ed = el(`div`, `cnedit`); ed.contentEditable = `true`; ed.setAttribute(`role`, `textbox`); ed.setAttribute(`aria-multiline`, `true`); ed.setAttribute(`aria-label`, `Contenido de la página`); ed.spellcheck = true;
   ed.innerHTML = p.html || `<p><br></p>`;
   const wrap = el(`div`, `cnedwrap`); wrap.append(tb, tbx, ed); w.append(wrap);
-  cnHydrate(ed);
+  cnHydrate(ed).then(() => cnFreeFit(ed)); ed.querySelectorAll(`img`).forEach(i => i.addEventListener(`load`, () => cnFreeFit(ed), { once:true })); cnFreeFit(ed);
   // guardado automático
   let T = null; const mark = t => { status.textContent = t; };
   const doSave = () => { clearTimeout(T); T = null; p.title = tt.value.trim(); p.html = cnSerialize(ed); p.snip = cnText(p.html).slice(0, 120); p.updated = Date.now(); delete p.fresh; cnSave(true); mark(`✓ Guardado`); };
@@ -4098,7 +4098,8 @@ if (window.visualViewport){ const f = () => { if (CN_ED && CN_ED.kb && CN_ED.ed.
 function cnFlush(){ if (CN_FLUSH) CN_FLUSH(); }
 function cnSerialize(ed){
   const c = ed.cloneNode(true);
-  c.querySelectorAll(`img[data-img]`).forEach(i => { i.removeAttribute(`src`); i.classList.remove(`sel`); });
+  c.querySelectorAll(`img[data-img]`).forEach(i => { i.removeAttribute(`src`); });
+  c.querySelectorAll(`img.sel`).forEach(i => { i.classList.remove(`sel`); if (!i.className) i.removeAttribute(`class`); });
   c.querySelectorAll(`.cnrsz`).forEach(x => x.remove());
   return c.innerHTML;
 }
@@ -4201,18 +4202,61 @@ setInterval(() => imgUpload(), 60e3);
 function cnImgSel(ed, im, tbx, later){
   ed.querySelectorAll(`img.sel`).forEach(x => x !== im && x.classList.remove(`sel`)); ed.querySelectorAll(`.cnrsz`).forEach(x => x.remove());
   im.classList.add(`sel`); tbx._img = im; tbx.hidden = false; tbx.innerHTML = ``;
-  const a = (t, f, lab) => { const b = btn(t, `tbb`, () => { f(); later(); place(); }); b.setAttribute(`aria-label`, lab || t); b.addEventListener(`mousedown`, e => e.preventDefault()); tbx.append(b); };
-  tbx.append(el(`span`, `muted`, `Imagen:`));
-  [25, 50, 75, 100].forEach(n => a(`${n}%`, () => { im.style.width = `${n}%`; }));
-  a(`⯇`, () => { im.className = `sel al-l`; }, `Alinear a la izquierda`); a(`⯀`, () => { im.className = `sel al-c`; }, `Centrar`); a(`⯈`, () => { im.className = `sel al-r`; }, `Alinear a la derecha`);
-  a(`🗑`, () => { im.remove(); tbx.hidden = true; tbx._img = null; ed.querySelectorAll(`.cnrsz`).forEach(x => x.remove()); }, `Quitar imagen`);
-  a(`Listo`, () => { im.classList.remove(`sel`); tbx.hidden = true; tbx._img = null; ed.querySelectorAll(`.cnrsz`).forEach(x => x.remove()); });
-  // tirador para cambiar el tamaño
-  const h = el(`span`, `cnrsz`); h.contentEditable = `false`; h.setAttribute(`aria-hidden`, `true`);
-  const place = () => { if (!im.isConnected || !im.classList.contains(`sel`)){ h.remove(); return; } const r = im.getBoundingClientRect(), e = ed.getBoundingClientRect(); h.style.left = `${r.right - e.left - 9}px`; h.style.top = `${r.bottom - e.top - 9 + ed.scrollTop}px`; };
-  ed.append(h); place();
-  h.onpointerdown = ev => { ev.preventDefault(); h.setPointerCapture(ev.pointerId); const e0 = ed.getBoundingClientRect(), r0 = im.getBoundingClientRect(); const mv = e => { const w = Math.max(10, Math.min(100, (r0.width + e.clientX - ev.clientX) / e0.width * 100)); im.style.width = `${Math.round(w)}%`; place(); }; const up = () => { h.removeEventListener(`pointermove`, mv); h.removeEventListener(`pointerup`, up); later(); }; h.addEventListener(`pointermove`, mv); h.addEventListener(`pointerup`, up); };
+  const done = () => { im.classList.remove(`sel`); tbx.hidden = true; tbx._img = null; ed.querySelectorAll(`.cnrsz`).forEach(x => x.remove()); document.removeEventListener(`pointerdown`, fuera, true); document.removeEventListener(`keydown`, tecla); };
+  const a = (t, f, lab, on) => { const b = btn(t, `tbb` + (on ? ` on` : ``), () => { f(); later(); cnFreeFit(ed); place(); }); b.setAttribute(`aria-label`, lab || t); b.title = lab || t; b.addEventListener(`mousedown`, e => e.preventDefault()); tbx.append(b); return b; };
+  const libre = () => im.classList.contains(`free`);
+  const pinta = () => {
+    tbx.innerHTML = ``; tbx.append(el(`span`, `muted`, `Imagen:`));
+    a(`✥ Libre`, () => { if (!libre()) aLibre(); pinta(); }, `Mover libremente por la página`, libre());
+    a(`☰ En el texto`, () => { if (libre()) aTexto(); pinta(); }, `Dejarla dentro del texto`, !libre());
+    tbx.append(el(`span`, `sep`));
+    [25, 50, 75, 100].forEach(n => a(`${n}%`, () => { const ew = ed.clientWidth; im.style.height = ``; if (libre()) im.style.width = `${Math.round(ew * n / 100)}px`; else im.style.width = `${n}%`; }));
+    if (!libre()){ a(`⯇`, () => { setAl(`al-l`); }, `Alinear a la izquierda`); a(`⯀`, () => { setAl(`al-c`); }, `Centrar`); a(`⯈`, () => { setAl(`al-r`); }, `Alinear a la derecha`); }
+    else { a(`⤒`, () => { im.style.zIndex = `3`; }, `Traer al frente`); a(`⤓`, () => { im.style.zIndex = `1`; }, `Enviar atrás`); }
+    a(`↺`, () => { im.style.height = ``; }, `Volver a la proporción original`);
+    a(`🗑`, () => { im.remove(); done(); }, `Quitar imagen`);
+    a(`Listo`, done);
+  };
+  const setAl = c => { im.classList.remove(`al-l`, `al-c`, `al-r`); im.classList.add(c); };
+  // posición dentro del editor (px)
+  const rel = () => { const r = im.getBoundingClientRect(), e = ed.getBoundingClientRect(); return { x:r.left - e.left + ed.scrollLeft, y:r.top - e.top + ed.scrollTop, w:r.width, h:r.height }; };
+  function aLibre(){ const q = rel(); im.classList.remove(`al-l`, `al-c`, `al-r`); im.classList.add(`free`); im.style.left = `${Math.round(q.x)}px`; im.style.top = `${Math.round(q.y)}px`; im.style.width = `${Math.round(q.w)}px`; if (im.parentNode !== ed){ const par = im.parentNode; ed.append(im); if (par && par !== ed && !par.textContent.trim() && !par.querySelector(`img`)) par.innerHTML = `<br>`; } }
+  function aTexto(){ const q = rel(); im.classList.remove(`free`); im.style.left = im.style.top = im.style.zIndex = ``; im.style.width = `${Math.round(Math.min(100, q.w / ed.clientWidth * 100))}%`; im.style.height = ``; setAl(`al-c`);
+    const blocks = [...ed.children].filter(b => b !== im && !b.classList.contains(`cnrsz`)); const e = ed.getBoundingClientRect(); const nb = blocks.find(b => b.getBoundingClientRect().top - e.top + ed.scrollTop >= q.y); const pp = el(`p`); pp.append(im); if (nb) ed.insertBefore(pp, nb); else ed.append(pp); }
+  // marco con 8 puntos: esquinas = mantiene la proporción; lados = estira
+  const fr = el(`div`, `cnrsz cnfrm`); fr.contentEditable = `false`; fr.setAttribute(`aria-hidden`, `true`);
+  const H = [`nw`, `n`, `ne`, `e`, `se`, `s`, `sw`, `w`]; H.forEach(k => { const h = el(`span`, `cnh h-${k}`); h.dataset.k = k; fr.append(h); });
+  const place = () => { if (!im.isConnected || !im.classList.contains(`sel`)){ fr.remove(); return; } const q = rel(); Object.assign(fr.style, { left:`${q.x}px`, top:`${q.y}px`, width:`${q.w}px`, height:`${q.h}px` }); };
+  ed.append(fr); pinta(); place();
+  fr.addEventListener(`pointerdown`, ev => {
+    ev.preventDefault(); ev.stopPropagation(); fr.setPointerCapture(ev.pointerId);
+    const k = ev.target.dataset && ev.target.dataset.k; const q0 = rel(), ew = ed.clientWidth, ar = q0.h / q0.w;
+    if (!k && !libre()){ aLibre(); pinta(); }   // arrastrar la imagen: pasa a modo libre
+    const L0 = parseFloat(im.style.left) || q0.x, T0 = parseFloat(im.style.top) || q0.y; let moved = false;
+    const mv = e => {
+      const dx = e.clientX - ev.clientX, dy = e.clientY - ev.clientY; if (Math.abs(dx) + Math.abs(dy) > 2) moved = true;
+      if (!k){ im.style.left = `${Math.round(Math.max(0, Math.min(ew - q0.w, L0 + dx)))}px`; im.style.top = `${Math.round(Math.max(0, T0 + dy))}px`; }
+      else {
+        let w = q0.w, h = q0.h, x = L0, y = T0;
+        if (k.includes(`e`)) w = q0.w + dx; if (k.includes(`w`)){ w = q0.w - dx; }
+        if (k.includes(`s`)) h = q0.h + dy; if (k.includes(`n`)){ h = q0.h - dy; }
+        w = Math.max(40, Math.min(libre() ? ew : ew, w)); h = Math.max(30, h);
+        if (k.length === 2){ h = w * ar; if (k.includes(`n`)) y = T0 + (q0.h - h); if (k.includes(`w`)) x = L0 + (q0.w - w); im.style.height = ``; }
+        else { if (k === `w`) x = L0 + (q0.w - w); if (k === `n`) y = T0 + (q0.h - h); if (k === `n` || k === `s`) im.style.height = `${Math.round(h)}px`; else if (im.style.height) im.style.height = `${Math.round(h)}px`; }
+        if (libre()){ im.style.width = `${Math.round(w)}px`; im.style.left = `${Math.round(Math.max(0, x))}px`; im.style.top = `${Math.round(Math.max(0, y))}px`; }
+        else im.style.width = `${Math.round(Math.min(100, w / ew * 100))}%`;
+      }
+      cnFreeFit(ed); place();
+    };
+    const up = () => { fr.removeEventListener(`pointermove`, mv); fr.removeEventListener(`pointerup`, up); fr.removeEventListener(`pointercancel`, up); if (moved) later(); };
+    fr.addEventListener(`pointermove`, mv); fr.addEventListener(`pointerup`, up); fr.addEventListener(`pointercancel`, up);
+  });
+  const fuera = e => { if (!fr.contains(e.target) && !tbx.contains(e.target) && e.target !== im) done(); };
+  const tecla = e => { if ((e.key === `Delete` || e.key === `Backspace`) && im.classList.contains(`sel`) && document.activeElement !== ed){ e.preventDefault(); im.remove(); later(); done(); } else if (e.key === `Escape`) done(); };
+  setTimeout(() => { document.addEventListener(`pointerdown`, fuera, true); document.addEventListener(`keydown`, tecla); }, 0);
 }
+/* las imágenes libres no se salen del editor: crece para contenerlas */
+function cnFreeFit(ed){ let b = 0; ed.querySelectorAll(`img.free`).forEach(i => { b = Math.max(b, (parseFloat(i.style.top) || 0) + i.offsetHeight); }); ed.style.minHeight = b ? `${Math.round(b + 40)}px` : ``; }
 /* ---------- dibujar a mano ---------- */
 function cnDraw(ed, later){
   let col = `#111111`, wd = 3; const strokes = []; let cur = null, cv = null;
@@ -4540,6 +4584,10 @@ document.addEventListener(`click`, e => {
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06f`, d:`2026-11-06`, t:`Imágenes y dibujos que se mueven libremente`, l:[
+    `Toca una imagen o dibujo del Cuaderno: aparece un marco con 8 puntos. Las esquinas cambian el tamaño sin deformar; los puntos de los lados la estiran.`,
+    `Arrástrala desde el centro y la colocas donde quieras en la página (modo ✥ Libre). Con ☰ En el texto vuelve a acomodarse entre los párrafos.`,
+    `⤒ / ⤓ la pone delante o detrás, ↺ recupera su forma original y 🗑 (o la tecla Suprimir) la quita.`] },
   { id:`2026-11-06e`, d:`2026-11-06`, t:`Marcar texto, apuntes y videos dentro del Repaso`, l:[
     `Selecciona cualquier parte de una ficha: sale un menú para marcarla con color o ⭐ Importante, guardarla como ❓ Duda en tu Cuaderno, pasarla 📝 a tus apuntes, agregarla a 📅 Pendientes para repasar mañana, 💬 preguntar, 🔊 escucharla o 📋 copiarla con la fuente.`,
     `Tus marcados se quedan guardados en la ficha. Tócalos para cambiar el color o quitarlos.`,
