@@ -189,15 +189,22 @@ document.addEventListener(`click`, e => {
    El video de YouTube se ve aquí mismo (youtube-nocookie). Al lado, una página del Cuaderno para
    las notas de ese video; “⏱ Minuto” pega el minuto actual como enlace que salta a ese momento.       */
 const VT = { cur:0, frame:null };
-const ytEmbed = id => `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
+// dónde se quedó cada video (en este dispositivo): al volver, sigue desde ahí
+const VPOS_K = `quimica_vpos`;
+const vpos = (() => { try { return JSON.parse(localStorage.getItem(VPOS_K) || `{}`) || {}; } catch(e){ return {}; } })();
+let VPOS_T = 0;
+function vposSet(id, t){ if (!id || !(t >= 0)) return; vpos[id] = Math.floor(t); if (VPOS_T) return; VPOS_T = setTimeout(() => { VPOS_T = 0; try { localStorage.setItem(VPOS_K, JSON.stringify(vpos)); } catch(e){} }, 1500); }
+const ytEmbed = id => `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1${vpos[id] > 3 ? `&start=${Math.max(0, vpos[id] - 2)}` : ``}&origin=${encodeURIComponent(location.origin)}`;
 const mmss = s => { s = Math.max(0, Math.floor(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + `:` + pad2(m) : m) + `:` + pad2(x); };
 function ytFrame(v){
   const f = document.createElement(`iframe`); f.src = ytEmbed(v.id); f.title = v.title; f.className = `ytf`;
   f.setAttribute(`allow`, `accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen`); f.allowFullscreen = true; f.loading = `lazy`; f.referrerPolicy = `strict-origin-when-cross-origin`;
-  f.addEventListener(`load`, () => { VT.frame = f; VT.cur = 0; try { f.contentWindow.postMessage(JSON.stringify({ event:`listening`, id:`q`, channel:`widget` }), `*`); } catch(e){} });
+  f.dataset.vid = v.id;
+  f.addEventListener(`load`, () => { VT.frame = f; VT.vid = v.id; VT.cur = vpos[v.id] || 0; try { f.contentWindow.postMessage(JSON.stringify({ event:`listening`, id:`q`, channel:`widget` }), `*`); } catch(e){} });
   return f;
 }
-addEventListener(`message`, e => { if (!/youtube(-nocookie)?\.com$/.test((e.origin || ``).replace(/^https?:\/\//, ``).replace(/^www\./, ``))) return; let d = e.data; try { if (typeof d === `string`) d = JSON.parse(d); } catch(x){ return; } if (d && d.info && typeof d.info.currentTime === `number`) VT.cur = d.info.currentTime; });
+addEventListener(`message`, e => { if (!/youtube(-nocookie)?\.com$/.test((e.origin || ``).replace(/^https?:\/\//, ``).replace(/^www\./, ``))) return; let d = e.data; try { if (typeof d === `string`) d = JSON.parse(d); } catch(x){ return; } if (d && d.info && typeof d.info.currentTime === `number`){ VT.cur = d.info.currentTime; const f = [...document.querySelectorAll(`iframe.ytf`)].find(x => x.contentWindow === e.source); const id = f ? f.dataset.vid : VT.vid; if (id && VT.cur > 0) vposSet(id, VT.cur); } });
+addEventListener(`pagehide`, () => { try { localStorage.setItem(VPOS_K, JSON.stringify(vpos)); } catch(e){} });
 function ytCmd(func, args){ const f = VT.frame; if (!f || !f.isConnected) return false; try { f.contentWindow.postMessage(JSON.stringify({ event:`command`, func, args:args || [] }), `*`); return true; } catch(e){ return false; } }
 function videoTab(it, vids, rehacer){
   const w = el(`div`, `vtab`), th = hlKey(it); S.x.vsel = S.x.vsel || {};
@@ -207,6 +214,7 @@ function videoTab(it, vids, rehacer){
   const col = el(`div`, `vcol`);
   const box = el(`div`, `vbox`); box.append(ytFrame(v)); col.append(box);
   col.append(el(`div`, `vmeta`, `<b>${esc(v.title)}</b><small>${esc(v.ch)} · refuerza: ${esc(v.src)}</small>`));
+  if (vpos[v.id] > 3){ const r = el(`div`, `vres muted`, `⏯ Sigue desde ${mmss(Math.max(0, vpos[v.id] - 2))}. `); r.append(btn(`Ver desde el inicio`, `linkbtn`, () => { delete vpos[v.id]; try { localStorage.setItem(VPOS_K, JSON.stringify(vpos)); } catch(e){} rehacer(); })); col.append(r); }
   const lk = el(`a`, `linkbtn`, `Abrir en YouTube ↗`); lk.href = ytUrl(v.id); lk.target = `_blank`; lk.rel = `noopener`; col.append(lk);
   // notas del video (página del Cuaderno)
   const nt = el(`div`, `vnotes`);

@@ -2,6 +2,10 @@
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06g`, d:`2026-11-06`, t:`Memorizar con todo lo importante, video que sigue donde quedó y barra que no estorba`, l:[
+    `“Memorizar” ahora trae: 🧠 idea clave, 📖 glosario (términos y definiciones de la ficha, con opción de taparlas), 🔑 palabras clave, 🔢 fórmulas y datos, ⚠️ ojo con los errores frecuentes, ❓ lo que te pueden preguntar y 🃏 tarjetas para repasar.`,
+    `El video sigue donde lo dejaste aunque cambies a Leer o a otra ficha. “Ver desde el inicio” lo regresa al principio.`,
+    `La barra Anterior · Comprobar · Siguiente es más delgada. En ⋯ la haces pequeña (solo ‹ ✓ ›), le bajas la opacidad o la mueves libremente arrastrando ⠿.`] },
   { id:`2026-11-06f`, d:`2026-11-06`, t:`Imágenes y dibujos que se mueven libremente`, l:[
     `Toca una imagen o dibujo del Cuaderno: aparece un marco con 8 puntos. Las esquinas cambian el tamaño sin deformar; los puntos de los lados la estiran.`,
     `Arrástrala desde el centro y la colocas donde quieras en la página (modo ✥ Libre). Con ☰ En el texto vuelve a acomodarse entre los párrafos.`,

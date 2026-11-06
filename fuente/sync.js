@@ -49,7 +49,7 @@ function docRef(){ return SY.db.collection(`users`).doc(SY.user.uid); }
    · Lo que es solo de la pantalla (temas elegidos, pestañas abiertas, vista de la agenda): se queda el de cada dispositivo.
    · Todo lo demás: gana el valor del dispositivo que cambió más recientemente.                                      */
 const DEVID = (() => { try { let d = localStorage.getItem(`quimica_dev`); if (!d){ d = Math.random().toString(36).slice(2, 10); localStorage.setItem(`quimica_dev`, d); } return d; } catch(e){ return `x`; } })();
-const LOCAL_X = [`sm`, `ptab`, `agv`, `cn`, `nrq`, `nrt`, `rtab`, `rtabFor`, `qw`, `qd`, `syncHide`, `figMode`, `figPos`, `figMin`, `panelOff`, `zoom`, `lect`, `apPg`];
+const LOCAL_X = [`sm`, `ptab`, `agv`, `cn`, `nrq`, `nrt`, `rtab`, `rtabFor`, `qw`, `qd`, `syncHide`, `figMode`, `figPos`, `figMin`, `panelOff`, `zoom`, `lect`, `apPg`, `dk`];
 const tsOf = o => (o && (o.upd || o.updated || o.t || o.created)) || 0;
 function mergeVal(a, b, bn, del){
   if (a === undefined) return b; if (b === undefined) return a;

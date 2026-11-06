@@ -813,7 +813,7 @@ function vRepaso(v){
   const nChk = (() => { const bl = checkBloques(it); return bl[0].qs.length; })();
   const cst = S.x.chk && S.x.chk[th], cpr = enCurso(cst) ? chkProg(cst) : null;
   const ck = checkBox(it);
-  const TABS = [[`leer`, `Leer`]]; if (it.memo) TABS.push([`memo`, `Memorizar`]); if (ck) TABS.push([`comp`, cpr ? `Comprobar · ${cpr.n}/${cpr.tot}` : `Comprobar · ${nChk}`]); if (vids.length) TABS.push([`video`, `Video`]);
+  const TABS = [[`leer`, `Leer`], [`memo`, `Memorizar`]]; if (ck) TABS.push([`comp`, cpr ? `Comprobar · ${cpr.n}/${cpr.tot}` : `Comprobar · ${nChk}`]); if (vids.length) TABS.push([`video`, `Video`]);
   const apun = typeof cnPagesFor === `function` ? cnPagesFor(it.t) : []; TABS.push([`apuntes`, apun.length ? `Mis apuntes · ${apun.length}` : `Mis apuntes`]);
   if (S.x.rtabFor !== th){ S.x.rtabFor = th; S.x.rtab = `leer`; }
   if (!TABS.some(t => t[0] === S.x.rtab)) S.x.rtab = `leer`;
@@ -831,11 +831,7 @@ function vRepaso(v){
       if (it.memo) más.append(btn(`Memorizar →`, `linkbtn`, () => { S.x.rtab = `memo`; pinta(); }));
       if (más.children.length) panel.append(más);
     } else if (t === `dibujo`) panel.append(fig);
-    else if (t === `memo`){
-      panel.append(el(`p`, `muted rmemoh`, `Antes de verla, intenta decir la idea clave en voz alta.`));
-      const m = el(`div`, `rmemo`); const r = btn(`Mostrar la idea clave`, `btn acc`, () => { m.innerHTML = `<b>Para memorizar</b><p>${it.memo}</p>`; });
-      m.append(r); panel.append(m);
-    } else if (t === `comp`) panel.append(ck);
+    else if (t === `memo`) panel.append(memoTab(it)); else if (t === `comp`) panel.append(ck);
     else if (t === `video`) panel.append(videoTab(it, vids, pinta));
     else if (t === `apuntes`) panel.append(apuntesTab(it, pinta));
     // Barra fija: anterior · acción central · siguiente
@@ -847,6 +843,7 @@ function vRepaso(v){
       : btn(last ? `Ir a Fichas` : `Siguiente ficha`, `btn acc rmid`, () => last ? go(`fichas`) : move(1));
     const next = btn(``, t === `comp` ? `btn acc` : `btn ghost`, () => last ? go(`fichas`) : move(1)); next.dataset.nav = `next`; next.innerHTML = `<span class="rl">${last ? `Ir a Fichas` : `Siguiente`}</span>` + icon(`right`); next.setAttribute(`aria-label`, last ? `Ir a Fichas` : `Ficha siguiente`);
     dock.append(prev, mid, next);
+    if (typeof dockEnhance === `function`) dockEnhance(dock);
   }
   pinta();
   v.append(tabs, panel, dock);
