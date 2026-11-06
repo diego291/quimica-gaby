@@ -1104,3 +1104,11 @@ textarea.inp{width:100%;resize:vertical;margin-top:8px;font:inherit}
 @media (min-width:1100px){ .app.nopanel{grid-template-columns:92px minmax(0,1fr)} .app.nopanel .panel{display:none} }
 .app.nopanel .bodyw{max-width:1400px}
 .agh4{margin:16px 0 4px;font-size:1rem}
+/* novedades */
+.hbtn.hnov{position:relative}
+.hbtn.hnov i{position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#E5484D;color:#fff;font:700 10.5px/17px system-ui,sans-serif;font-style:normal;text-align:center}
+.nov{border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin:10px 0;background:var(--surface)}
+.nov.nueva{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,var(--surface))}
+.novd{font-size:12px;color:var(--muted)}.novd b{color:var(--acc);text-transform:none}
+.nov h4{margin:2px 0 4px;font-size:15.5px}
+.nov ul{margin:0;padding-left:18px;font-size:14px;line-height:1.5}.nov li{margin:3px 0}
