@@ -108,7 +108,16 @@ function vCuaderno(v){
   const top = el(`div`, `cntop`);
   const q = el(`input`, `inp`); q.type = `search`; q.placeholder = `🔍 Buscar en todos los cuadernos`; q.value = st.q || ``; q.setAttribute(`aria-label`, `Buscar en el cuaderno`);
   const imp = btn(`⬆ <span class="lbl">Importar</span>`, `btn ghost`, () => cnImport(st.sec)); imp.setAttribute(`aria-label`, `Importar archivo`);
-  top.append(q, imp); v.append(top);
+  if (wide){
+    // menú de cuadernos y páginas (desplegable): el editor ocupa todo el ancho
+    const pg = cnPg(st.pg), sc = cnSec(st.sec), nb = cnNb(st.nb);
+    const lbl = pg ? `${esc((nb || {}).name || ``)} › ${esc((sc || {}).name || ``)}` : sc ? `${esc((nb || {}).name || ``)} › ${esc(sc.name)}` : esc((nb || {}).name || `Cuadernos`);
+    const mb = btn(`<span class="cnmi">📓</span><span class="cnml"><small>Cuaderno y páginas</small><b>${lbl}</b></span><span class="cnmc">${st.menu ? `▴` : `▾`}</span>`, `cnmenub` + (st.menu ? ` on` : ``), () => { st.menu = !st.menu; save(); renderView(); });
+    mb.setAttribute(`aria-expanded`, !!st.menu); mb.setAttribute(`aria-label`, `Cuadernos, secciones y páginas`);
+    top.append(mb, q, imp);
+    if (st.sec) top.append(btn(`+ Página`, `btn acc`, () => { st.menu = false; pickTpl(st.sec); }));
+  } else top.append(q, imp);
+  v.append(top);
   const res = el(`div`, `cnres`); v.append(res);
   const doSearch = () => {
     res.innerHTML = ``; const s = (st.q || ``).trim().toLowerCase(); if (!s) { res.hidden = true; return; } res.hidden = false;
@@ -119,7 +128,17 @@ function vCuaderno(v){
   };
   q.oninput = () => { st.q = q.value; doSearch(); };
   const g = el(`div`, `cn3` + (wide ? ` wide` : ``));
-  if (wide){ g.append(cnPaneNb(), cnPanePg(), cnPaneEd()); }
+  if (wide){
+    if (!cnPg(st.pg)) st.menu = true;   // sin página abierta: el menú se muestra
+    if (!st.sec){ const r = C.pg.filter(p => { const x = cnSec(p.sec); return x && x.nb === st.nb; }).sort((a, b) => (b.updated || 0) - (a.updated || 0))[0]; st.sec = r ? r.sec : (C.sec.find(x => x.nb === st.nb) || {}).id || null; }
+    if (st.menu){
+      const dd = el(`div`, `cnmenu`); dd.append(cnPaneNb(), cnPanePg());
+      if (cnPg(st.pg)){ const x = btn(`✕`, `cnmenux`, () => { st.menu = false; save(); renderView(); }); x.setAttribute(`aria-label`, `Cerrar el menú`); dd.append(x); }
+      g.append(dd);
+      setTimeout(() => { if (!dd.isConnected || !cnPg(st.pg)) return; const f = e => { if (!dd.isConnected){ document.removeEventListener(`pointerdown`, f, true); return; } if (!dd.contains(e.target) && !e.target.closest(`.cnmenub, .sheet, .cnpop, .scrim`)){ document.removeEventListener(`pointerdown`, f, true); st.menu = false; save(); renderView(); } }; document.addEventListener(`pointerdown`, f, true); }, 0);
+    }
+    g.append(cnPaneEd());
+  }
   else { if (st.pg && cnPg(st.pg)) g.append(cnPaneEd(true)); else if (st.sec && cnSec(st.sec)) g.append(cnPanePg(true)); else g.append(cnPaneNb(true)); }
   v.append(g); doSearch();
 }
@@ -153,7 +172,7 @@ function cnPanePg(single){
   const ps = C.pg.filter(p => p.sec === s.id).sort((a, b) => (b.pinned - a.pinned) || (b.updated || 0) - (a.updated || 0));
   if (!ps.length) w.append(el(`p`, `muted`, `Esta sección no tiene páginas. Toca “+ Página” para empezar con una plantilla.`));
   ps.forEach(p => { const sn = p.snip || cnText(p.html).slice(0, 90); const d = new Date(p.updated || p.created); const ds = dstr(d) === todayStr() ? `hoy` : dstr(d) === addDays(todayStr(), -1) ? `ayer` : `${d.getDate()} ${MESES[d.getMonth()].slice(0, 3)}`;
-    w.append(btn(`<span class="row"><b>${p.pinned ? `📌 ` : ``}${esc(p.title || `Sin título`)}</b><small>${ds}</small></span><span>${esc(sn)}${/data-img/.test(p.html || ``) ? ` 🖼` : ``}</span>`, `cnpg` + (st.pg === p.id ? ` on` : ``), () => { cnLeave(); st.pg = p.id; save(); renderView(); })); });
+    w.append(btn(`<span class="row"><b>${p.pinned ? `📌 ` : ``}${esc(p.title || `Sin título`)}</b><small>${ds}</small></span><span>${esc(sn)}${/data-img/.test(p.html || ``) ? ` 🖼` : ``}</span>`, `cnpg` + (st.pg === p.id ? ` on` : ``), () => { cnFlush(); cnLeave(); st.pg = p.id; st.menu = false; save(); renderView(); })); });
   return w;
 }
 
@@ -167,13 +186,15 @@ const TBTN = [
 ];
 const TCOL = [`#E2E8E6`, `#D50000`, `#F4511E`, `#0B8043`, `#039BE5`, `#8E24AA`, `#616161`, `#000000`];
 const HCOL = [`#FFF59D`, `#C8E6C9`, `#B3E5FC`, `#F8BBD0`, `#FFE0B2`, `transparent`];
-function cnPaneEd(single){
-  const st = cnState(), w = el(`div`, `cnp cned`), p = cnPg(st.pg);
+function cnPaneEd(single, pid, opt = {}){
+  const st = cnState(), w = el(`div`, `cnp cned` + (opt.embed ? ` emb` : ``)), p = cnPg(pid || st.pg);
+  requestAnimationFrame(() => { const sw = S.x.lect && S.mode === `repaso` ? $(`.lbar`) : $(`#subw`); const h = sw && getComputedStyle(sw).position === `sticky` ? Math.round(sw.getBoundingClientRect().height) : 0; w.style.setProperty(`--cnstk`, `${h}px`); });
   if (!p){ w.append(el(`div`, `cnempty`, `<p class="muted">Elige una página o crea una nueva.</p>`)); if (st.sec) w.firstChild.append(btn(`+ Página`, `btn acc`, () => pickTpl(st.sec))); return w; }
   const hd = el(`div`, `cnedh`);
   if (single){ const bk = btn(icon(`left`) + ` ${esc((cnSec(p.sec) || {}).name || ``)}`, `cnback`, () => { cnFlush(); cnLeave(); st.pg = null; save(); renderView(); }); hd.append(bk); }
   const status = el(`span`, `cnst`, `✓ Guardado`); status.setAttribute(`aria-live`, `polite`);
   const more = btn(`⋯`, `cnmore`, () => { cnFlush(); cnMenu(`pg`, p); }); more.setAttribute(`aria-label`, `Opciones de la página`);
+  if (opt.embed){ const op = btn(`Abrir en el Cuaderno ↗`, `linkbtn`, () => { cnFlush(); cnOpenPage(p.id); }); op.style.marginRight = `auto`; hd.append(op); }
   hd.append(status, more); w.append(hd);
   const tt = el(`input`, `cnttl`); tt.value = p.title || ``; tt.placeholder = `Título de la página`; tt.setAttribute(`aria-label`, `Título`);
   w.append(tt, el(`div`, `cnpath muted`, `${esc(cnPath(p))}${p.pinned ? ` · 📌 fijada` : ``}`));
@@ -213,7 +234,7 @@ function cnPaneEd(single){
   const kb = () => { const vv = window.visualViewport; if (!vv || innerWidth > 700) return; const on = document.activeElement === ed; tb.classList.toggle(`kb`, on); document.body.classList.toggle(`cnediting`, on); if (on){ const off = innerHeight - vv.height - vv.offsetTop; tb.style.bottom = `${Math.max(0, off)}px`; } else tb.style.bottom = ``; };
   ed.addEventListener(`focus`, () => setTimeout(kb, 50)); ed.addEventListener(`blur`, () => setTimeout(kb, 150));
   CN_ED.kb = kb;
-  if (p.fresh && !p.title) setTimeout(() => tt.focus(), 60);
+  if (p.fresh && !p.title && !opt.embed) setTimeout(() => tt.focus(), 60);
   return w;
 }
 let CN_FLUSH = null, CN_ED = null;

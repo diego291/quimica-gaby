@@ -821,6 +821,7 @@ function vRepaso(v){
   const panel = el(`div`, `rpanel`); panel.setAttribute(`role`, `tabpanel`);
   const dock = el(`div`, `decknav rdock`);
   function pinta(){
+    if (typeof cnFlush === `function`) cnFlush();
     const t = S.x.rtab; tabs.innerHTML = ``; panel.innerHTML = ``;
     TABS.forEach(([k, n]) => { const b = btn(n, k === `comp` ? `k` : ``, () => { S.x.rtab = k; save(); pinta(); if (tabs.getBoundingClientRect().top < 0) tabs.scrollIntoView({ block:`start`, behavior:`smooth` }); });
       b.setAttribute(`role`, `tab`); b.setAttribute(`aria-selected`, t === k); tabs.append(b); });
@@ -835,12 +836,8 @@ function vRepaso(v){
       const m = el(`div`, `rmemo`); const r = btn(`Mostrar la idea clave`, `btn acc`, () => { m.innerHTML = `<b>Para memorizar</b><p>${it.memo}</p>`; });
       m.append(r); panel.append(m);
     } else if (t === `comp`) panel.append(ck);
-    else if (t === `video`) panel.append(vidLinks(vids));
-    else if (t === `apuntes`){
-      if (!apun.length) panel.append(el(`p`, `muted`, `Aún no tienes apuntes de este tema. Crea una página en el Cuaderno: queda enlazada aquí.`));
-      apun.forEach(pg => panel.append(btn(`<span class="row"><b>${esc(pg.title || `Sin título`)}</b><small>${esc(cnPath(pg))}</small></span><span>${esc(cnText(pg.html).slice(0, 110))}</span>`, `cnpg`, () => cnOpenPage(pg.id))));
-      const nb = btn(`+ Página de apuntes de este tema`, `btn ghost`, () => { let s = cn().sec.find(x => x.t === it.t); if (!s){ const q = cn().nb[0]; s = { id:nid(), nb:q.id, name:`${TOPICS[it.t].n} · ${TOPICS[it.t].name}`, color:q.color, order:cn().sec.length, t:it.t }; cn().sec.push(s); } const p = cnNewPage(s.id, `apuntes`, `Apuntes · ${it.title}`); cnOpenPage(p.id); }); nb.style.marginTop = `10px`; panel.append(nb);
-    }
+    else if (t === `video`) panel.append(videoTab(it, vids, pinta));
+    else if (t === `apuntes`) panel.append(apuntesTab(it, pinta));
     // Barra fija: anterior · acción central · siguiente
     dock.innerHTML = ``;
     const last = i === all.length - 1;

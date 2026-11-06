@@ -2,6 +2,12 @@
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06e`, d:`2026-11-06`, t:`Marcar texto, apuntes y videos dentro del Repaso`, l:[
+    `Selecciona cualquier parte de una ficha: sale un menú para marcarla con color o ⭐ Importante, guardarla como ❓ Duda en tu Cuaderno, pasarla 📝 a tus apuntes, agregarla a 📅 Pendientes para repasar mañana, 💬 preguntar, 🔊 escucharla o 📋 copiarla con la fuente.`,
+    `Tus marcados se quedan guardados en la ficha. Tócalos para cambiar el color o quitarlos.`,
+    `“Mis apuntes” ahora es un cuaderno dentro del Repaso: escribes ahí mismo y se guarda en la sección del tema. Abajo ves todo lo que marcaste en esa ficha.`,
+    `“Video”: el video de YouTube se ve aquí, con tus notas al lado. “⏱ Minuto” pega el momento del video; al tocarlo, el video salta ahí.`,
+    `Cuaderno: la página ocupa todo el ancho. Los cuadernos y páginas están en el menú “Cuaderno y páginas ▾”.`] },
   { id:`2026-11-06d`, d:`2026-11-06`, t:`Repaso en pantalla completa`, l:[
     `En Repaso toca “Pantalla completa”: desaparece todo lo demás y queda solo la ficha.`,
     `En computadora se ve como un libro abierto: texto a la izquierda y dibujo a la derecha. Cambias de ficha con las flechas grandes de los lados (o con ← → del teclado).`,

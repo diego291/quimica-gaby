@@ -1158,7 +1158,7 @@ textarea.inp{width:100%;resize:vertical;margin-top:8px;font:inherit}
 .cnttl:focus{border-bottom-color:var(--line2)}
 .cnpath{font-size:12px;margin:0 0 10px}
 .cnedwrap{position:relative}
-.cntb{display:flex;gap:2px;flex-wrap:wrap;align-items:center;background:var(--sunk);border:1px solid var(--line);border-radius:12px;padding:4px;position:sticky;top:6px;z-index:6}
+.cntb{display:flex;gap:2px;flex-wrap:wrap;align-items:center;background:var(--sunk);border:1px solid var(--line);border-radius:12px;padding:4px;position:sticky;top:calc(var(--cnstk,0px) + 6px);z-index:6}
 .cntb .sep{width:1px;align-self:stretch;background:var(--line2);margin:4px 3px}
 .tbb{min-width:34px;height:34px;padding:0 7px;border-radius:8px;border:0;background:none;color:var(--ink);font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
 .tbb:hover{background:var(--surface)}
@@ -1203,7 +1203,7 @@ textarea.inp{width:100%;resize:vertical;margin-top:8px;font:inherit}
 .cntoast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:70;max-width:90vw;text-align:center}
 .cntoast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 @media (max-width:700px){
-  .cntb{top:0;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+  .cntb{top:var(--cnstk,0px);overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
   .cntb::-webkit-scrollbar{display:none}
   .cntb .tbb{flex:none}
   .cntb.kb{position:fixed;left:6px;right:6px;top:auto;z-index:45;box-shadow:0 -4px 16px rgba(0,0,0,.25)}
@@ -1226,3 +1226,70 @@ textarea.inp{width:100%;resize:vertical;margin-top:8px;font:inherit}
 .novd{font-size:12px;color:var(--muted)}.novd b{color:var(--acc);text-transform:none}
 .nov h4{margin:2px 0 4px;font-size:15.5px}
 .nov ul{margin:0;padding-left:18px;font-size:14px;line-height:1.5}.nov li{margin:3px 0}
+/* ======== Cuaderno: editor a todo el ancho, menú desplegable ======== */
+.cntop{align-items:stretch}
+.cnmenub{flex:none;display:flex;align-items:center;gap:10px;max-width:360px;min-width:220px;padding:6px 12px;border-radius:12px;border:1px solid var(--line2);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;text-align:left}
+.cnmenub.on,.cnmenub:hover{border-color:var(--acc)}
+.cnmi{font-size:18px}.cnml{flex:1;min-width:0;display:flex;flex-direction:column}
+.cnml small{font-size:11px;color:var(--muted)}.cnml b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cnmc{color:var(--muted)}
+.cn3.wide{display:block;position:relative;border:0;background:none;min-height:0;overflow:visible}
+.cn3.wide > .cned{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 28px 10px;max-height:none!important;overflow:visible!important}
+.cn3.wide .cnedit{min-height:calc(100vh - 330px);font-size:16.5px;line-height:1.7;padding:16px 4px 80px}
+.cn3.wide .cntb{top:calc(var(--cnstk,0px) + 6px)}
+.cnmenu{position:absolute;top:0;left:0;z-index:20;display:grid;grid-template-columns:260px 300px;background:var(--surface);border:1px solid var(--line2);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.4);max-height:min(72vh,640px);overflow:hidden}
+.cnmenu .cnp{padding:12px;overflow-y:auto;max-height:min(72vh,640px)!important;border-right:1px solid var(--line)}
+.cnmenu .cnnb{background:var(--sunk)}
+.cnmenu .cnp:last-of-type{border-right:0}
+.cnmenux{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:9px;border:0;background:var(--sunk);color:var(--ink);cursor:pointer;font-size:14px}
+.cnmenu .cnpgs .cnph.row{padding-right:36px}
+/* ======== Mis apuntes dentro del Repaso ======== */
+.aptab{display:flex;flex-direction:column;gap:12px}
+.apempty{background:var(--sunk);border:1px dashed var(--line2);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.apempty p{margin:0}
+.apbar{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.apch{flex:none;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:13.5px;cursor:pointer;white-space:nowrap;max-width:280px;overflow:hidden;text-overflow:ellipsis}
+.apch.on{background:var(--acc);border-color:var(--acc);color:var(--onAcc);font-weight:700}
+.apch.add{border-style:dashed;color:var(--muted)}
+.cned.emb{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 18px}
+.cned.emb .cnedit{min-height:42vh}
+.apmk{border-top:1px solid var(--line);padding-top:10px}
+.apmk h4{margin:0 0 8px;font-size:15px}
+.apmkr{display:flex;align-items:flex-start;gap:6px;padding:6px 0;border-bottom:1px solid var(--line)}
+.apmkr mark{flex:1;min-width:0;padding:2px 6px;border-radius:6px;line-height:1.5}
+.apmkb{flex:none;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+/* marcadores */
+mark.hl{color:inherit;border-radius:3px;padding:0 1px;cursor:pointer;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.hl-y{background:rgba(255,213,0,.42)}.hl-g{background:rgba(76,200,120,.38)}.hl-p{background:rgba(255,105,180,.36)}.hl-b{background:rgba(80,170,255,.38)}
+.hl-i{background:rgba(229,72,77,.24);box-shadow:inset 0 -2px 0 #E5484D;font-weight:700}
+.seltip{margin:12px 0 0;padding:9px 12px;border-radius:12px;background:color-mix(in srgb,var(--acc) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--acc) 35%,var(--line));font-size:14px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+/* menú al seleccionar */
+.selmenu{position:fixed;z-index:80;display:flex;flex-direction:column;gap:6px;padding:8px;background:var(--surface);border:1px solid var(--line2);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.45);max-width:calc(100vw - 16px)}
+.smrow{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.smb{height:38px;padding:0 11px;border-radius:10px;border:1px solid var(--line);background:var(--sunk);color:var(--ink);font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
+.smb:hover{border-color:var(--acc)}
+.smb.imp{background:rgba(229,72,77,.14);border-color:rgba(229,72,77,.5)}
+.smb.on{outline:2px solid var(--acc)}
+.smc{width:34px;height:34px;border-radius:50%;border:2px solid var(--line2);cursor:pointer;padding:0}
+.smc.on{outline:3px solid var(--ink);outline-offset:1px}
+@media (max-width:700px){ .smb{height:40px;font-size:14px;padding:0 9px} .smc{width:36px;height:36px} .selmenu{padding:7px;gap:5px} }
+/* ======== Video dentro del Repaso + notas ======== */
+.vtab{display:flex;flex-direction:column;gap:12px}
+.vgrid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);gap:18px;align-items:start}
+.vcol{display:flex;flex-direction:column;gap:8px;position:sticky;top:calc(var(--cnstk,70px) + 8px)}
+.vbox{position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000;border:1px solid var(--line)}
+.vbox .ytf{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vmeta{display:flex;flex-direction:column;gap:2px}.vmeta b{font-size:15.5px}.vmeta small{color:var(--muted);font-size:12.5px}
+.vnotes{display:flex;flex-direction:column;gap:8px;min-width:0}
+.vnh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.vnotes .cned.emb{padding:8px 12px}
+.vnotes .cnttl{font-size:1.1rem}
+.vnotes .cnedit{min-height:300px;font-size:15px;padding-bottom:30px}
+.vnotes .cntb .tbb{min-width:30px;height:30px;padding:0 5px;font-size:13px}
+.vtip{font-size:12.5px;margin:0}
+a.ytt{font-weight:700;text-decoration:none;background:color-mix(in srgb,var(--acc) 18%,transparent);border-radius:6px;padding:0 4px}
+@media (max-width:1000px){ .vgrid{grid-template-columns:1fr} .vcol{position:static} }
+.smc.hl-y{background:#FFD500}.smc.hl-g{background:#3FBF6F}.smc.hl-p{background:#FF6FB5}.smc.hl-b{background:#4DA8FF}
+.cnph.row .btn{white-space:nowrap;flex:none}
+.vnotes .cntb .sep, .vnotes .tbb[data-k="table"], .vnotes .tbb[data-k="link"], .vnotes .tbb[data-k="justifyLeft"], .vnotes .tbb[data-k="justifyCenter"], .vnotes .tbb[data-k="cam"], .vnotes .tbb[data-k="draw"], .vnotes .tbb[data-k="strikeThrough"], .vnotes .tbb[data-k="removeFormat"]{display:none}
+.vnotes .cnpath{display:none}
