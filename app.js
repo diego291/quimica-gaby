@@ -4341,7 +4341,8 @@ addEventListener(`pagehide`, () => { cnFlush(); });
    · Al seleccionar texto de una ficha sale un menú: marcar con color, ⭐ importante, duda al Cuaderno,
      pasar a mis apuntes, repasar luego (pendiente), preguntar, escuchar y copiar.
    · Los marcados se guardan por ficha en S.x.hl[hash(título)] = [{ id, q, s, c, t }] y se sincronizan.     */
-const HLC = [[`y`, `Amarillo`], [`g`, `Verde`], [`p`, `Rosa`], [`b`, `Azul`]];
+const HLC = [[`y`, `Amarillo`], [`o`, `Naranja`], [`r`, `Rojo`], [`p`, `Rosa`], [`v`, `Morado`], [`b`, `Azul`], [`c`, `Celeste`], [`g`, `Verde`]];
+const HLI = [`⭐`, `❓`, `⚠️`, `💡`, `📌`, `✅`, `🔥`, `❤️`, `📝`, `📅`];
 const hlKey = it => hash(it.title);
 const hlOf = it => ((S.x.hl || {})[hlKey(it)] || []);
 function repCur(){ if (S.mode !== `repaso` || S.x.rall) return null; const all = filt(ALL.REPASO); if (!all.length) return null; return all[Math.max(0, Math.min(S.x.rpos[selKey()] || 0, all.length - 1))]; }
@@ -4400,7 +4401,7 @@ function apuntesTab(it, rehacer){
   if (!hs.length) mk.append(el(`p`, `muted`, `En “Leer”, selecciona un texto: puedes marcarlo con color, ⭐ como importante, guardarlo como duda o pasarlo a estos apuntes.`));
   hs.slice().sort((a, b) => (b.c === `i`) - (a.c === `i`) || a.s - b.s).forEach(h => {
     const r = el(`div`, `apmkr`);
-    r.append(el(`mark`, `hl hl-${h.c}`, `${h.c === `i` ? `⭐ ` : ``}${esc(h.q)}`));
+    r.append(el(`mark`, `hl hl-${h.c}`, `${h.i ? h.i + ` ` : h.c === `i` ? `⭐ ` : ``}${esc(h.q)}`));
     const a = btn(`📝`, `apmkb`, () => { const p = cur || apPage(t, `apuntes`); apAppend(p, `<blockquote>${esc(h.q)}</blockquote><p><small>— ${esc(it.title)} · ${esc(it.src)}</small></p><p><br></p>`); S.x.apPg[t] = p.id; save(); toastMsg(`Pasado a “${p.title}”.`); rehacer(); }); a.title = `Pasar a mis apuntes`; a.setAttribute(`aria-label`, a.title);
     const x = btn(`✕`, `apmkb`, () => { hlDel(it, h.id); rehacer(); }); x.title = `Quitar marcado`; x.setAttribute(`aria-label`, x.title);
     r.append(a, x); mk.append(r);
@@ -4410,16 +4411,17 @@ function apuntesTab(it, rehacer){
 }
 
 /* ---------- marcados ---------- */
-function hlAdd(it, q, s, c){ S.x.hl = S.x.hl || {}; const k = hlKey(it); (S.x.hl[k] = S.x.hl[k] || []).push({ id:nid(), q, s, c, t:Date.now() }); save(); }
+function hlAdd(it, q, s, c, i){ S.x.hl = S.x.hl || {}; const k = hlKey(it); const h = { id:nid(), q, s, c, t:Date.now() }; if (i) h.i = i; (S.x.hl[k] = S.x.hl[k] || []).push(h); save(); return h; }
 function hlDel(it, id){ if (typeof tomb === `function`) tomb(id); const k = hlKey(it); S.x.hl[k] = (S.x.hl[k] || []).filter(h => h.id !== id); save(); }
-function hlSet(it, id, c){ const h = hlOf(it).find(x => x.id === id); if (h){ h.c = c; h.t = Date.now(); save(); } }
+function hlSet(it, id, c, i){ const h = hlOf(it).find(x => x.id === id); if (h){ if (c) h.c = c; if (i !== undefined){ if (i) h.i = i; else delete h.i; } h.t = Date.now(); save(); } }
 function txtNodes(root){ const L = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n, o = 0; while ((n = w.nextNode())){ L.push({ n, s:o }); o += n.data.length; } return L; }
 function hlWrap(root, a, b, h){
+  let first = true;
   txtNodes(root).forEach(({ n, s }) => {
     const len = n.data.length, x0 = Math.max(a, s) - s, x1 = Math.min(b, s + len) - s; if (x1 <= x0) return;
     let node = n; if (x1 < len) node.splitText(x1); if (x0 > 0) node = node.splitText(x0);
     if (!node.data.trim() && node.parentNode && /^(UL|OL|TBODY|TR|TABLE)$/.test(node.parentNode.tagName)) return;
-    const m = document.createElement(`mark`); m.className = `hl hl-${h.c}`; m.dataset.hl = h.id; node.parentNode.insertBefore(m, node); m.append(node);
+    const m = document.createElement(`mark`); m.className = `hl hl-${h.c}`; m.dataset.hl = h.id; if (first && h.i){ m.dataset.ic = h.i; } first = false; node.parentNode.insertBefore(m, node); m.append(node);
   });
 }
 function hlPaint(root, it){
@@ -4471,26 +4473,35 @@ function selCopiar(q, it){ const t = q + (it ? `\n— ${it.title} (${it.src})` :
 function selMenu(info, mark){
   selCerrar();
   const m = el(`div`, `selmenu`); m.setAttribute(`role`, `toolbar`); m.setAttribute(`aria-label`, `Acciones con el texto seleccionado`);
-  const it = info.it, q = info.q, fin = msg => { selCerrar(); try { getSelection().removeAllRanges(); } catch(e){} };
-  const B = (html, tip, f, cls = ``) => { const b = btn(html, `smb ${cls}`, () => { f(); }); b.title = tip; b.setAttribute(`aria-label`, tip); m.append(b); return b; };
-  const fila1 = el(`div`, `smrow`);
-  if (it && (info.root || mark)){
-    HLC.forEach(([c, n]) => { const b = btn(``, `smc hl-${c}` + (mark && mark.c === c ? ` on` : ``), () => {
-      if (mark) hlSet(it, mark.id, c); else hlAdd(it, info.q, info.off, c);
-      document.querySelectorAll(`#view .rleer`).forEach(r => hlPaint(r, it)); fin(); }); b.title = `Marcar en ${n.toLowerCase()}`; b.setAttribute(`aria-label`, b.title); fila1.append(b); });
-    const imp = btn(`⭐ Importante`, `smb imp` + (mark && mark.c === `i` ? ` on` : ``), () => { if (mark) hlSet(it, mark.id, `i`); else hlAdd(it, info.q, info.off, `i`); document.querySelectorAll(`#view .rleer`).forEach(r => hlPaint(r, it)); fin(); toastMsg(`⭐ Marcado como importante. Lo ves en “Mis apuntes”.`); });
-    imp.title = `Marcar como importante`; fila1.append(imp);
-    if (mark){ const x = btn(`✕ Quitar`, `smb`, () => { hlDel(it, mark.id); document.querySelectorAll(`#view .rleer`).forEach(r => hlPaint(r, it)); fin(); }); x.title = `Quitar el marcado`; fila1.append(x); }
-    m.append(fila1);
+  const it = info.it, q = info.q, puede = !!(it && (info.root || mark));
+  const fin = () => { selCerrar(); try { getSelection().removeAllRanges(); } catch(e){} };
+  const repinta = () => document.querySelectorAll(`#view .rleer`).forEach(r => hlPaint(r, it));
+  // marca (o actualiza) el texto con color y/o ícono
+  const marca = (c, i) => { if (!puede) return; const ex = mark || hlOf(it).find(h => h.q === q && h.s === info.off); if (ex) hlSet(it, ex.id, c, i); else hlAdd(it, q, info.off, c || `n`, i); repinta(); };
+  const B = (row, html, tip, f, cls = ``) => { const b = btn(html, `smb ${cls}`, f); b.title = tip; b.setAttribute(`aria-label`, tip); row.append(b); return b; };
+  const r1 = el(`div`, `smrow`); m.append(r1);
+  if (puede){
+    HLC.forEach(([c, n]) => { const b = btn(``, `smc hl-${c}` + (mark && mark.c === c ? ` on` : ``), () => { marca(c, mark ? undefined : null); fin(); }); b.title = n; b.setAttribute(`aria-label`, `Marcar en ${n.toLowerCase()}`); r1.append(b); });
+    r1.append(el(`span`, `smsep`));
   }
-  const fila2 = el(`div`, `smrow`); m.append(fila2);
-  const B2 = (html, tip, f) => { const b = btn(html, `smb`, () => { f(); fin(); }); b.title = tip; b.setAttribute(`aria-label`, tip); fila2.append(b); };
-  B2(`❓ Duda`, `Guardar como duda en el Cuaderno`, () => selDuda(q, it));
-  B2(`📝 A mis apuntes`, `Pasar este texto a mis apuntes del tema`, () => selApunte(q, it));
-  B2(`📅 Repasar luego`, `Agregar a Pendientes para mañana`, () => selRepasar(q, it));
-  B2(`💬 Preguntar`, `Buscar una explicación en Preguntar`, () => { if (typeof ASK !== `undefined`){ ASK.q = q.slice(0, 160); ASK.tab = `mat`; } go(`preguntar`); });
-  B2(`🔊`, `Escuchar en voz alta`, () => selHablar(q));
-  B2(`📋`, `Copiar con la fuente`, () => selCopiar(q, it));
+  B(r1, `⭐`, `Importante`, () => { marca(`i`, `⭐`); fin(); toastMsg(`⭐ Marcado como importante.`); }, mark && mark.c === `i` ? `on` : ``);
+  B(r1, `❓`, `Duda: se guarda en tu Cuaderno`, () => { marca(mark ? undefined : `n`, `❓`); selDuda(q, it); fin(); });
+  B(r1, `📝`, `Pasar a mis apuntes`, () => { marca(mark ? undefined : `n`, `📝`); selApunte(q, it); fin(); });
+  B(r1, `📅`, `Repasar luego (Pendientes de mañana)`, () => { marca(mark ? undefined : `n`, `📅`); selRepasar(q, it); fin(); });
+  const r2 = el(`div`, `smrow smmas`); r2.hidden = !S.x.smx;
+  const mas = B(r1, `⋯`, `Más opciones`, () => { S.x.smx = !S.x.smx; save(); r2.hidden = !S.x.smx; mas.classList.toggle(`on`, !!S.x.smx); selPos(); }, S.x.smx ? `on` : ``);
+  if (puede){
+    r2.append(el(`span`, `smlab`, `Ícono:`));
+    HLI.forEach(ic => B(r2, ic, `Poner ${ic} al texto`, () => { marca(mark ? undefined : `n`, ic); fin(); }, mark && mark.i === ic ? `on` : ``));
+    if (mark && mark.i) B(r2, `⊘`, `Quitar el ícono`, () => { hlSet(it, mark.id, null, null); repinta(); fin(); });
+    r2.append(el(`span`, `smsep`));
+  }
+  B(r2, `💬`, `Preguntar: buscar una explicación`, () => { if (typeof ASK !== `undefined`){ ASK.q = q.slice(0, 160); ASK.tab = `mat`; } fin(); go(`preguntar`); });
+  B(r2, `🔊`, `Escuchar en voz alta`, () => { selHablar(q); fin(); });
+  B(r2, `📋`, `Copiar con la fuente`, () => { selCopiar(q, it); fin(); });
+  if (mark) B(r2, `🗑`, `Quitar el marcado`, () => { hlDel(it, mark.id); repinta(); fin(); });
+  m.append(r2);
+  if (mark && !S.x.smx){ r2.hidden = false; mas.classList.add(`on`); }
   // sin quitar la selección al tocar el menú
   m.addEventListener(`pointerdown`, e => { if (e.target.closest(`button`)) e.preventDefault(); });
   m.addEventListener(`mousedown`, e => e.preventDefault());
@@ -4732,6 +4743,10 @@ function dockMenu(anchor, dock){
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06h`, d:`2026-11-06`, t:`Menú de marcar más pequeño, 8 colores e íconos`, l:[
+    `Al seleccionar texto sale una barrita compacta: 8 colores (amarillo, naranja, rojo, rosa, morado, azul, celeste y verde), ⭐ importante, ❓ duda, 📝 a mis apuntes y 📅 repasar luego.`,
+    `Duda, apuntes y repasar luego también dejan su ícono pegado al texto, para que veas qué hiciste con cada parte.`,
+    `En ⋯ eliges un ícono para el texto (⭐ ❓ ⚠️ 💡 📌 ✅ 🔥 ❤️ 📝 📅), además de preguntar, escuchar, copiar o quitar el marcado.`] },
   { id:`2026-11-06g`, d:`2026-11-06`, t:`Memorizar con todo lo importante, video que sigue donde quedó y barra que no estorba`, l:[
     `“Memorizar” ahora trae: 🧠 idea clave, 📖 glosario (términos y definiciones de la ficha, con opción de taparlas), 🔑 palabras clave, 🔢 fórmulas y datos, ⚠️ ojo con los errores frecuentes, ❓ lo que te pueden preguntar y 🃏 tarjetas para repasar.`,
     `El video sigue donde lo dejaste aunque cambies a Leer o a otra ficha. “Ver desde el inicio” lo regresa al principio.`,

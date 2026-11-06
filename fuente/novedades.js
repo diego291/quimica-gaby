@@ -2,6 +2,10 @@
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06h`, d:`2026-11-06`, t:`Menú de marcar más pequeño, 8 colores e íconos`, l:[
+    `Al seleccionar texto sale una barrita compacta: 8 colores (amarillo, naranja, rojo, rosa, morado, azul, celeste y verde), ⭐ importante, ❓ duda, 📝 a mis apuntes y 📅 repasar luego.`,
+    `Duda, apuntes y repasar luego también dejan su ícono pegado al texto, para que veas qué hiciste con cada parte.`,
+    `En ⋯ eliges un ícono para el texto (⭐ ❓ ⚠️ 💡 📌 ✅ 🔥 ❤️ 📝 📅), además de preguntar, escuchar, copiar o quitar el marcado.`] },
   { id:`2026-11-06g`, d:`2026-11-06`, t:`Memorizar con todo lo importante, video que sigue donde quedó y barra que no estorba`, l:[
     `“Memorizar” ahora trae: 🧠 idea clave, 📖 glosario (términos y definiciones de la ficha, con opción de taparlas), 🔑 palabras clave, 🔢 fórmulas y datos, ⚠️ ojo con los errores frecuentes, ❓ lo que te pueden preguntar y 🃏 tarjetas para repasar.`,
     `El video sigue donde lo dejaste aunque cambies a Leer o a otra ficha. “Ver desde el inicio” lo regresa al principio.`,
