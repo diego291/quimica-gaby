@@ -474,3 +474,9 @@ body{background:var(--bg)}
 .psb svg{width:18px;height:18px}.psb small{font-size:10px;color:var(--muted)}
 .psb.pom .pomo-time{font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums}
 .psb.pom.run{border-color:var(--acc)}.psb.pom.run .pomo-time{color:var(--acc)}
+/* Panel oculto: el contenido usa el ancho libre (antes quedaba un hueco a la derecha) */
+@media (min-width:1100px){ .bodyw{max-width:1500px} }
+.rlc.m-lado:not(.ph) .rleer{max-width:none}
+@media (min-width:1300px){ .rlc.m-lado:not(.ph){grid-template-columns:minmax(0,1.1fr) minmax(340px,1fr);gap:28px} }
+.rlc.m-lado:not(.ph) .rfig .fig svg{max-height:calc(100vh - var(--stk) - 190px)}
+@media (min-width:1100px){ .rdock{margin-left:auto;margin-right:auto} }
