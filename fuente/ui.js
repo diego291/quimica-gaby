@@ -742,7 +742,6 @@ function leerConDibujo(it, fig, rehacer){
   if (mode !== `lado`) b(min ? `▾` : `▴`, min ? `Mostrar el dibujo` : `Minimizar el dibujo`, () => { S.x.figMin = !min; save(); rehacer(); });
   { const lz = btn(`🔍`, ``, () => lupa(fig)); lz.title = `Ver el dibujo en grande`; lz.setAttribute(`aria-label`, lz.title); ctl.prepend(lz); }
   bar.append(lab, ctl); box.append(bar, fig);
-  if (libro){ txt.prepend(el(`h2`, `ltit`, it.title)); }
   w.append(box, txt);
   // la ventana flotante vive fuera del contenido para que el tamaño de letra no la desplace
   if (mode === `flota`){ box.classList.add(`flt`); document.body.append(box); }

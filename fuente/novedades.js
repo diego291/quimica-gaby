@@ -2,6 +2,10 @@
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06i`, d:`2026-11-06`, t:`Pantalla completa: el texto entra completo y se lee mejor`, l:[
+    `En computadora, el texto ocupa más espacio y el dibujo se hace más compacto a la derecha.`,
+    `La letra se ajusta sola para que toda la ficha se vea sin bajar (sin quedar nunca más pequeña de lo cómodo). Con A− / A+ la cambias si quieres.`,
+    `El botón “1 tema · cambiar” vuelve a abrir la lista de temas aunque el panel derecho esté oculto.`] },
   { id:`2026-11-06h`, d:`2026-11-06`, t:`Menú de marcar más pequeño, 8 colores e íconos`, l:[
     `Al seleccionar texto sale una barrita compacta: 8 colores (amarillo, naranja, rojo, rosa, morado, azul, celeste y verde), ⭐ importante, ❓ duda, 📝 a mis apuntes y 📅 repasar luego.`,
     `Duda, apuntes y repasar luego también dejan su ícono pegado al texto, para que veas qué hiciste con cada parte.`,

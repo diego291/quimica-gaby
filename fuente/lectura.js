@@ -77,3 +77,20 @@ go = function(mode){ if (S.x.lect && mode !== `repaso`){ S.x.lect = false; lectC
 const _renderAllL = renderAll;
 renderAll = function(){ const on = !!S.x.lect && S.mode === `repaso`; document.documentElement.classList.toggle(`lect`, on); if (!on) lectCerrarLista(); return _renderAllL.apply(this, arguments); };
 document.documentElement.classList.toggle(`lect`, !!S.x.lect && S.mode === `repaso`);
+
+/* ---------- libro: el texto cabe en la pantalla ----------
+   Ajusta el tamaño de letra del texto (entre 15 y 21 px, por el zoom) para que toda la ficha
+   se lea sin bajar; si aun con 15 px no cabe, se deja con scroll normal.                     */
+function lectFit(){
+  const w = document.querySelector(`#view .rlc.libro`); if (!w) return;
+  const t = w.querySelector(`.rleer`); if (!t) return;
+  const top = w.getBoundingClientRect().top + scrollY, dock = document.querySelector(`.rdock`);
+  const avail = innerHeight / (+S.x.zoom || 1) - Math.max(0, top - scrollY) / (+S.x.zoom || 1) - 24;
+  let fs = 21; t.style.fontSize = `${fs}px`;
+  while (fs > 15 && t.scrollHeight > avail){ fs -= 0.5; t.style.fontSize = `${fs}px`; }
+  w.classList.toggle(`cabe`, t.scrollHeight <= avail);
+  w.style.setProperty(`--lh`, `${Math.max(320, avail)}px`);
+}
+let LF_T = 0;
+new MutationObserver(() => { if (!S.x.lect || LF_T) return; LF_T = requestAnimationFrame(() => { LF_T = 0; const w = document.querySelector(`#view .rlc.libro:not([data-fit])`); if (w){ w.dataset.fit = `1`; lectFit(); } }); }).observe(document.getElementById(`view`), { childList:true, subtree:true });
+addEventListener(`resize`, () => { if (S.x.lect) lectFit(); });

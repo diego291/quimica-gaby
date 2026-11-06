@@ -969,6 +969,21 @@ html.lect .pdfbar, html.lect .rmas{display:none}
   html.lect .rlc.m-lado.ph .rfig{order:2;margin:16px 0 0}
 }
 
+/* libro: más espacio para el texto, dibujo más compacto */
+.rlc.libro{grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr)!important;min-height:var(--lh,auto)}
+.rlc.libro .rleer{padding:22px 34px 26px;line-height:1.6}
+.rlc.libro .rleer p,.rlc.libro .rleer li{margin-top:0;margin-bottom:.45em}
+.rlc.libro .rleer ol,.rlc.libro .rleer ul{margin:.3em 0 .6em}
+.rlc.libro .rfig{padding:10px 16px 14px;display:flex;flex-direction:column}
+.rlc.libro .rfig .rfigbar{position:absolute;top:8px;right:10px;background:none;padding:0;margin:0;z-index:3}
+.rlc.libro .rfig .rfigl{display:none}
+.rlc.libro .rfig{position:relative!important}
+.rlc.libro .rfig .fig{position:sticky;top:calc(var(--stk) + 10px)}
+.rlc.libro .rfig .fig svg{max-height:min(46vh,calc(var(--lh,600px) * .62))}
+.rlc.libro .rfig figcaption{font-size:13px;line-height:1.45}
+.rlc.libro .rfig{top:auto!important;align-self:stretch}
+html.lect .rdock.mini,.rdock.mini{max-width:max-content!important}
+
 /* ======================= ORGANIZAR: AGENDA ======================= */
 .agbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .agnav{display:flex;align-items:center;gap:6px;min-width:0}

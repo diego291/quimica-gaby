@@ -2119,7 +2119,6 @@ function leerConDibujo(it, fig, rehacer){
   if (mode !== `lado`) b(min ? `▾` : `▴`, min ? `Mostrar el dibujo` : `Minimizar el dibujo`, () => { S.x.figMin = !min; save(); rehacer(); });
   { const lz = btn(`🔍`, ``, () => lupa(fig)); lz.title = `Ver el dibujo en grande`; lz.setAttribute(`aria-label`, lz.title); ctl.prepend(lz); }
   bar.append(lab, ctl); box.append(bar, fig);
-  if (libro){ txt.prepend(el(`h2`, `ltit`, it.title)); }
   w.append(box, txt);
   // la ventana flotante vive fuera del contenido para que el tamaño de letra no la desplace
   if (mode === `flota`){ box.classList.add(`flt`); document.body.append(box); }
@@ -4744,6 +4743,10 @@ function dockMenu(anchor, dock){
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06i`, d:`2026-11-06`, t:`Pantalla completa: el texto entra completo y se lee mejor`, l:[
+    `En computadora, el texto ocupa más espacio y el dibujo se hace más compacto a la derecha.`,
+    `La letra se ajusta sola para que toda la ficha se vea sin bajar (sin quedar nunca más pequeña de lo cómodo). Con A− / A+ la cambias si quieres.`,
+    `El botón “1 tema · cambiar” vuelve a abrir la lista de temas aunque el panel derecho esté oculto.`] },
   { id:`2026-11-06h`, d:`2026-11-06`, t:`Menú de marcar más pequeño, 8 colores e íconos`, l:[
     `Al seleccionar texto sale una barrita compacta: 8 colores (amarillo, naranja, rojo, rosa, morado, azul, celeste y verde), ⭐ importante, ❓ duda, 📝 a mis apuntes y 📅 repasar luego.`,
     `Duda, apuntes y repasar luego también dejan su ícono pegado al texto, para que veas qué hiciste con cada parte.`,
@@ -4974,6 +4977,23 @@ go = function(mode){ if (S.x.lect && mode !== `repaso`){ S.x.lect = false; lectC
 const _renderAllL = renderAll;
 renderAll = function(){ const on = !!S.x.lect && S.mode === `repaso`; document.documentElement.classList.toggle(`lect`, on); if (!on) lectCerrarLista(); return _renderAllL.apply(this, arguments); };
 document.documentElement.classList.toggle(`lect`, !!S.x.lect && S.mode === `repaso`);
+
+/* ---------- libro: el texto cabe en la pantalla ----------
+   Ajusta el tamaño de letra del texto (entre 15 y 21 px, por el zoom) para que toda la ficha
+   se lea sin bajar; si aun con 15 px no cabe, se deja con scroll normal.                     */
+function lectFit(){
+  const w = document.querySelector(`#view .rlc.libro`); if (!w) return;
+  const t = w.querySelector(`.rleer`); if (!t) return;
+  const top = w.getBoundingClientRect().top + scrollY, dock = document.querySelector(`.rdock`);
+  const avail = innerHeight / (+S.x.zoom || 1) - Math.max(0, top - scrollY) / (+S.x.zoom || 1) - 24;
+  let fs = 21; t.style.fontSize = `${fs}px`;
+  while (fs > 15 && t.scrollHeight > avail){ fs -= 0.5; t.style.fontSize = `${fs}px`; }
+  w.classList.toggle(`cabe`, t.scrollHeight <= avail);
+  w.style.setProperty(`--lh`, `${Math.max(320, avail)}px`);
+}
+let LF_T = 0;
+new MutationObserver(() => { if (!S.x.lect || LF_T) return; LF_T = requestAnimationFrame(() => { LF_T = 0; const w = document.querySelector(`#view .rlc.libro:not([data-fit])`); if (w){ w.dataset.fit = `1`; lectFit(); } }); }).observe(document.getElementById(`view`), { childList:true, subtree:true });
+addEventListener(`resize`, () => { if (S.x.lect) lectFit(); });
 
 /* ======================= AUDIO-REPASO (lectura en voz alta) ======================= */
 const AU = { on:false, cards:[], ci:0, si:0, seg:0, sents:[], voices:[], sleepEnd:0, token:0 };
