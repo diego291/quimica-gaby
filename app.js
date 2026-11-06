@@ -2094,7 +2094,9 @@ function checkBox(it){
 }
 /* ---------- Leer con el dibujo a la vista: al lado, fijo arriba o en ventana flotante que se mueve ---------- */
 function leerConDibujo(it, fig, rehacer){
-  const phone = bp() === `phone`, mode = S.x.figMode || `lado`, min = !!S.x.figMin && mode !== `lado`;
+  const z = +S.x.zoom || 1, libre = (innerWidth - 92 - (S.x.panelOff ? 58 : 330)) / z;
+  const phone = bp() === `phone` || libre < 820, mode = S.x.figMode || `lado`, min = !!S.x.figMin && mode !== `lado`;
+  document.querySelectorAll(`body > .rfig.flt`).forEach(x => x.remove());
   const w = el(`div`, `rlc m-${mode}` + (phone ? ` ph` : ``));
   const txt = el(`div`, `reptext rleer`, it.body);
   const box = el(`div`, `rfig` + (min ? ` min` : ``)); box.setAttribute(`role`, `region`); box.setAttribute(`aria-label`, `Dibujo de la ficha`);
@@ -2111,8 +2113,11 @@ function leerConDibujo(it, fig, rehacer){
     b(`−`, `Más pequeño`, () => sz(-80)); b(`+`, `Más grande`, () => sz(80));
   }
   if (mode !== `lado`) b(min ? `▾` : `▴`, min ? `Mostrar el dibujo` : `Minimizar el dibujo`, () => { S.x.figMin = !min; save(); rehacer(); });
+  { const lz = btn(`🔍`, ``, () => lupa(fig)); lz.title = `Ver el dibujo en grande`; lz.setAttribute(`aria-label`, lz.title); ctl.prepend(lz); }
   bar.append(lab, ctl); box.append(bar, fig);
   w.append(box, txt);
+  // la ventana flotante vive fuera del contenido para que el tamaño de letra no la desplace
+  if (mode === `flota`){ box.classList.add(`flt`); document.body.append(box); }
   // fijo y "al lado" quedan debajo de la barra de secciones, que también es fija
   requestAnimationFrame(() => { const sw = document.querySelector(`.subw`); const h = sw && getComputedStyle(sw).position === `sticky` ? Math.round(sw.getBoundingClientRect().height) : 0; w.style.setProperty(`--stk`, `${h}px`); });
   // ventana flotante: se arrastra desde la barra y recuerda dónde la dejaste
@@ -4272,6 +4277,10 @@ addEventListener(`pagehide`, () => { cnFlush(); });
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06c`, d:`2026-11-06`, t:`🔍 Ver más grande`, l:[
+    `Arriba tienes el botón 🔍. Con A+ / A− (o eligiendo 115 %, 130 %, 150 %, 175 % o 200 %) se agranda la letra, los botones y los dibujos de toda la página.`,
+    `Se guarda en cada dispositivo: puedes tener la letra grande en el teléfono y normal en la computadora.`,
+    `Cada dibujo tiene su 🔍: lo abre en pantalla completa. Acerca con + / −, con la rueda del ratón o con dos dedos; arrástralo para moverlo y toca dos veces para acercar ahí. ↺ lo ajusta y ✕ cierra.`] },
   { id:`2026-11-06b`, d:`2026-11-06`, t:`Lee y mira el dibujo al mismo tiempo`, l:[
     `En Repaso → Leer, el dibujo ya está junto al texto (en computadora, a la derecha; en el teléfono, arriba).`,
     `Arriba del dibujo tienes 3 botones: ◧ junto al texto, 📌 fijarlo arriba mientras bajas leyendo, y ⧉ ventana flotante.`,
@@ -4323,6 +4332,77 @@ renderHead = function(){
   b.title = n ? `${n} novedad${n === 1 ? `` : `es`} sin leer` : `Novedades`; b.setAttribute(`aria-label`, b.title);
   tools.prepend(b);
 };
+
+/* ======================= LUPA Y TAMAÑO DE LETRA =======================
+   Para ver mejor: 🔍 arriba cambia el tamaño de todo el contenido (se guarda en cada dispositivo)
+   y cualquier dibujo se abre en pantalla completa para acercarlo y moverlo.                        */
+const ZOOMS = [1, 1.15, 1.3, 1.5, 1.75, 2];
+function applyZoom(){ const z = +S.x.zoom || 1; document.documentElement.style.setProperty(`--z`, z); document.documentElement.classList.toggle(`zoomed`, z !== 1); }
+function setZoom(z){ S.x.zoom = Math.round(Math.max(0.9, Math.min(2, z)) * 100) / 100; save(); applyZoom(); renderAll ? renderAll() : renderView(); }
+function openZoom(){
+  openSheet(`Ver más grande`, b => {
+    const z = +S.x.zoom || 1;
+    b.append(el(`p`, `muted`, `Agranda la letra, los botones y los dibujos de toda la página. Se guarda en este dispositivo.`));
+    const row = el(`div`, `zrow`);
+    const m = btn(`A−`, `zbt sm`, () => { const i = ZOOMS.findIndex(v => v >= z - .001); setZoom(ZOOMS[Math.max(0, i - 1)] || .9); drawSheet(); }); m.setAttribute(`aria-label`, `Letra más pequeña`);
+    const p = btn(`A+`, `zbt lg`, () => { const i = ZOOMS.findIndex(v => v > z + .001); setZoom(i < 0 ? 2 : ZOOMS[i]); drawSheet(); }); p.setAttribute(`aria-label`, `Letra más grande`);
+    row.append(m, el(`div`, `zval`, `${Math.round(z * 100)} %`), p); b.append(row);
+    const ch = el(`div`, `zchips`);
+    ZOOMS.forEach(v => { const c = btn(`${Math.round(v * 100)} %`, `zchip` + (Math.abs(v - z) < .01 ? ` on` : ``), () => { setZoom(v); drawSheet(); }); c.setAttribute(`aria-pressed`, Math.abs(v - z) < .01); ch.append(c); });
+    b.append(ch);
+    b.append(el(`div`, `zprev reptext`, `<p>Ejemplo: el <b>pH</b> = −log [H<sub>3</sub>O<sup>+</sup>]. Una solución con pH 3 es <b>ácida</b>.</p>`));
+    b.append(el(`p`, `muted`, `🔍 en cualquier dibujo: lo abre en pantalla completa. Ahí puedes acercar con + / −, con la rueda del ratón o con dos dedos, y moverlo arrastrando.`));
+  });
+}
+/* Visor de dibujos a pantalla completa */
+function lupa(fig){
+  if (!fig) return; const svg = fig.querySelector(`svg`); if (!svg) return;
+  const cap = fig.querySelector(`figcaption`);
+  const ov = el(`div`, `lupa`); ov.setAttribute(`role`, `dialog`); ov.setAttribute(`aria-modal`, `true`); ov.setAttribute(`aria-label`, `Dibujo en grande`);
+  const top = el(`div`, `lupab`), stage = el(`div`, `lupas`), inner = el(`div`, `lupai`);
+  inner.append(svg.cloneNode(true)); stage.append(inner);
+  let k = 1, x = 0, y = 0; const pinta = () => { inner.style.transform = `translate(${x}px,${y}px) scale(${k})`; val.textContent = `${Math.round(k * 100)} %`; };
+  const zoomA = (nk, cx, cy) => { nk = Math.max(1, Math.min(6, nk)); const r = stage.getBoundingClientRect(); cx = cx == null ? r.width / 2 : cx - r.left; cy = cy == null ? r.height / 2 : cy - r.top; x = cx - (cx - x) * nk / k; y = cy - (cy - y) * nk / k; k = nk; if (k === 1){ x = 0; y = 0; } pinta(); };
+  const B = (t, l, f) => { const b = btn(t, `lbt`, f); b.title = l; b.setAttribute(`aria-label`, l); return b; };
+  const val = el(`span`, `lval`, `100 %`);
+  const cerrar = () => { ov.remove(); document.removeEventListener(`keydown`, kd); };
+  top.append(el(`b`, ``, `Dibujo`), B(`−`, `Alejar`, () => zoomA(k / 1.4)), val, B(`+`, `Acercar`, () => zoomA(k * 1.4)), B(`↺`, `Ajustar a la pantalla`, () => { k = 1; x = 0; y = 0; pinta(); }), B(`✕`, `Cerrar`, cerrar));
+  ov.append(top, stage);
+  if (cap){ const c = el(`div`, `lupac`, cap.innerHTML); ov.append(c); }
+  const kd = e => { if (e.key === `Escape`) cerrar(); else if (e.key === `+` || e.key === `=`) zoomA(k * 1.4); else if (e.key === `-`) zoomA(k / 1.4); };
+  document.addEventListener(`keydown`, kd);
+  stage.addEventListener(`wheel`, e => { e.preventDefault(); zoomA(k * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX, e.clientY); }, { passive:false });
+  // arrastrar y pellizcar
+  const pts = new Map(); let d0 = 0, k0 = 1;
+  stage.addEventListener(`pointerdown`, e => { stage.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x:e.clientX, y:e.clientY }); if (pts.size === 2){ const [a, b] = [...pts.values()]; d0 = Math.hypot(a.x - b.x, a.y - b.y); k0 = k; } });
+  stage.addEventListener(`pointermove`, e => { const p = pts.get(e.pointerId); if (!p) return;
+    if (pts.size === 1){ x += e.clientX - p.x; y += e.clientY - p.y; pinta(); }
+    pts.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if (pts.size === 2 && d0){ const [a, b] = [...pts.values()]; zoomA(k0 * Math.hypot(a.x - b.x, a.y - b.y) / d0, (a.x + b.x) / 2, (a.y + b.y) / 2); } });
+  const fin = e => { pts.delete(e.pointerId); if (pts.size < 2) d0 = 0; };
+  stage.addEventListener(`pointerup`, fin); stage.addEventListener(`pointercancel`, fin);
+  stage.addEventListener(`dblclick`, e => zoomA(k > 1.5 ? 1 : 2.5, e.clientX, e.clientY));
+  document.body.append(ov); pinta(); setTimeout(() => top.querySelector(`button:last-child`).focus(), 30);
+}
+/* 🔍 en cada dibujo de la página */
+const _figureL = figure;
+figure = function(key, small){
+  const d = _figureL(key, small); if (!d) return d;
+  const z = btn(`🔍`, `figz`, e => { e.stopPropagation(); lupa(d); }); z.title = `Ver en grande`; z.setAttribute(`aria-label`, `Ver el dibujo en grande`);
+  d.append(z); return d;
+};
+/* botón 🔍 arriba */
+const _renderHeadZ = renderHead;
+renderHead = function(){
+  _renderHeadZ();
+  const tools = $(`#head .top .tools`); if (!tools) return;
+  const z = +S.x.zoom || 1; const b = btn(`🔍${z !== 1 ? `<i>${Math.round(z * 100)}</i>` : ``}`, `hbtn hzoom`, openZoom);
+  b.title = `Ver más grande (tamaño de letra y lupa)`; b.setAttribute(`aria-label`, b.title); tools.prepend(b);
+};
+applyZoom();
+/* la ventana flotante del dibujo se quita al salir del Repaso */
+const _renderViewL = renderView;
+renderView = function(){ _renderViewL.apply(this, arguments); if (!document.querySelector(`#view .rlc.m-flota`)) document.querySelectorAll(`body > .rfig.flt`).forEach(x => x.remove()); };
 
 /* ======================= AUDIO-REPASO (lectura en voz alta) ======================= */
 const AU = { on:false, cards:[], ci:0, si:0, seg:0, sents:[], voices:[], sleepEnd:0, token:0 };
@@ -4566,7 +4646,7 @@ function docRef(){ return SY.db.collection(`users`).doc(SY.user.uid); }
    · Lo que es solo de la pantalla (temas elegidos, pestañas abiertas, vista de la agenda): se queda el de cada dispositivo.
    · Todo lo demás: gana el valor del dispositivo que cambió más recientemente.                                      */
 const DEVID = (() => { try { let d = localStorage.getItem(`quimica_dev`); if (!d){ d = Math.random().toString(36).slice(2, 10); localStorage.setItem(`quimica_dev`, d); } return d; } catch(e){ return `x`; } })();
-const LOCAL_X = [`sm`, `ptab`, `agv`, `cn`, `nrq`, `nrt`, `rtab`, `rtabFor`, `qw`, `qd`, `syncHide`, `figMode`, `figPos`, `figMin`, `panelOff`];
+const LOCAL_X = [`sm`, `ptab`, `agv`, `cn`, `nrq`, `nrt`, `rtab`, `rtabFor`, `qw`, `qd`, `syncHide`, `figMode`, `figPos`, `figMin`, `panelOff`, `zoom`];
 const tsOf = o => (o && (o.upd || o.updated || o.t || o.created)) || 0;
 function mergeVal(a, b, bn, del){
   if (a === undefined) return b; if (b === undefined) return a;

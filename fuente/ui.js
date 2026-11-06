@@ -717,7 +717,9 @@ function checkBox(it){
 }
 /* ---------- Leer con el dibujo a la vista: al lado, fijo arriba o en ventana flotante que se mueve ---------- */
 function leerConDibujo(it, fig, rehacer){
-  const phone = bp() === `phone`, mode = S.x.figMode || `lado`, min = !!S.x.figMin && mode !== `lado`;
+  const z = +S.x.zoom || 1, libre = (innerWidth - 92 - (S.x.panelOff ? 58 : 330)) / z;
+  const phone = bp() === `phone` || libre < 820, mode = S.x.figMode || `lado`, min = !!S.x.figMin && mode !== `lado`;
+  document.querySelectorAll(`body > .rfig.flt`).forEach(x => x.remove());
   const w = el(`div`, `rlc m-${mode}` + (phone ? ` ph` : ``));
   const txt = el(`div`, `reptext rleer`, it.body);
   const box = el(`div`, `rfig` + (min ? ` min` : ``)); box.setAttribute(`role`, `region`); box.setAttribute(`aria-label`, `Dibujo de la ficha`);
@@ -734,8 +736,11 @@ function leerConDibujo(it, fig, rehacer){
     b(`−`, `Más pequeño`, () => sz(-80)); b(`+`, `Más grande`, () => sz(80));
   }
   if (mode !== `lado`) b(min ? `▾` : `▴`, min ? `Mostrar el dibujo` : `Minimizar el dibujo`, () => { S.x.figMin = !min; save(); rehacer(); });
+  { const lz = btn(`🔍`, ``, () => lupa(fig)); lz.title = `Ver el dibujo en grande`; lz.setAttribute(`aria-label`, lz.title); ctl.prepend(lz); }
   bar.append(lab, ctl); box.append(bar, fig);
   w.append(box, txt);
+  // la ventana flotante vive fuera del contenido para que el tamaño de letra no la desplace
+  if (mode === `flota`){ box.classList.add(`flt`); document.body.append(box); }
   // fijo y "al lado" quedan debajo de la barra de secciones, que también es fija
   requestAnimationFrame(() => { const sw = document.querySelector(`.subw`); const h = sw && getComputedStyle(sw).position === `sticky` ? Math.round(sw.getBoundingClientRect().height) : 0; w.style.setProperty(`--stk`, `${h}px`); });
   // ventana flotante: se arrastra desde la barra y recuerda dónde la dejaste

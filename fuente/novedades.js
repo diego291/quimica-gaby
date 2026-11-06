@@ -2,6 +2,10 @@
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06c`, d:`2026-11-06`, t:`🔍 Ver más grande`, l:[
+    `Arriba tienes el botón 🔍. Con A+ / A− (o eligiendo 115 %, 130 %, 150 %, 175 % o 200 %) se agranda la letra, los botones y los dibujos de toda la página.`,
+    `Se guarda en cada dispositivo: puedes tener la letra grande en el teléfono y normal en la computadora.`,
+    `Cada dibujo tiene su 🔍: lo abre en pantalla completa. Acerca con + / −, con la rueda del ratón o con dos dedos; arrástralo para moverlo y toca dos veces para acercar ahí. ↺ lo ajusta y ✕ cierra.`] },
   { id:`2026-11-06b`, d:`2026-11-06`, t:`Lee y mira el dibujo al mismo tiempo`, l:[
     `En Repaso → Leer, el dibujo ya está junto al texto (en computadora, a la derecha; en el teléfono, arriba).`,
     `Arriba del dibujo tienes 3 botones: ◧ junto al texto, 📌 fijarlo arriba mientras bajas leyendo, y ⧉ ventana flotante.`,
