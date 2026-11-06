@@ -12,6 +12,7 @@ function cn(){
   return CN;
 }
 let CN_T = null;
+function cnTomb(...ids){ const C = cn(); C.del = C.del || {}; ids.forEach(id => { C.del[id] = Date.now(); }); }
 function cnSave(now){ clearTimeout(CN_T); const w = () => { try { localStorage.setItem(CN_KEY, JSON.stringify(cn())); } catch(e){ toastMsg(`No hay espacio para guardar el cuaderno en este dispositivo.`); } }; if (now) w(); else CN_T = setTimeout(w, 400); }
 const cnNb = id => cn().nb.find(x => x.id === id), cnSec = id => cn().sec.find(x => x.id === id), cnPg = id => cn().pg.find(x => x.id === id);
 const cnColorOf = p => { const s = cnSec(p.sec), n = s && cnNb(s.nb); return GPAL[(s && s.color) || (n && n.color) || 8]; };
@@ -45,7 +46,7 @@ function cnNewPage(secId, tpl, title){
 }
 function cnLeave(){ // páginas en blanco que se abandonan sin escribir: se descartan
   const st = S.x.cn || {}, p = st.pg && cnPg(st.pg); if (!p) return;
-  if (!(p.title || ``).trim() && !cnText(p.html) && !/data-img/.test(p.html || ``)){ cn().pg = cn().pg.filter(x => x.id !== p.id); st.pg = null; cnSave(true); save(); }
+  if (!(p.title || ``).trim() && !cnText(p.html) && !/data-img/.test(p.html || ``)){ cnTomb(p.id); cn().pg = cn().pg.filter(x => x.id !== p.id); st.pg = null; cnSave(true); save(); }
   else if (p.fresh && !cnText(p.html).replace(/Fecha:.*$/, ``).trim() && !(p.title || ``).trim()){ /* conserva plantillas con título */ }
 }
 function pickTpl(secId){
@@ -93,9 +94,9 @@ function cnMenu(kind, obj){
       const n = kind === `nb` ? cn().sec.filter(s => s.nb === obj.id).length : kind === `sec` ? cn().pg.filter(p => p.sec === obj.id).length : 0;
       if (!confirm(kind === `nb` ? `¿Borrar el cuaderno “${obj.name}” con sus ${n} secciones y todas sus páginas?` : kind === `sec` ? `¿Borrar la sección “${obj.name}” y sus ${n} páginas?` : `¿Borrar la página “${obj.title || `Sin título`}”?`)) return;
       const C = cn();
-      if (kind === `nb`){ const ss = C.sec.filter(s => s.nb === obj.id).map(s => s.id); C.pg = C.pg.filter(p => !ss.includes(p.sec)); C.sec = C.sec.filter(s => s.nb !== obj.id); C.nb = C.nb.filter(x => x.id !== obj.id); }
-      if (kind === `sec`){ C.pg = C.pg.filter(p => p.sec !== obj.id); C.sec = C.sec.filter(s => s.id !== obj.id); }
-      if (kind === `pg`) C.pg = C.pg.filter(p => p.id !== obj.id);
+      if (kind === `nb`){ const ss = C.sec.filter(s => s.nb === obj.id).map(s => s.id); cnTomb(obj.id, ...ss, ...C.pg.filter(p => ss.includes(p.sec)).map(p => p.id)); C.pg = C.pg.filter(p => !ss.includes(p.sec)); C.sec = C.sec.filter(s => s.nb !== obj.id); C.nb = C.nb.filter(x => x.id !== obj.id); }
+      if (kind === `sec`){ cnTomb(obj.id, ...C.pg.filter(p => p.sec === obj.id).map(p => p.id)); C.pg = C.pg.filter(p => p.sec !== obj.id); C.sec = C.sec.filter(s => s.id !== obj.id); }
+      if (kind === `pg`){ cnTomb(obj.id); C.pg = C.pg.filter(p => p.id !== obj.id); }
       cnSave(true); closeSheet(); renderView();
     }, `btn danger wide`);
   });

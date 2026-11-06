@@ -58,7 +58,7 @@ function markDay(){ const t = todayStr(), d = S.x.days || (S.x.days = []); if (!
 function streak(){ const d = new Set(S.x.days || []); let s = todayStr(); if (!d.has(s)) s = addDays(s, -1); let n = 0; while (d.has(s)){ n++; s = addDays(s, -1); } return n; }
 
 /* ---------- navegación ---------- */
-function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`notas`,`agenda`,`pendientes`,`notasr`,`cuaderno`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
+function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`notas`,`agenda`,`pendientes`,`notasr`,`cuaderno`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList(), t:Date.now() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
 function goSec(k){ const sc = SECS.find(s => s.k === k); go(S.x.sm[k] || sc.modes[0][0]); }
 function topScroll(){ window.scrollTo({ top:0 }); const p = $(`#panel`); if (p && S.mode !== `repaso`) p.scrollTop = 0; }
 function setSel(set){ S.sel = new Set(set); save(); SIM.on = false; stopTick(); renderAll(); }
@@ -413,7 +413,9 @@ function heroCard(){
     title = card_.title; line = `${TOPICS[card_.t].n} · ${TOPICS[card_.t].name} · ficha ${j + 1} de ${tm.length}`;
     seg = `<div class="hseg" style="--c:var(--${card_.t})">${tm.map(x => `<i class="${x === card_ ? `c` : S.x.seen[hash(x.title)] ? `d` : ``}"></i>`).join(``)}</div>`;
     const ts = (L.sel || []).filter(x => TORDER.includes(x));
-    go_ = () => { if (ts.length) S.sel = new Set(ts); S.x.rall = false; go(`repaso`); };
+    const cs = S.x.chk && S.x.chk[hash(card_.title)], cp = enCurso(cs) ? chkProg(cs) : null;
+    if (cp) line += ` · ibas en la pregunta ${cp.n} de ${cp.tot}`;
+    go_ = () => { if (ts.length) S.sel = new Set(ts); S.x.rall = false; const k = selKey(), j = filt(ALL.REPASO).findIndex(x => x.title === card_.title); if (j >= 0) S.x.rpos[k] = j; if (cp){ S.x.rtabFor = hash(card_.title); S.x.rtab = `comp`; } go(`repaso`); };
   } else if (L && L.mode){
     const ts = (L.sel || []).filter(x => TORDER.includes(x)); if (ts.length) t = ts[ts.length - 1];
     title = ts.length === 1 ? `${TOPICS[t].n} · ${TOPICS[t].name}` : ts.length ? `${ts.length} temas: ${ts.map(x => x.slice(1)).join(`, `)}` : `Química`;
@@ -422,7 +424,7 @@ function heroCard(){
   } else { title = t ? `${TOPICS[t].n} · ${TOPICS[t].name}` : `Elige tus temas`; line = `Empieza por el Repaso del tema`; go_ = () => go(`repaso`); }
   if (!seg && t){ const all = ALL.REPASO.filter(x => sel.includes(x.t)); frac = all.length ? all.filter(x => S.x.seen[hash(x.title)]).length / all.length : 0; seg = `<div class="bar"><i style="width:${Math.round(frac * 100)}%"></i></div>`; }
   h.innerHTML = `<div class="k">${L && L.mode ? `Continúa donde quedaste` : `Para empezar`}</div><h2>${title}</h2><div class="hl">${line}</div>${seg}`;
-  const b = btn(card_ ? `Seguir leyendo ` : L && L.mode ? `Seguir ` : `Empezar `, `go`, go_); b.innerHTML += icon(`right`); h.append(b);
+  const b = btn(card_ ? ((S.x.chk && enCurso(S.x.chk[hash(card_.title)])) ? `Seguir con las preguntas ` : `Seguir leyendo `) : L && L.mode ? `Seguir ` : `Empezar `, `go`, go_); b.innerHTML += icon(`right`); h.append(b);
   return h;
 }
 function routeBox(){
@@ -552,6 +554,8 @@ function chkAj(){
   const x = S.x;
   return { max: x.chkMax == null ? 20 : x.chkMax, fallo: x.chkFallo !== false, final: x.chkFinal !== false, excl: (x.chkExcl = x.chkExcl || {}) };
 }
+function enCurso(st){ return !!st && st.fase !== `fin` && (Object.keys(st.res || {}).length > 0 || st.i > 0 || st.fase !== `a`); }
+function chkProg(st){ if (!st) return null; const tot = (st.a || []).length + (st.b || []).length, resp = Object.keys(st.res || {}).length; const n = st.fase === `a` ? st.i + 1 : (st.a || []).length + (st.fase === `b` ? st.i + 1 : 0); return { tot, resp, n:Math.min(tot, Math.max(1, n)) }; }
 function dominio(qs){ let ok = 0, n = 0; qs.forEach(q => { const v = S.st[q.id]; if (v){ ok += v[0]; n += v[0] + v[1]; } }); return n ? ok / n : null; }
 function checkBox(it){
   const bloques = checkBloques(it);
@@ -582,10 +586,15 @@ function checkBox(it){
   const nuevo = () => {
     const aj = chkAj(), a = ordenar(propia).map(q => q.id), r = elegirRepaso();
     const mezcla = !aj.final && r.length;
-    return CHK[key] = { f: firma(), a: mezcla ? shuf(a.concat(r)) : a, b: mezcla ? [] : r, fase: `a`, i: 0, res: {}, mezcla };
+    S.x.chk[key] = { f: firma(), a: mezcla ? shuf(a.concat(r)) : a, b: mezcla ? [] : r, fase: `a`, i: 0, res: {}, mezcla, t: Date.now() }; save(); return S.x.chk[key];
   };
-  let st = CHK[key];
+  // El avance se guarda (y se sincroniza): se puede seguir en otro dispositivo
+  S.x.chk = S.x.chk || {};
+  let st = S.x.chk[key];
+  if (st){ const ok = id => id in porId; st.a = (st.a || []).filter(ok); st.b = (st.b || []).filter(ok); st.res = st.res || {}; if (!st.a.length && !st.b.length) st = null; }
   if (!st) st = nuevo();
+  const persist = () => { st.t = Date.now(); S.x.chk[key] = st; save(); };
+  let preguntar = enCurso(st);
   const sec = el(`section`, `check`);
   const cuenta = ids => { const r = ids.filter(id => id in st.res); return { bien: r.filter(id => st.res[id]).length, resp: r.length, mal: r.filter(id => st.res[id] === false) }; };
   const subir = () => sec.scrollIntoView({ block: `nearest`, behavior: `smooth` });
@@ -625,6 +634,7 @@ function checkBox(it){
     st.b.forEach(id => delete st.res[id]); st.b = elegirRepaso(); st.f = firma();
     if (st.fase === `b` || st.fase === `fin`){ st.fase = `pausa`; st.i = 0; }
     if (st.fase === `pausa` && !st.b.length) st.fase = `fin`;
+    persist();
   }
   function pasos(){
     const conRep = st.mezcla || st.b.length;
@@ -641,14 +651,25 @@ function checkBox(it){
     const head = el(`div`, `chkhead`);
     const g = btn(``, `gear`, ajustes); g.innerHTML = icon(`gear`) + ` Ajustes`; g.setAttribute(`aria-label`, `Ajustes del repaso`);
     head.append(el(`h4`, ``, `Comprueba lo que leíste`), g); sec.append(head, pasos());
+    // Si quedó a medias (aquí o en otro dispositivo): seguir, reiniciar o empezar uno nuevo
+    if (preguntar && enCurso(st)){
+      const pr = chkProg(st), bx = el(`div`, `chkresume`);
+      bx.append(el(`b`, ``, st.fase === `pausa` ? `Terminaste la ficha nueva y te falta el repaso` : `Te quedaste en la pregunta ${pr.n} de ${pr.tot}`), el(`span`, ``, `${pr.resp} respondida${pr.resp === 1 ? `` : `s`} · ${Object.values(st.res).filter(Boolean).length} correcta${Object.values(st.res).filter(Boolean).length === 1 ? `` : `s`}`));
+      const col = el(`div`, `chkcol`);
+      col.append(btn(`Seguir donde quedé`, `btn acc`, () => { preguntar = false; draw(); }));
+      col.append(btn(`Reiniciar con las mismas preguntas`, `btn ghost`, () => { st.res = {}; st.i = 0; st.fase = st.a.length ? `a` : `b`; preguntar = false; persist(); draw(); }));
+      col.append(btn(`Empezar uno nuevo`, `btn ghost`, () => { st = nuevo(); preguntar = false; draw(); }));
+      bx.append(col); sec.append(bx); return;
+    }
+    preguntar = false;
     if (st.fase === `pausa`){
       const c = cuenta(st.a);
       sec.append(el(`div`, `chkbig`, `<b>${c.bien}</b><span> / ${st.a.length}</span><div>correctas en esta ficha</div>`));
       sec.append(el(`p`, `chkfin`, `Sigue el repaso: <b>${st.b.length} pregunta${st.b.length === 1 ? `` : `s`}</b> de ${new Set(st.b.map(id => porId[id].de)).size} ficha${new Set(st.b.map(id => porId[id].de)).size === 1 ? `` : `s`} anterior${new Set(st.b.map(id => porId[id].de)).size === 1 ? `` : `es`}.`));
       const col = el(`div`, `chkcol`);
-      col.append(btn(`Empezar repaso`, `btn acc`, () => { st.fase = `b`; st.i = 0; draw(); subir(); }));
-      if (c.mal.length) col.append(btn(`Repetir las ${c.mal.length} falladas`, `btn ghost`, () => { c.mal.forEach(id => delete st.res[id]); st.a = shuf(c.mal); st.fase = `a`; st.i = 0; draw(); subir(); }));
-      col.append(btn(`Terminar aquí`, `btn link`, () => { st.fase = `fin`; draw(); subir(); }));
+      col.append(btn(`Empezar repaso`, `btn acc`, () => { st.fase = `b`; st.i = 0; persist(); draw(); subir(); }));
+      if (c.mal.length) col.append(btn(`Repetir las ${c.mal.length} falladas`, `btn ghost`, () => { c.mal.forEach(id => delete st.res[id]); st.a = shuf(c.mal); st.fase = `a`; st.i = 0; persist(); draw(); subir(); }));
+      col.append(btn(`Terminar aquí`, `btn link`, () => { st.fase = `fin`; persist(); draw(); subir(); }));
       sec.append(col); return;
     }
     if (st.fase === `fin`){
@@ -657,12 +678,12 @@ function checkBox(it){
       if (st.b.length) sec.append(el(`p`, `chkfin`, `Ficha nueva: <b>${ca.bien} de ${ca.resp}</b> · Repaso: <b>${cb.bien} de ${cb.resp}</b>`));
       const mal = ca.mal.concat(cb.mal);
       const col = el(`div`, `chkcol`);
-      col.append(btn(`Repetir preguntas`, `btn acc`, () => { st = nuevo(); draw(); subir(); }));
-      if (mal.length) col.append(btn(`Repetir solo las falladas (${mal.length})`, `btn ghost`, () => { mal.forEach(id => delete st.res[id]); st.a = shuf(ca.mal); st.b = shuf(cb.mal); st.fase = st.a.length ? `a` : `b`; st.i = 0; draw(); subir(); }));
+      col.append(btn(`Repetir preguntas`, `btn acc`, () => { st = nuevo(); persist(); draw(); subir(); }));
+      if (mal.length) col.append(btn(`Repetir solo las falladas (${mal.length})`, `btn ghost`, () => { mal.forEach(id => delete st.res[id]); st.a = shuf(ca.mal); st.b = shuf(cb.mal); st.fase = st.a.length ? `a` : `b`; st.i = 0; persist(); draw(); subir(); }));
       sec.append(col); return;
     }
     const lista = st.fase === `a` ? st.a : st.b;
-    if (!lista.length){ st.fase = st.fase === `a` && st.b.length ? `pausa` : `fin`; return draw(); }
+    if (!lista.length){ st.fase = st.fase === `a` && st.b.length ? `pausa` : `fin`; persist(); return draw(); }
     const c = cuenta(lista);
     const cnt = el(`div`, `row chkcnt`); cnt.append(el(`span`, ``, `Pregunta <b>${st.i + 1}</b> de ${lista.length}`), el(`span`, ``, `${c.bien} correcta${c.bien === 1 ? `` : `s`}`)); sec.append(cnt);
     sec.append(el(`div`, `chkbar`, `<i style="width:${Math.round(st.i / lista.length * 100)}%"></i>`));
@@ -670,14 +691,14 @@ function checkBox(it){
     const ultima = st.i === lista.length - 1;
     const sigTxt = () => ultima ? (st.fase === `a` && st.b.length ? `Continuar` : `Ver resultado`) : `Siguiente pregunta`;
     sec.append(el(`p`, `chkde` + (q.de === it.title ? ` nueva` : ``), q.de === it.title ? `De esta ficha` : `Repaso · ${q.de}`));
-    const alResponder = ok => { st.res[q.id] = ok; S.st[`R_` + key] = (S.st[`R_` + key] || 0) + 1; save(); sig.textContent = sigTxt(); sig.classList.add(`acc`); sig.classList.remove(`ghost`); };
+    const alResponder = ok => { st.res[q.id] = ok; S.st[`R_` + key] = (S.st[`R_` + key] || 0) + 1; persist(); sig.textContent = sigTxt(); sig.classList.add(`acc`); sig.classList.remove(`ghost`); };
     sec.append(q.ej ? ejCheck(q, alResponder) : q.o ? mcqCard(q, alResponder) : abiertaCheck(q, alResponder));
     if (q.id[0] === `R`) sec.append(el(`p`, `chknota`, `<b>Nota:</b> esta pregunta sale del formulario de resumen del tema, por eso la fuente dice ${q.src.replace(/^Tema \d+,\s*/, ``)}. La respuesta correcta es de ${q.de === it.title ? `esta ficha` : `la ficha «${q.de}»`}; las otras opciones son filas del mismo formulario y pueden ser de fichas que aún no has leído.`));
     const nav = el(`div`, `chknav`);
-    const rep = btn(``, `btn ghost`, () => { st = nuevo(); draw(); subir(); }); rep.innerHTML = icon(`redo`) + ` Repetir`;
+    const rep = btn(``, `btn ghost`, () => { st = nuevo(); persist(); draw(); subir(); }); rep.innerHTML = icon(`redo`) + ` Repetir`;
     const sig = btn(q.id in st.res ? sigTxt() : (ultima ? sigTxt() : `Saltar pregunta`), `btn` + (q.id in st.res ? ` acc` : ` ghost`), () => {
-      if (!ultima){ st.i++; return draw(); }
-      st.i = 0; st.fase = st.fase === `a` && st.b.length ? `pausa` : `fin`; draw(); subir(); });
+      if (!ultima){ st.i++; persist(); return draw(); }
+      st.i = 0; st.fase = st.fase === `a` && st.b.length ? `pausa` : `fin`; persist(); draw(); subir(); });
     nav.append(rep, sig); sec.append(nav);
   }
   draw();
@@ -720,12 +741,13 @@ function vRepaso(v){
   v.append(sq); requestAnimationFrame(() => { const c = sq.querySelector(`.cur`); if (c && sq.scrollWidth > sq.clientWidth) sq.scrollLeft = c.offsetLeft - sq.clientWidth / 2 + c.offsetWidth / 2; });
   v.append(el(`h2`, `rtit`, it.title));
   v.append(el(`p`, `rsub`, `Ficha ${ti + 1} de ${tema.length} · Fuente: ${it.src}${all.length > tema.length ? ` · tarjeta ${i + 1} de ${all.length}` : ``}`));
-  const _was = S.x.seen[th]; S.x.seen[th] = 1; motSeen(all, it, _was); S.x.last = { mode:`repaso`, sel:selList(), i, n:all.length, title:it.title };
+  const _was = S.x.seen[th]; S.x.seen[th] = 1; motSeen(all, it, _was); S.x.last = { mode:`repaso`, sel:selList(), i, n:all.length, title:it.title, t:Date.now() };
   // Pestañas de la ficha
   const fig = it.fig && figure(it.fig), vids = VIDEOS.filter(x => x.rep.includes(it.title));
   const nChk = (() => { const bl = checkBloques(it); return bl[0].qs.length; })();
+  const cst = S.x.chk && S.x.chk[th], cpr = enCurso(cst) ? chkProg(cst) : null;
   const ck = checkBox(it);
-  const TABS = [[`leer`, `Leer`]]; if (fig) TABS.push([`dibujo`, `Dibujo`]); if (it.memo) TABS.push([`memo`, `Memorizar`]); if (ck) TABS.push([`comp`, `Comprobar · ${nChk}`]); if (vids.length) TABS.push([`video`, `Video`]);
+  const TABS = [[`leer`, `Leer`]]; if (fig) TABS.push([`dibujo`, `Dibujo`]); if (it.memo) TABS.push([`memo`, `Memorizar`]); if (ck) TABS.push([`comp`, cpr ? `Comprobar · ${cpr.n}/${cpr.tot}` : `Comprobar · ${nChk}`]); if (vids.length) TABS.push([`video`, `Video`]);
   const apun = typeof cnPagesFor === `function` ? cnPagesFor(it.t) : []; TABS.push([`apuntes`, apun.length ? `Mis apuntes · ${apun.length}` : `Mis apuntes`]);
   if (S.x.rtabFor !== th){ S.x.rtabFor = th; S.x.rtab = `leer`; }
   if (!TABS.some(t => t[0] === S.x.rtab)) S.x.rtab = `leer`;
@@ -759,7 +781,7 @@ function vRepaso(v){
     const last = i === all.length - 1;
     const prev = btn(``, `btn ghost`, () => move(-1)); prev.dataset.nav = `prev`; prev.innerHTML = icon(`left`) + `<span class="rl">Anterior</span>`; prev.disabled = i === 0; prev.setAttribute(`aria-label`, `Ficha anterior`);
     const mid = t === `comp` ? btn(`Volver a leer la ficha`, `btn ghost rmid`, () => { S.x.rtab = `leer`; pinta(); topScroll(); })
-      : ck ? btn(`Comprobar lo leído · ${nChk}`, `btn acc rmid`, () => { S.x.rtab = `comp`; save(); pinta(); tabs.scrollIntoView({ block:`start`, behavior:`smooth` }); })
+      : ck ? btn(cpr ? `Seguir comprobando · ${cpr.n} de ${cpr.tot}` : `Comprobar lo leído · ${nChk}`, `btn acc rmid`, () => { S.x.rtab = `comp`; save(); pinta(); tabs.scrollIntoView({ block:`start`, behavior:`smooth` }); })
       : btn(last ? `Ir a Fichas` : `Siguiente ficha`, `btn acc rmid`, () => last ? go(`fichas`) : move(1));
     const next = btn(``, t === `comp` ? `btn acc` : `btn ghost`, () => last ? go(`fichas`) : move(1)); next.dataset.nav = `next`; next.innerHTML = `<span class="rl">${last ? `Ir a Fichas` : `Siguiente`}</span>` + icon(`right`); next.setAttribute(`aria-label`, last ? `Ir a Fichas` : `Ficha siguiente`);
     dock.append(prev, mid, next);

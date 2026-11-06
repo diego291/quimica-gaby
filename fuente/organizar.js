@@ -6,7 +6,7 @@ const agn = () => S.x.agn || (S.x.agn = []);
 const nid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const tagsOf = txt => [...new Set((String(txt).match(/#[\wáéíóúñü]+/gi) || []).map(t => t.toLowerCase()))];
 function nSave(n){ n.upd = Date.now(); n.tags = tagsOf(n.text); const L = agn(), i = L.findIndex(x => x.id === n.id); if (i >= 0) L[i] = n; else L.unshift(n); save(); afterAg(); if ([`pendientes`,`notasr`].includes(S.mode)) renderView(); }
-function nDel(n){ S.x.agn = agn().filter(x => x.id !== n.id); save(); afterAg(); if ([`pendientes`,`notasr`].includes(S.mode)) renderView(); }
+function nDel(n){ tomb(n.id); S.x.agn = agn().filter(x => x.id !== n.id); save(); afterAg(); if ([`pendientes`,`notasr`].includes(S.mode)) renderView(); }
 
 /* ---------- editor de pendiente o nota ---------- */
 function openNota(n, kind){
@@ -56,7 +56,7 @@ function vPend(v){
   let any = false;
   G.forEach(([t, l, c]) => { if (!l.length) return; any = true; v.append(el(`h4`, `tkh ${c}`, `${t} · ${l.length}`)); const box = el(`div`, `tkbox`); l.forEach(n => box.append(taskRow(n))); v.append(box); });
   const hechos = L.filter(n => n.done && !(n.date === today && n.doneAt && dstr(new Date(n.doneAt)) === today));
-  if (hechos.length){ const d = el(`details`, `tkdone`); d.append(el(`summary`, ``, `Hechos · ${hechos.length}`)); hechos.slice(0, 40).forEach(n => d.append(taskRow(n))); const cl = btn(`Borrar los hechos`, `linkbtn`, () => { if (confirm(`¿Borrar ${hechos.length} pendientes hechos?`)){ S.x.agn = agn().filter(n => !(n.kind === `task` && n.done)); save(); renderView(); } }); d.append(cl); v.append(d); }
+  if (hechos.length){ const d = el(`details`, `tkdone`); d.append(el(`summary`, ``, `Hechos · ${hechos.length}`)); hechos.slice(0, 40).forEach(n => d.append(taskRow(n))); const cl = btn(`Borrar los hechos`, `linkbtn`, () => { if (confirm(`¿Borrar ${hechos.length} pendientes hechos?`)){ hechos.forEach(n => tomb(n.id)); S.x.agn = agn().filter(n => !(n.kind === `task` && n.done)); save(); renderView(); } }); d.append(cl); v.append(d); }
   if (!any) v.append(el(`p`, `muted`, `No tienes pendientes. Escribe arriba lo que tengas que hacer; toca un pendiente para ponerle fecha o tema.`));
 }
 

@@ -125,9 +125,11 @@ function evSaved(e, isNew){
   e.upd = Date.now(); const i = S.x.ev.findIndex(x => x.id === e.id); if (i >= 0) S.x.ev[i] = e; else S.x.ev.push(e);
   save(); gcQueue({ op:`up`, id:e.id }); afterAg();
 }
-function evDelete(e){ S.x.ev = S.x.ev.filter(x => x.id !== e.id); save(); if (e.gid) gcQueue({ op:`del`, id:e.id, gid:e.gid }); afterAg(); }
+/* lo borrado queda anotado para que la sincronización no lo traiga de vuelta desde otro dispositivo */
+function tomb(id){ S.x.del = S.x.del || {}; S.x.del[id] = Date.now(); }
+function evDelete(e){ tomb(e.id); S.x.ev = S.x.ev.filter(x => x.id !== e.id); save(); if (e.gid) gcQueue({ op:`del`, id:e.id, gid:e.gid }); afterAg(); }
 function afterAg(){ if (typeof renderAgendaHosts === `function`) renderAgendaHosts(); if ([`agenda`,`inicio`].includes(S.mode)) renderView(); renderHead(); if (bp() === `wide`) renderPanel(); }
-function toggleDone(x){ S.x.caldone = S.x.caldone || {}; if (S.x.caldone[x.key]) delete S.x.caldone[x.key]; else S.x.caldone[x.key] = 1; save(); afterAg(); }
+function toggleDone(x){ S.x.caldone = S.x.caldone || {}; S.x.caldone[x.key] = S.x.caldone[x.key] ? 0 : 1; save(); afterAg(); }
 
 /* ---------- editor de evento ---------- */
 function openEv(ev, o = {}){
@@ -544,7 +546,7 @@ async function gcPull(){
   });
   // borrados en Google (solo los que no se repiten y caen dentro del rango revisado)
   const f0 = dstr(from), t0 = dstr(to);
-  S.x.ev = (S.x.ev || []).filter(e => !(e.gid && !e.rrule && !pend.has(e.id) && !seen.has(e.id) && e.date >= f0 && e.date <= t0));
+  S.x.ev = (S.x.ev || []).filter(e => { const gone = e.gid && !e.rrule && !pend.has(e.id) && !seen.has(e.id) && e.date >= f0 && e.date <= t0; if (gone) tomb(e.id); return !gone; });
   try { localStorage.setItem(`quimica_gcal`, JSON.stringify({ t:Date.now(), items: all.filter(g => !g.mf || !(S.x.ev || []).some(e => e.id === g.mf)) })); } catch(e){}
   save();
 }

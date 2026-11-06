@@ -1435,7 +1435,7 @@ function markDay(){ const t = todayStr(), d = S.x.days || (S.x.days = []); if (!
 function streak(){ const d = new Set(S.x.days || []); let s = todayStr(); if (!d.has(s)) s = addDays(s, -1); let n = 0; while (d.has(s)){ n++; s = addDays(s, -1); } return n; }
 
 /* ---------- navegación ---------- */
-function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`notas`,`agenda`,`pendientes`,`notasr`,`cuaderno`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
+function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`notas`,`agenda`,`pendientes`,`notasr`,`cuaderno`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList(), t:Date.now() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
 function goSec(k){ const sc = SECS.find(s => s.k === k); go(S.x.sm[k] || sc.modes[0][0]); }
 function topScroll(){ window.scrollTo({ top:0 }); const p = $(`#panel`); if (p && S.mode !== `repaso`) p.scrollTop = 0; }
 function setSel(set){ S.sel = new Set(set); save(); SIM.on = false; stopTick(); renderAll(); }
@@ -1790,7 +1790,9 @@ function heroCard(){
     title = card_.title; line = `${TOPICS[card_.t].n} · ${TOPICS[card_.t].name} · ficha ${j + 1} de ${tm.length}`;
     seg = `<div class="hseg" style="--c:var(--${card_.t})">${tm.map(x => `<i class="${x === card_ ? `c` : S.x.seen[hash(x.title)] ? `d` : ``}"></i>`).join(``)}</div>`;
     const ts = (L.sel || []).filter(x => TORDER.includes(x));
-    go_ = () => { if (ts.length) S.sel = new Set(ts); S.x.rall = false; go(`repaso`); };
+    const cs = S.x.chk && S.x.chk[hash(card_.title)], cp = enCurso(cs) ? chkProg(cs) : null;
+    if (cp) line += ` · ibas en la pregunta ${cp.n} de ${cp.tot}`;
+    go_ = () => { if (ts.length) S.sel = new Set(ts); S.x.rall = false; const k = selKey(), j = filt(ALL.REPASO).findIndex(x => x.title === card_.title); if (j >= 0) S.x.rpos[k] = j; if (cp){ S.x.rtabFor = hash(card_.title); S.x.rtab = `comp`; } go(`repaso`); };
   } else if (L && L.mode){
     const ts = (L.sel || []).filter(x => TORDER.includes(x)); if (ts.length) t = ts[ts.length - 1];
     title = ts.length === 1 ? `${TOPICS[t].n} · ${TOPICS[t].name}` : ts.length ? `${ts.length} temas: ${ts.map(x => x.slice(1)).join(`, `)}` : `Química`;
@@ -1799,7 +1801,7 @@ function heroCard(){
   } else { title = t ? `${TOPICS[t].n} · ${TOPICS[t].name}` : `Elige tus temas`; line = `Empieza por el Repaso del tema`; go_ = () => go(`repaso`); }
   if (!seg && t){ const all = ALL.REPASO.filter(x => sel.includes(x.t)); frac = all.length ? all.filter(x => S.x.seen[hash(x.title)]).length / all.length : 0; seg = `<div class="bar"><i style="width:${Math.round(frac * 100)}%"></i></div>`; }
   h.innerHTML = `<div class="k">${L && L.mode ? `Continúa donde quedaste` : `Para empezar`}</div><h2>${title}</h2><div class="hl">${line}</div>${seg}`;
-  const b = btn(card_ ? `Seguir leyendo ` : L && L.mode ? `Seguir ` : `Empezar `, `go`, go_); b.innerHTML += icon(`right`); h.append(b);
+  const b = btn(card_ ? ((S.x.chk && enCurso(S.x.chk[hash(card_.title)])) ? `Seguir con las preguntas ` : `Seguir leyendo `) : L && L.mode ? `Seguir ` : `Empezar `, `go`, go_); b.innerHTML += icon(`right`); h.append(b);
   return h;
 }
 function routeBox(){
@@ -1929,6 +1931,8 @@ function chkAj(){
   const x = S.x;
   return { max: x.chkMax == null ? 20 : x.chkMax, fallo: x.chkFallo !== false, final: x.chkFinal !== false, excl: (x.chkExcl = x.chkExcl || {}) };
 }
+function enCurso(st){ return !!st && st.fase !== `fin` && (Object.keys(st.res || {}).length > 0 || st.i > 0 || st.fase !== `a`); }
+function chkProg(st){ if (!st) return null; const tot = (st.a || []).length + (st.b || []).length, resp = Object.keys(st.res || {}).length; const n = st.fase === `a` ? st.i + 1 : (st.a || []).length + (st.fase === `b` ? st.i + 1 : 0); return { tot, resp, n:Math.min(tot, Math.max(1, n)) }; }
 function dominio(qs){ let ok = 0, n = 0; qs.forEach(q => { const v = S.st[q.id]; if (v){ ok += v[0]; n += v[0] + v[1]; } }); return n ? ok / n : null; }
 function checkBox(it){
   const bloques = checkBloques(it);
@@ -1959,10 +1963,15 @@ function checkBox(it){
   const nuevo = () => {
     const aj = chkAj(), a = ordenar(propia).map(q => q.id), r = elegirRepaso();
     const mezcla = !aj.final && r.length;
-    return CHK[key] = { f: firma(), a: mezcla ? shuf(a.concat(r)) : a, b: mezcla ? [] : r, fase: `a`, i: 0, res: {}, mezcla };
+    S.x.chk[key] = { f: firma(), a: mezcla ? shuf(a.concat(r)) : a, b: mezcla ? [] : r, fase: `a`, i: 0, res: {}, mezcla, t: Date.now() }; save(); return S.x.chk[key];
   };
-  let st = CHK[key];
+  // El avance se guarda (y se sincroniza): se puede seguir en otro dispositivo
+  S.x.chk = S.x.chk || {};
+  let st = S.x.chk[key];
+  if (st){ const ok = id => id in porId; st.a = (st.a || []).filter(ok); st.b = (st.b || []).filter(ok); st.res = st.res || {}; if (!st.a.length && !st.b.length) st = null; }
   if (!st) st = nuevo();
+  const persist = () => { st.t = Date.now(); S.x.chk[key] = st; save(); };
+  let preguntar = enCurso(st);
   const sec = el(`section`, `check`);
   const cuenta = ids => { const r = ids.filter(id => id in st.res); return { bien: r.filter(id => st.res[id]).length, resp: r.length, mal: r.filter(id => st.res[id] === false) }; };
   const subir = () => sec.scrollIntoView({ block: `nearest`, behavior: `smooth` });
@@ -2002,6 +2011,7 @@ function checkBox(it){
     st.b.forEach(id => delete st.res[id]); st.b = elegirRepaso(); st.f = firma();
     if (st.fase === `b` || st.fase === `fin`){ st.fase = `pausa`; st.i = 0; }
     if (st.fase === `pausa` && !st.b.length) st.fase = `fin`;
+    persist();
   }
   function pasos(){
     const conRep = st.mezcla || st.b.length;
@@ -2018,14 +2028,25 @@ function checkBox(it){
     const head = el(`div`, `chkhead`);
     const g = btn(``, `gear`, ajustes); g.innerHTML = icon(`gear`) + ` Ajustes`; g.setAttribute(`aria-label`, `Ajustes del repaso`);
     head.append(el(`h4`, ``, `Comprueba lo que leíste`), g); sec.append(head, pasos());
+    // Si quedó a medias (aquí o en otro dispositivo): seguir, reiniciar o empezar uno nuevo
+    if (preguntar && enCurso(st)){
+      const pr = chkProg(st), bx = el(`div`, `chkresume`);
+      bx.append(el(`b`, ``, st.fase === `pausa` ? `Terminaste la ficha nueva y te falta el repaso` : `Te quedaste en la pregunta ${pr.n} de ${pr.tot}`), el(`span`, ``, `${pr.resp} respondida${pr.resp === 1 ? `` : `s`} · ${Object.values(st.res).filter(Boolean).length} correcta${Object.values(st.res).filter(Boolean).length === 1 ? `` : `s`}`));
+      const col = el(`div`, `chkcol`);
+      col.append(btn(`Seguir donde quedé`, `btn acc`, () => { preguntar = false; draw(); }));
+      col.append(btn(`Reiniciar con las mismas preguntas`, `btn ghost`, () => { st.res = {}; st.i = 0; st.fase = st.a.length ? `a` : `b`; preguntar = false; persist(); draw(); }));
+      col.append(btn(`Empezar uno nuevo`, `btn ghost`, () => { st = nuevo(); preguntar = false; draw(); }));
+      bx.append(col); sec.append(bx); return;
+    }
+    preguntar = false;
     if (st.fase === `pausa`){
       const c = cuenta(st.a);
       sec.append(el(`div`, `chkbig`, `<b>${c.bien}</b><span> / ${st.a.length}</span><div>correctas en esta ficha</div>`));
       sec.append(el(`p`, `chkfin`, `Sigue el repaso: <b>${st.b.length} pregunta${st.b.length === 1 ? `` : `s`}</b> de ${new Set(st.b.map(id => porId[id].de)).size} ficha${new Set(st.b.map(id => porId[id].de)).size === 1 ? `` : `s`} anterior${new Set(st.b.map(id => porId[id].de)).size === 1 ? `` : `es`}.`));
       const col = el(`div`, `chkcol`);
-      col.append(btn(`Empezar repaso`, `btn acc`, () => { st.fase = `b`; st.i = 0; draw(); subir(); }));
-      if (c.mal.length) col.append(btn(`Repetir las ${c.mal.length} falladas`, `btn ghost`, () => { c.mal.forEach(id => delete st.res[id]); st.a = shuf(c.mal); st.fase = `a`; st.i = 0; draw(); subir(); }));
-      col.append(btn(`Terminar aquí`, `btn link`, () => { st.fase = `fin`; draw(); subir(); }));
+      col.append(btn(`Empezar repaso`, `btn acc`, () => { st.fase = `b`; st.i = 0; persist(); draw(); subir(); }));
+      if (c.mal.length) col.append(btn(`Repetir las ${c.mal.length} falladas`, `btn ghost`, () => { c.mal.forEach(id => delete st.res[id]); st.a = shuf(c.mal); st.fase = `a`; st.i = 0; persist(); draw(); subir(); }));
+      col.append(btn(`Terminar aquí`, `btn link`, () => { st.fase = `fin`; persist(); draw(); subir(); }));
       sec.append(col); return;
     }
     if (st.fase === `fin`){
@@ -2034,12 +2055,12 @@ function checkBox(it){
       if (st.b.length) sec.append(el(`p`, `chkfin`, `Ficha nueva: <b>${ca.bien} de ${ca.resp}</b> · Repaso: <b>${cb.bien} de ${cb.resp}</b>`));
       const mal = ca.mal.concat(cb.mal);
       const col = el(`div`, `chkcol`);
-      col.append(btn(`Repetir preguntas`, `btn acc`, () => { st = nuevo(); draw(); subir(); }));
-      if (mal.length) col.append(btn(`Repetir solo las falladas (${mal.length})`, `btn ghost`, () => { mal.forEach(id => delete st.res[id]); st.a = shuf(ca.mal); st.b = shuf(cb.mal); st.fase = st.a.length ? `a` : `b`; st.i = 0; draw(); subir(); }));
+      col.append(btn(`Repetir preguntas`, `btn acc`, () => { st = nuevo(); persist(); draw(); subir(); }));
+      if (mal.length) col.append(btn(`Repetir solo las falladas (${mal.length})`, `btn ghost`, () => { mal.forEach(id => delete st.res[id]); st.a = shuf(ca.mal); st.b = shuf(cb.mal); st.fase = st.a.length ? `a` : `b`; st.i = 0; persist(); draw(); subir(); }));
       sec.append(col); return;
     }
     const lista = st.fase === `a` ? st.a : st.b;
-    if (!lista.length){ st.fase = st.fase === `a` && st.b.length ? `pausa` : `fin`; return draw(); }
+    if (!lista.length){ st.fase = st.fase === `a` && st.b.length ? `pausa` : `fin`; persist(); return draw(); }
     const c = cuenta(lista);
     const cnt = el(`div`, `row chkcnt`); cnt.append(el(`span`, ``, `Pregunta <b>${st.i + 1}</b> de ${lista.length}`), el(`span`, ``, `${c.bien} correcta${c.bien === 1 ? `` : `s`}`)); sec.append(cnt);
     sec.append(el(`div`, `chkbar`, `<i style="width:${Math.round(st.i / lista.length * 100)}%"></i>`));
@@ -2047,14 +2068,14 @@ function checkBox(it){
     const ultima = st.i === lista.length - 1;
     const sigTxt = () => ultima ? (st.fase === `a` && st.b.length ? `Continuar` : `Ver resultado`) : `Siguiente pregunta`;
     sec.append(el(`p`, `chkde` + (q.de === it.title ? ` nueva` : ``), q.de === it.title ? `De esta ficha` : `Repaso · ${q.de}`));
-    const alResponder = ok => { st.res[q.id] = ok; S.st[`R_` + key] = (S.st[`R_` + key] || 0) + 1; save(); sig.textContent = sigTxt(); sig.classList.add(`acc`); sig.classList.remove(`ghost`); };
+    const alResponder = ok => { st.res[q.id] = ok; S.st[`R_` + key] = (S.st[`R_` + key] || 0) + 1; persist(); sig.textContent = sigTxt(); sig.classList.add(`acc`); sig.classList.remove(`ghost`); };
     sec.append(q.ej ? ejCheck(q, alResponder) : q.o ? mcqCard(q, alResponder) : abiertaCheck(q, alResponder));
     if (q.id[0] === `R`) sec.append(el(`p`, `chknota`, `<b>Nota:</b> esta pregunta sale del formulario de resumen del tema, por eso la fuente dice ${q.src.replace(/^Tema \d+,\s*/, ``)}. La respuesta correcta es de ${q.de === it.title ? `esta ficha` : `la ficha «${q.de}»`}; las otras opciones son filas del mismo formulario y pueden ser de fichas que aún no has leído.`));
     const nav = el(`div`, `chknav`);
-    const rep = btn(``, `btn ghost`, () => { st = nuevo(); draw(); subir(); }); rep.innerHTML = icon(`redo`) + ` Repetir`;
+    const rep = btn(``, `btn ghost`, () => { st = nuevo(); persist(); draw(); subir(); }); rep.innerHTML = icon(`redo`) + ` Repetir`;
     const sig = btn(q.id in st.res ? sigTxt() : (ultima ? sigTxt() : `Saltar pregunta`), `btn` + (q.id in st.res ? ` acc` : ` ghost`), () => {
-      if (!ultima){ st.i++; return draw(); }
-      st.i = 0; st.fase = st.fase === `a` && st.b.length ? `pausa` : `fin`; draw(); subir(); });
+      if (!ultima){ st.i++; persist(); return draw(); }
+      st.i = 0; st.fase = st.fase === `a` && st.b.length ? `pausa` : `fin`; persist(); draw(); subir(); });
     nav.append(rep, sig); sec.append(nav);
   }
   draw();
@@ -2097,12 +2118,13 @@ function vRepaso(v){
   v.append(sq); requestAnimationFrame(() => { const c = sq.querySelector(`.cur`); if (c && sq.scrollWidth > sq.clientWidth) sq.scrollLeft = c.offsetLeft - sq.clientWidth / 2 + c.offsetWidth / 2; });
   v.append(el(`h2`, `rtit`, it.title));
   v.append(el(`p`, `rsub`, `Ficha ${ti + 1} de ${tema.length} · Fuente: ${it.src}${all.length > tema.length ? ` · tarjeta ${i + 1} de ${all.length}` : ``}`));
-  const _was = S.x.seen[th]; S.x.seen[th] = 1; motSeen(all, it, _was); S.x.last = { mode:`repaso`, sel:selList(), i, n:all.length, title:it.title };
+  const _was = S.x.seen[th]; S.x.seen[th] = 1; motSeen(all, it, _was); S.x.last = { mode:`repaso`, sel:selList(), i, n:all.length, title:it.title, t:Date.now() };
   // Pestañas de la ficha
   const fig = it.fig && figure(it.fig), vids = VIDEOS.filter(x => x.rep.includes(it.title));
   const nChk = (() => { const bl = checkBloques(it); return bl[0].qs.length; })();
+  const cst = S.x.chk && S.x.chk[th], cpr = enCurso(cst) ? chkProg(cst) : null;
   const ck = checkBox(it);
-  const TABS = [[`leer`, `Leer`]]; if (fig) TABS.push([`dibujo`, `Dibujo`]); if (it.memo) TABS.push([`memo`, `Memorizar`]); if (ck) TABS.push([`comp`, `Comprobar · ${nChk}`]); if (vids.length) TABS.push([`video`, `Video`]);
+  const TABS = [[`leer`, `Leer`]]; if (fig) TABS.push([`dibujo`, `Dibujo`]); if (it.memo) TABS.push([`memo`, `Memorizar`]); if (ck) TABS.push([`comp`, cpr ? `Comprobar · ${cpr.n}/${cpr.tot}` : `Comprobar · ${nChk}`]); if (vids.length) TABS.push([`video`, `Video`]);
   const apun = typeof cnPagesFor === `function` ? cnPagesFor(it.t) : []; TABS.push([`apuntes`, apun.length ? `Mis apuntes · ${apun.length}` : `Mis apuntes`]);
   if (S.x.rtabFor !== th){ S.x.rtabFor = th; S.x.rtab = `leer`; }
   if (!TABS.some(t => t[0] === S.x.rtab)) S.x.rtab = `leer`;
@@ -2136,7 +2158,7 @@ function vRepaso(v){
     const last = i === all.length - 1;
     const prev = btn(``, `btn ghost`, () => move(-1)); prev.dataset.nav = `prev`; prev.innerHTML = icon(`left`) + `<span class="rl">Anterior</span>`; prev.disabled = i === 0; prev.setAttribute(`aria-label`, `Ficha anterior`);
     const mid = t === `comp` ? btn(`Volver a leer la ficha`, `btn ghost rmid`, () => { S.x.rtab = `leer`; pinta(); topScroll(); })
-      : ck ? btn(`Comprobar lo leído · ${nChk}`, `btn acc rmid`, () => { S.x.rtab = `comp`; save(); pinta(); tabs.scrollIntoView({ block:`start`, behavior:`smooth` }); })
+      : ck ? btn(cpr ? `Seguir comprobando · ${cpr.n} de ${cpr.tot}` : `Comprobar lo leído · ${nChk}`, `btn acc rmid`, () => { S.x.rtab = `comp`; save(); pinta(); tabs.scrollIntoView({ block:`start`, behavior:`smooth` }); })
       : btn(last ? `Ir a Fichas` : `Siguiente ficha`, `btn acc rmid`, () => last ? go(`fichas`) : move(1));
     const next = btn(``, t === `comp` ? `btn acc` : `btn ghost`, () => last ? go(`fichas`) : move(1)); next.dataset.nav = `next`; next.innerHTML = `<span class="rl">${last ? `Ir a Fichas` : `Siguiente`}</span>` + icon(`right`); next.setAttribute(`aria-label`, last ? `Ir a Fichas` : `Ficha siguiente`);
     dock.append(prev, mid, next);
@@ -3147,9 +3169,11 @@ function evSaved(e, isNew){
   e.upd = Date.now(); const i = S.x.ev.findIndex(x => x.id === e.id); if (i >= 0) S.x.ev[i] = e; else S.x.ev.push(e);
   save(); gcQueue({ op:`up`, id:e.id }); afterAg();
 }
-function evDelete(e){ S.x.ev = S.x.ev.filter(x => x.id !== e.id); save(); if (e.gid) gcQueue({ op:`del`, id:e.id, gid:e.gid }); afterAg(); }
+/* lo borrado queda anotado para que la sincronización no lo traiga de vuelta desde otro dispositivo */
+function tomb(id){ S.x.del = S.x.del || {}; S.x.del[id] = Date.now(); }
+function evDelete(e){ tomb(e.id); S.x.ev = S.x.ev.filter(x => x.id !== e.id); save(); if (e.gid) gcQueue({ op:`del`, id:e.id, gid:e.gid }); afterAg(); }
 function afterAg(){ if (typeof renderAgendaHosts === `function`) renderAgendaHosts(); if ([`agenda`,`inicio`].includes(S.mode)) renderView(); renderHead(); if (bp() === `wide`) renderPanel(); }
-function toggleDone(x){ S.x.caldone = S.x.caldone || {}; if (S.x.caldone[x.key]) delete S.x.caldone[x.key]; else S.x.caldone[x.key] = 1; save(); afterAg(); }
+function toggleDone(x){ S.x.caldone = S.x.caldone || {}; S.x.caldone[x.key] = S.x.caldone[x.key] ? 0 : 1; save(); afterAg(); }
 
 /* ---------- editor de evento ---------- */
 function openEv(ev, o = {}){
@@ -3566,7 +3590,7 @@ async function gcPull(){
   });
   // borrados en Google (solo los que no se repiten y caen dentro del rango revisado)
   const f0 = dstr(from), t0 = dstr(to);
-  S.x.ev = (S.x.ev || []).filter(e => !(e.gid && !e.rrule && !pend.has(e.id) && !seen.has(e.id) && e.date >= f0 && e.date <= t0));
+  S.x.ev = (S.x.ev || []).filter(e => { const gone = e.gid && !e.rrule && !pend.has(e.id) && !seen.has(e.id) && e.date >= f0 && e.date <= t0; if (gone) tomb(e.id); return !gone; });
   try { localStorage.setItem(`quimica_gcal`, JSON.stringify({ t:Date.now(), items: all.filter(g => !g.mf || !(S.x.ev || []).some(e => e.id === g.mf)) })); } catch(e){}
   save();
 }
@@ -3603,7 +3627,7 @@ const agn = () => S.x.agn || (S.x.agn = []);
 const nid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const tagsOf = txt => [...new Set((String(txt).match(/#[\wáéíóúñü]+/gi) || []).map(t => t.toLowerCase()))];
 function nSave(n){ n.upd = Date.now(); n.tags = tagsOf(n.text); const L = agn(), i = L.findIndex(x => x.id === n.id); if (i >= 0) L[i] = n; else L.unshift(n); save(); afterAg(); if ([`pendientes`,`notasr`].includes(S.mode)) renderView(); }
-function nDel(n){ S.x.agn = agn().filter(x => x.id !== n.id); save(); afterAg(); if ([`pendientes`,`notasr`].includes(S.mode)) renderView(); }
+function nDel(n){ tomb(n.id); S.x.agn = agn().filter(x => x.id !== n.id); save(); afterAg(); if ([`pendientes`,`notasr`].includes(S.mode)) renderView(); }
 
 /* ---------- editor de pendiente o nota ---------- */
 function openNota(n, kind){
@@ -3653,7 +3677,7 @@ function vPend(v){
   let any = false;
   G.forEach(([t, l, c]) => { if (!l.length) return; any = true; v.append(el(`h4`, `tkh ${c}`, `${t} · ${l.length}`)); const box = el(`div`, `tkbox`); l.forEach(n => box.append(taskRow(n))); v.append(box); });
   const hechos = L.filter(n => n.done && !(n.date === today && n.doneAt && dstr(new Date(n.doneAt)) === today));
-  if (hechos.length){ const d = el(`details`, `tkdone`); d.append(el(`summary`, ``, `Hechos · ${hechos.length}`)); hechos.slice(0, 40).forEach(n => d.append(taskRow(n))); const cl = btn(`Borrar los hechos`, `linkbtn`, () => { if (confirm(`¿Borrar ${hechos.length} pendientes hechos?`)){ S.x.agn = agn().filter(n => !(n.kind === `task` && n.done)); save(); renderView(); } }); d.append(cl); v.append(d); }
+  if (hechos.length){ const d = el(`details`, `tkdone`); d.append(el(`summary`, ``, `Hechos · ${hechos.length}`)); hechos.slice(0, 40).forEach(n => d.append(taskRow(n))); const cl = btn(`Borrar los hechos`, `linkbtn`, () => { if (confirm(`¿Borrar ${hechos.length} pendientes hechos?`)){ hechos.forEach(n => tomb(n.id)); S.x.agn = agn().filter(n => !(n.kind === `task` && n.done)); save(); renderView(); } }); d.append(cl); v.append(d); }
   if (!any) v.append(el(`p`, `muted`, `No tienes pendientes. Escribe arriba lo que tengas que hacer; toca un pendiente para ponerle fecha o tema.`));
 }
 
@@ -3781,6 +3805,7 @@ function cn(){
   return CN;
 }
 let CN_T = null;
+function cnTomb(...ids){ const C = cn(); C.del = C.del || {}; ids.forEach(id => { C.del[id] = Date.now(); }); }
 function cnSave(now){ clearTimeout(CN_T); const w = () => { try { localStorage.setItem(CN_KEY, JSON.stringify(cn())); } catch(e){ toastMsg(`No hay espacio para guardar el cuaderno en este dispositivo.`); } }; if (now) w(); else CN_T = setTimeout(w, 400); }
 const cnNb = id => cn().nb.find(x => x.id === id), cnSec = id => cn().sec.find(x => x.id === id), cnPg = id => cn().pg.find(x => x.id === id);
 const cnColorOf = p => { const s = cnSec(p.sec), n = s && cnNb(s.nb); return GPAL[(s && s.color) || (n && n.color) || 8]; };
@@ -3814,7 +3839,7 @@ function cnNewPage(secId, tpl, title){
 }
 function cnLeave(){ // páginas en blanco que se abandonan sin escribir: se descartan
   const st = S.x.cn || {}, p = st.pg && cnPg(st.pg); if (!p) return;
-  if (!(p.title || ``).trim() && !cnText(p.html) && !/data-img/.test(p.html || ``)){ cn().pg = cn().pg.filter(x => x.id !== p.id); st.pg = null; cnSave(true); save(); }
+  if (!(p.title || ``).trim() && !cnText(p.html) && !/data-img/.test(p.html || ``)){ cnTomb(p.id); cn().pg = cn().pg.filter(x => x.id !== p.id); st.pg = null; cnSave(true); save(); }
   else if (p.fresh && !cnText(p.html).replace(/Fecha:.*$/, ``).trim() && !(p.title || ``).trim()){ /* conserva plantillas con título */ }
 }
 function pickTpl(secId){
@@ -3862,9 +3887,9 @@ function cnMenu(kind, obj){
       const n = kind === `nb` ? cn().sec.filter(s => s.nb === obj.id).length : kind === `sec` ? cn().pg.filter(p => p.sec === obj.id).length : 0;
       if (!confirm(kind === `nb` ? `¿Borrar el cuaderno “${obj.name}” con sus ${n} secciones y todas sus páginas?` : kind === `sec` ? `¿Borrar la sección “${obj.name}” y sus ${n} páginas?` : `¿Borrar la página “${obj.title || `Sin título`}”?`)) return;
       const C = cn();
-      if (kind === `nb`){ const ss = C.sec.filter(s => s.nb === obj.id).map(s => s.id); C.pg = C.pg.filter(p => !ss.includes(p.sec)); C.sec = C.sec.filter(s => s.nb !== obj.id); C.nb = C.nb.filter(x => x.id !== obj.id); }
-      if (kind === `sec`){ C.pg = C.pg.filter(p => p.sec !== obj.id); C.sec = C.sec.filter(s => s.id !== obj.id); }
-      if (kind === `pg`) C.pg = C.pg.filter(p => p.id !== obj.id);
+      if (kind === `nb`){ const ss = C.sec.filter(s => s.nb === obj.id).map(s => s.id); cnTomb(obj.id, ...ss, ...C.pg.filter(p => ss.includes(p.sec)).map(p => p.id)); C.pg = C.pg.filter(p => !ss.includes(p.sec)); C.sec = C.sec.filter(s => s.nb !== obj.id); C.nb = C.nb.filter(x => x.id !== obj.id); }
+      if (kind === `sec`){ cnTomb(obj.id, ...C.pg.filter(p => p.sec === obj.id).map(p => p.id)); C.pg = C.pg.filter(p => p.sec !== obj.id); C.sec = C.sec.filter(s => s.id !== obj.id); }
+      if (kind === `pg`){ cnTomb(obj.id); C.pg = C.pg.filter(p => p.id !== obj.id); }
       cnSave(true); closeSheet(); renderView();
     }, `btn danger wide`);
   });
@@ -4398,7 +4423,7 @@ function setSync(st, err){ SY.state = st; SY.err = err || ``; renderSyncHosts();
   const orig = Storage.prototype.setItem; Storage.prototype.__set = orig;
   Storage.prototype.setItem = function(k, v){ orig.call(this, k, v); if (this === window.localStorage && BACKUP_KEYS.includes(k) && !SY.applying && Date.now() - SY.boot > 1500) syncDirty(); };
 })();
-function syncDirty(){ const m = syncMeta(); if (!m.dirty){ m.dirty = true; setMeta(m); } if (SY.user && !SY.timer) SY.timer = setTimeout(() => { SY.timer = null; syncPush(); }, 5000); if (SY.user) setSync(`pend`); }
+function syncDirty(){ const m = syncMeta(); m.dirty = true; m.changed = Date.now(); setMeta(m); if (SY.user){ clearTimeout(SY.timer); SY.timer = setTimeout(() => { SY.timer = null; syncPush(); }, 2000); setSync(`pend`); } }
 
 async function syncInit(){
   if (!syncAvailable()) return;
@@ -4407,7 +4432,7 @@ async function syncInit(){
     if (!window.firebase){ await loadScript(`lib/firebase-app-compat.js`); await loadScript(`lib/firebase-auth-compat.js`); await loadScript(`lib/firebase-firestore-compat.js`); }
     if (!firebase.apps.length) firebase.initializeApp(window.FB_CONFIG);
     SY.db = firebase.firestore(); SY.on = true;
-    firebase.auth().onAuthStateChanged(u => { SY.user = u; if (u) syncPull(); else setSync(`out`); });
+    firebase.auth().onAuthStateChanged(u => { SY.user = u; if (SY.unsub){ SY.unsub(); SY.unsub = null; } if (u){ syncPull().then(syncListen); } else setSync(`out`); });
   } catch(e){ setSync(`offline`); }
 }
 function syncLogin(){
@@ -4421,46 +4446,139 @@ function syncLogin(){
 function syncLogout(){ firebase.auth().signOut(); const m = syncMeta(); delete m.rev; delete m.uid; setMeta(m); }
 function docRef(){ return SY.db.collection(`users`).doc(SY.user.uid); }
 
+/* ---------- mezcla automática entre dispositivos (ya no se pregunta qué progreso conservar) ----------
+   · Respuestas y contadores (S.st): se suma lo mejor de ambos (máximo de cada contador).
+   · Listas con id (eventos, pendientes, notas, páginas del cuaderno): por elemento, gana el cambio más reciente;
+     lo borrado en cualquier dispositivo queda borrado (x.del / cuaderno.del).
+   · "Comprueba lo que leíste" (x.chk) y "Continúa donde quedaste" (x.last): gana el avance más reciente.
+   · Lo que es solo de la pantalla (temas elegidos, pestañas abiertas, vista de la agenda): se queda el de cada dispositivo.
+   · Todo lo demás: gana el valor del dispositivo que cambió más recientemente.                                      */
+const DEVID = (() => { try { let d = localStorage.getItem(`quimica_dev`); if (!d){ d = Math.random().toString(36).slice(2, 10); localStorage.setItem(`quimica_dev`, d); } return d; } catch(e){ return `x`; } })();
+const LOCAL_X = [`sm`, `ptab`, `agv`, `cn`, `nrq`, `nrt`, `rtab`, `rtabFor`, `qw`, `qd`, `syncHide`];
+const tsOf = o => (o && (o.upd || o.updated || o.t || o.created)) || 0;
+function mergeVal(a, b, bn, del){
+  if (a === undefined) return b; if (b === undefined) return a;
+  if (Array.isArray(a) && Array.isArray(b)){
+    const isId = arr => arr.length > 0 && arr.every(x => x && typeof x === `object` && !Array.isArray(x) && `id` in x);
+    if ((isId(a) || isId(b)) && (isId(a) || !a.length) && (isId(b) || !b.length)){
+      const m = new Map(), order = bn ? b.concat(a) : a.concat(b);
+      order.forEach(x => { const y = m.get(x.id); if (!y) m.set(x.id, x); else { const tx = tsOf(x), ty = tsOf(y); if (tx > ty) m.set(x.id, x); } });
+      const pick = new Map(); a.forEach(x => pick.set(x.id, x)); b.forEach(y => { const x = pick.get(y.id); if (!x || tsOf(y) > tsOf(x) || (tsOf(y) === tsOf(x) && bn)) pick.set(y.id, y); });
+      return [...m.keys()].map(id => pick.get(id)).filter(x => !(del && del[x.id]));
+    }
+    return bn ? b : a;
+  }
+  if (a && b && typeof a === `object` && typeof b === `object`){ const o = {}; new Set(Object.keys(a).concat(Object.keys(b))).forEach(k => { o[k] = mergeVal(a[k], b[k], bn, del); }); return o; }
+  return bn ? b : a;
+}
+const newest = (a, b, bn) => !a ? b : !b ? a : (tsOf(b) > tsOf(a) || (tsOf(b) === tsOf(a) && bn)) ? b : a;
+function mergeState(L, R, bn){
+  const o = Object.assign({}, R, L);
+  o.sel = L.sel || R.sel; o.mode = L.mode || R.mode; o.simFb = L.simFb || R.simFb;
+  o.st = {}; new Set(Object.keys(L.st || {}).concat(Object.keys(R.st || {}))).forEach(k => { const a = (L.st || {})[k], b = (R.st || {})[k];
+    o.st[k] = Array.isArray(a) && Array.isArray(b) ? a.map((v, i) => Math.max(v || 0, b[i] || 0)) : typeof a === `number` && typeof b === `number` ? Math.max(a, b) : a === undefined ? b : a; });
+  o.err = bn ? (R.err || []) : (L.err || []);
+  o.box = mergeVal(L.box || {}, R.box || {}, bn);
+  const lx = L.x || {}, rx = R.x || {}, del = Object.assign({}, rx.del || {}, lx.del || {});
+  const cut = Date.now() - 90 * 864e5; Object.keys(del).forEach(k => { if (del[k] < cut) delete del[k]; });
+  const x = {};
+  new Set(Object.keys(lx).concat(Object.keys(rx))).forEach(k => {
+    if (LOCAL_X.includes(k)) x[k] = k in lx ? lx[k] : rx[k];
+    else if (k === `last`) x[k] = newest(lx[k], rx[k], bn);
+    else if (k === `chk`){ const c = {}; new Set(Object.keys(lx.chk || {}).concat(Object.keys(rx.chk || {}))).forEach(q => { c[q] = newest((lx.chk || {})[q], (rx.chk || {})[q], bn); }); x[k] = c; }
+    else if (k === `del`) x[k] = del;
+    else x[k] = mergeVal(lx[k], rx[k], bn, del);
+  });
+  o.x = x; return o;
+}
+function mergeDatos(L, R, bn){
+  const out = Object.assign({}, R, L);
+  Object.keys(Object.assign({}, L, R)).forEach(k => {
+    if (!(k in L)) return out[k] = R[k]; if (!(k in R) || L[k] === R[k]) return out[k] = L[k];
+    let a, b; try { a = JSON.parse(L[k]); b = JSON.parse(R[k]); } catch(e){ return out[k] = bn ? R[k] : L[k]; }
+    let m;
+    if (k === KEY) m = mergeState(a || {}, b || {}, bn);
+    else if (k === `quimica_cuaderno` && a && b){ const del = Object.assign({}, b.del || {}, a.del || {}); m = { nb:mergeVal(a.nb || [], b.nb || [], bn, del), sec:mergeVal(a.sec || [], b.sec || [], bn, del), pg:mergeVal(a.pg || [], b.pg || [], bn, del), del }; }
+    else m = mergeVal(a, b, bn);
+    out[k] = JSON.stringify(m);
+  });
+  return out;
+}
+/* aplica lo que llegó de la nube sin recargar la página */
+function applyDatos(d){
+  const prev = localData(), changed = Object.keys(d).filter(k => BACKUP_KEYS.includes(k) && d[k] !== prev[k]);
+  if (!changed.length) return false;
+  SY.applying = true; changed.forEach(k => { try { localStorage.setItem(k, d[k]); } catch(e){} }); SY.applying = false;
+  if (changed.some(k => k !== KEY && k !== `quimica_cuaderno`)){ location.reload(); return true; } // videos, dudas o paquetes nuevos
+  if (changed.includes(KEY)){ try { const o = JSON.parse(d[KEY]) || {}; S.st = o.st || {}; S.err = o.err || []; S.box = o.box || {}; S.x = o.x || {}; initX(); if (typeof syncETYPE === `function`) syncETYPE(); } catch(e){} }
+  if (changed.includes(`quimica_cuaderno`)){ try { CN = JSON.parse(d.quimica_cuaderno); } catch(e){} }
+  syncRefresh(); return true;
+}
+function syncRefresh(){
+  const a = document.activeElement;
+  if ((typeof SH !== `undefined` && SH) || (a && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)))){ SY.later = true; return; }
+  SY.later = false; const y = scrollY;
+  try { renderHead(); renderView(); renderPanel(); renderBnav(); } catch(e){}
+  scrollTo(0, y);
+}
+setInterval(() => { if (SY.later) syncRefresh(); }, 3000);
+/* lo de la nube, mezclado con lo de este dispositivo */
+function syncReceive(r){
+  const m = syncMeta();
+  if (!r || !r.datos) return false;
+  if ((r.updated || 0) <= (m.rev || 0)) return false;
+  if (r.devId === DEVID && r.updated === m.rev) return false;
+  const local = localData();
+  const merged = m.dirty || !m.rev ? mergeDatos(local, r.datos, (r.updated || 0) > (m.changed || 0)) : mergeDatos(local, r.datos, true);
+  const igual = Object.keys(r.datos).every(k => !BACKUP_KEYS.includes(k) || merged[k] === r.datos[k]) && Object.keys(merged).every(k => k in r.datos);
+  applyDatos(merged);
+  const n = syncMeta(); n.uid = SY.user.uid; n.rev = r.updated; n.at = Date.now(); n.dirty = !igual; setMeta(n);
+  return !igual;
+}
 async function syncPull(){
   if (!SY.user || SY.busy) return; SY.busy = true; setSync(`sync`);
   try {
     const snap = await docRef().get({ source:`server` }); const r = snap.exists ? snap.data() : null; const m = syncMeta();
-    if (m.uid && m.uid !== SY.user.uid){ m.rev = 0; }
+    if (m.uid && m.uid !== SY.user.uid){ m.rev = 0; m.dirty = true; }
     m.uid = SY.user.uid; setMeta(m);
-    if (!r || !r.datos){ SY.busy = false; return syncPush(true); }
-    const remoteNewer = (r.updated || 0) > (m.rev || 0);
-    if (!remoteNewer){ SY.busy = false; return m.dirty ? syncPush() : setSync(`ok`); }
-    if (!m.rev && !hasProgress()) return syncApply(r);
-    if (m.rev && !m.dirty) return syncApply(r);
-    SY.busy = false; syncConflict(r);
+    SY.busy = false;
+    if (!r || !r.datos) return syncPush();
+    const falta = syncReceive(r);
+    if (falta || syncMeta().dirty) return syncPush(); setSync(`ok`);
   } catch(e){ SY.busy = false; setSync(navigator.onLine ? `err` : `offline`, navigator.onLine ? `No se pudo leer la nube.` : ``); }
 }
-function syncApply(r){
-  SY.applying = true;
-  for (const k in r.datos){ if (BACKUP_KEYS.includes(k)) try { localStorage.setItem(k, r.datos[k]); } catch(e){} }
-  setMeta({ uid:SY.user.uid, rev:r.updated, dirty:false, at:Date.now() });
-  location.reload();
-}
-async function syncPush(force){
-  if (!SY.user) return; if (SY.busy && !force) return; SY.busy = true; setSync(`sync`);
+/* tiempo real: lo que se hace en un dispositivo aparece solo en los demás */
+function syncListen(){
+  if (!SY.user || SY.unsub) return;
   try {
-    const m = syncMeta();
-    if (!force){ const snap = await docRef().get({ source:`server` }); const r = snap.exists ? snap.data() : null; if (r && (r.updated || 0) > (m.rev || 0)){ SY.busy = false; return syncConflict(r); } }
-    const now = Date.now();
-    await docRef().set({ datos:localData(), updated:now, dev:devName() }, { merge:true });
-    setMeta({ uid:SY.user.uid, rev:now, dirty:false, at:now }); SY.busy = false; setSync(`ok`);
+    SY.unsub = docRef().onSnapshot(snap => {
+      if (snap.metadata && (snap.metadata.hasPendingWrites || snap.metadata.fromCache)) return;
+      const r = snap.exists ? snap.data() : null; if (!r || SY.busy) return;
+      if (syncReceive(r)) syncDirty(); else if (!syncMeta().dirty) setSync(`ok`);
+    }, () => { SY.unsub = null; });
+  } catch(e){}
+}
+async function syncPush(){
+  if (!SY.user) return; if (SY.busy){ SY.again = true; return; } SY.busy = true; setSync(`sync`);
+  const m0 = syncMeta(), changed0 = m0.changed || 0;
+  try {
+    let merged = null, rev = 0;
+    await SY.db.runTransaction(async tx => {
+      merged = null; const ref = docRef(); const snap = await tx.get(ref); const r = snap.exists ? snap.data() : null; const m = syncMeta();
+      let d = localData();
+      if (r && r.datos && (r.updated || 0) > (m.rev || 0)){ d = mergeDatos(d, r.datos, (r.updated || 0) > (m.changed || 0)); merged = d; }
+      rev = Math.max(Date.now(), ((r && r.updated) || 0) + 1);
+      tx.set(ref, { datos:d, updated:rev, dev:devName(), devId:DEVID }, { merge:true });
+    });
+    if (merged) applyDatos(merged);
+    const m = syncMeta(); const more = (m.changed || 0) > changed0;
+    m.uid = SY.user.uid; m.rev = rev; m.at = Date.now(); m.dirty = more; setMeta(m);
+    SY.busy = false; setSync(more ? `pend` : `ok`);
+    if (more || SY.again){ SY.again = false; clearTimeout(SY.timer); SY.timer = setTimeout(() => { SY.timer = null; syncPush(); }, 1500); }
   } catch(e){ SY.busy = false; setSync(navigator.onLine ? `err` : `offline`, navigator.onLine ? `No se pudo guardar en la nube.` : ``); }
 }
-function syncConflict(r){
-  setSync(`conf`);
-  openSheet(`¿Qué progreso conservo?`, b => {
-    b.append(el(`p`, ``, `Hay cambios en este dispositivo que no estaban en la nube, y la nube tiene progreso guardado desde tu <b>${r.dev || `otro dispositivo`}</b> el <b>${new Date(r.updated).toLocaleString(`es`, { dateStyle:`medium`, timeStyle:`short` })}</b>.`));
-    b.append(el(`p`, `muted`, `Elige cuál usar. El otro se reemplaza. Si no estás segura, descarga primero un respaldo de este dispositivo en Mi progreso.`));
-    const row = el(`div`, `btnrow`);
-    row.append(btn(`Usar el de la nube`, `btn acc`, () => { closeSheet(); syncApply(r); }), btn(`Conservar el de este dispositivo`, `btn ghost`, () => { closeSheet(); syncPush(true); }));
-    b.append(row);
-  });
-}
+function syncApply(r){ syncReceive(r); }
+function syncConflict(r){ syncReceive(r); syncPush(); }
 function syncAgo(t){ if (!t) return ``; const s = Math.round((Date.now() - t) / 1000); return s < 60 ? `hace un momento` : s < 3600 ? `hace ${Math.round(s / 60)} min` : new Date(t).toLocaleString(`es`, { dateStyle:`short`, timeStyle:`short` }); }
 const SYNC_TXT = { load:`Conectando…`, out:`Sin iniciar sesión`, sync:`Sincronizando…`, ok:`Guardado en la nube`, pend:`Cambios por subir…`, err:`Error al sincronizar`, offline:`Sin internet: se subirá al volver la conexión`, conf:`Elige qué progreso conservar` };
 function syncLine(){ const m = syncMeta(); return SYNC_TXT[SY.state] + (SY.state === `ok` && m.at ? ` · ${syncAgo(m.at)}` : ``); }
