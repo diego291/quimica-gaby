@@ -2,6 +2,11 @@
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-06b`, d:`2026-11-06`, t:`Lee y mira el dibujo al mismo tiempo`, l:[
+    `En Repaso → Leer, el dibujo ya está junto al texto (en computadora, a la derecha; en el teléfono, arriba).`,
+    `Arriba del dibujo tienes 3 botones: ◧ junto al texto, 📌 fijarlo arriba mientras bajas leyendo, y ⧉ ventana flotante.`,
+    `La ventana flotante la mueves arrastrando su barra, la agrandas o achicas con − / + (o la esquina) y ▴ la minimiza. Recuerda dónde la dejaste.`,
+    `En computadora, el panel de la derecha (Pomodoro, índice y temas) se oculta con “Ocultar panel” y queda una tira delgada con el reloj; tócala para abrirlo de nuevo.`] },
   { id:`2026-11-06a`, d:`2026-11-06`, t:`Tu progreso pasa solo entre el teléfono y la computadora`, l:[
     `Ya no sale el mensaje de “¿Qué progreso conservo?”: los dispositivos juntan los cambios solos y en pocos segundos.`,
     `Si dejas “Comprueba lo que leíste” a medias, en el otro dispositivo te aparece en qué pregunta ibas. Puedes seguir, reiniciar con las mismas preguntas o empezar uno nuevo.`,

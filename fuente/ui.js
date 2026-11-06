@@ -122,6 +122,17 @@ function renderPanel(){
   const p = $(`#panel`); p.innerHTML = ``; const np = [`agenda`, `cuaderno`].includes(S.mode); $(`#app`).classList.toggle(`nopanel`, np); if (bp() !== `wide` || np) return;
   const ctx = panelCtx(); const tabs = ctx === `inicio` ? [[`agenda`,`Agenda`],[`temas`,`Temas`]] : ctx === `repaso` ? [[`indice`,`Índice del tema`],[`temas`,`Temas`]] : [[`temas`,`Temas`],[`agenda`,`Agenda`]];
   let cur = S.x.ptab[ctx]; if (!tabs.some(t => t[0] === cur)) cur = tabs[0][0];
+  // Cerrado: queda una tira delgada con el Pomodoro y accesos para volver a abrirlo
+  const off = !!S.x.panelOff; $(`#app`).classList.toggle(`pcol`, off);
+  const abrir = k => { S.x.panelOff = false; if (k) S.x.ptab[ctx] = k; save(); renderPanel(); };
+  if (off){
+    const st = el(`nav`, `pstrip`); st.setAttribute(`aria-label`, `Panel cerrado`);
+    const ex = btn(icon(`left`), `psb`, () => abrir()); ex.title = `Mostrar el panel`; ex.setAttribute(`aria-label`, `Mostrar el panel`); st.append(ex);
+    const pm = btn(`<span>🍅</span><span class="pomo-time">${fmtSec(pomoLeft())}</span>`, `psb pom` + (S.x.pst.run ? ` run` : ``), () => abrir()); pm.title = `Pomodoro`; pm.setAttribute(`aria-label`, `Abrir el Pomodoro`); st.append(pm);
+    tabs.forEach(([k, n]) => { const b = btn(icon(k === `indice` ? `list` : k === `agenda` ? `cal` : `tag`) + `<small>${n.split(` `)[0]}</small>`, `psb`, () => abrir(k)); b.title = n; b.setAttribute(`aria-label`, `Abrir ${n}`); st.append(b); });
+    p.append(st); return;
+  }
+  { const cl = btn(icon(`right`) + `<span>Ocultar panel</span>`, `pclose`, () => { S.x.panelOff = true; save(); renderPanel(); }); cl.setAttribute(`aria-label`, `Ocultar el panel lateral`); p.append(cl); }
   { const m = el(`div`); m.dataset.pomo = `mini`; p.append(m); }
   const tb = el(`div`, `ptabs`); tb.setAttribute(`role`, `tablist`);
   tabs.forEach(([k, n]) => { const b = btn(n, ``, () => { S.x.ptab[ctx] = k; save(); renderPanel(); }); b.setAttribute(`role`, `tab`); b.setAttribute(`aria-selected`, cur === k); tb.append(b); });
@@ -704,6 +715,52 @@ function checkBox(it){
   draw();
   return sec;
 }
+/* ---------- Leer con el dibujo a la vista: al lado, fijo arriba o en ventana flotante que se mueve ---------- */
+function leerConDibujo(it, fig, rehacer){
+  const phone = bp() === `phone`, mode = S.x.figMode || `lado`, min = !!S.x.figMin && mode !== `lado`;
+  const w = el(`div`, `rlc m-${mode}` + (phone ? ` ph` : ``));
+  const txt = el(`div`, `reptext rleer`, it.body);
+  const box = el(`div`, `rfig` + (min ? ` min` : ``)); box.setAttribute(`role`, `region`); box.setAttribute(`aria-label`, `Dibujo de la ficha`);
+  const bar = el(`div`, `rfigbar`);
+  const lab = el(`span`, `rfigl`, mode === `flota` ? `⠿ Dibujo` : `Dibujo`); if (mode === `flota`) lab.title = `Arrastra desde aquí para moverlo`;
+  const ctl = el(`div`, `rfigc`);
+  const b = (txt_, t, f, on) => { const x = btn(txt_, on ? `on` : ``, f); x.title = t; x.setAttribute(`aria-label`, t); if (on != null) x.setAttribute(`aria-pressed`, !!on); ctl.append(x); return x; };
+  const set = k => { S.x.figMode = k; S.x.figMin = false; save(); rehacer(); };
+  b(`◧`, phone ? `Junto al texto` : `Al lado del texto`, () => set(`lado`), mode === `lado`);
+  b(`📌`, `Fijar arriba mientras lees`, () => set(`fijo`), mode === `fijo`);
+  b(`⧉`, `Ventana flotante que puedes mover`, () => set(`flota`), mode === `flota`);
+  if (mode === `flota`){
+    const sz = d => { const p = S.x.figPos || {}; p.w = Math.max(200, Math.min(innerWidth - 16, (p.w || 340) + d)); S.x.figPos = p; save(); box.style.width = `${p.w}px`; clamp(); };
+    b(`−`, `Más pequeño`, () => sz(-80)); b(`+`, `Más grande`, () => sz(80));
+  }
+  if (mode !== `lado`) b(min ? `▾` : `▴`, min ? `Mostrar el dibujo` : `Minimizar el dibujo`, () => { S.x.figMin = !min; save(); rehacer(); });
+  bar.append(lab, ctl); box.append(bar, fig);
+  w.append(box, txt);
+  // fijo y "al lado" quedan debajo de la barra de secciones, que también es fija
+  requestAnimationFrame(() => { const sw = document.querySelector(`.subw`); const h = sw && getComputedStyle(sw).position === `sticky` ? Math.round(sw.getBoundingClientRect().height) : 0; w.style.setProperty(`--stk`, `${h}px`); });
+  // ventana flotante: se arrastra desde la barra y recuerda dónde la dejaste
+  function clamp(){ const r = box.getBoundingClientRect(), p = S.x.figPos || {}; let x = Math.max(8, Math.min(innerWidth - r.width - 8, p.x)), y = Math.max(8, Math.min(innerHeight - Math.min(r.height, 120) - 8, p.y)); p.x = x; p.y = y; box.style.left = `${x}px`; box.style.top = `${y}px`; }
+  if (mode === `flota`){
+    const p = S.x.figPos = S.x.figPos || {}; if (!p.w) p.w = phone ? Math.min(300, innerWidth - 24) : 380;
+    if (p.x == null){ p.x = innerWidth - p.w - (phone ? 12 : 360); p.y = phone ? innerHeight - 380 : 150; }
+    box.style.width = `${p.w}px`; requestAnimationFrame(clamp);
+    bar.addEventListener(`pointerdown`, ev => {
+      if (ev.target.closest(`button`)) return; ev.preventDefault(); bar.setPointerCapture(ev.pointerId);
+      const r0 = box.getBoundingClientRect(), dx = ev.clientX - r0.left, dy = ev.clientY - r0.top; box.classList.add(`drag`);
+      const mv = e => { p.x = e.clientX - dx; p.y = e.clientY - dy; clamp(); };
+      const up = () => { bar.removeEventListener(`pointermove`, mv); bar.removeEventListener(`pointerup`, up); bar.removeEventListener(`pointercancel`, up); box.classList.remove(`drag`); save(); };
+      bar.addEventListener(`pointermove`, mv); bar.addEventListener(`pointerup`, up); bar.addEventListener(`pointercancel`, up);
+    });
+    // tirador para cambiar el tamaño
+    const rz = el(`span`, `rfigrz`); rz.setAttribute(`aria-hidden`, `true`); box.append(rz);
+    rz.addEventListener(`pointerdown`, ev => { ev.preventDefault(); rz.setPointerCapture(ev.pointerId); const w0 = box.getBoundingClientRect().width, x0 = ev.clientX;
+      const mv = e => { p.w = Math.max(200, Math.min(innerWidth - 16, w0 + e.clientX - x0)); box.style.width = `${p.w}px`; };
+      const up = () => { rz.removeEventListener(`pointermove`, mv); rz.removeEventListener(`pointerup`, up); clamp(); save(); };
+      rz.addEventListener(`pointermove`, mv); rz.addEventListener(`pointerup`, up); });
+    if (window._figRz) removeEventListener(`resize`, window._figRz); window._figRz = () => box.isConnected && clamp(); addEventListener(`resize`, window._figRz, { passive:true });
+  }
+  return w;
+}
 function repCard(it){ const c = card(it, `rep`); c.append(el(`h3`, ``, it.title)); const body = el(`div`, `repbody`); body.append(el(`div`, `reptext`, it.body)); const f = it.fig && figure(it.fig); if (f) body.append(f); c.append(body); if (it.memo) c.append(el(`p`, `memo`, `<b>Para memorizar:</b> ${it.memo}`)); const vids = VIDEOS.filter(x => x.rep.includes(it.title)); if (vids.length) c.append(vidLinks(vids)); return c; }
 function tocInto(box){
   const all = filt(ALL.REPASO); const i0 = Math.min(S.x.rpos[selKey()] || 0, Math.max(0, all.length - 1));
@@ -747,7 +804,7 @@ function vRepaso(v){
   const nChk = (() => { const bl = checkBloques(it); return bl[0].qs.length; })();
   const cst = S.x.chk && S.x.chk[th], cpr = enCurso(cst) ? chkProg(cst) : null;
   const ck = checkBox(it);
-  const TABS = [[`leer`, `Leer`]]; if (fig) TABS.push([`dibujo`, `Dibujo`]); if (it.memo) TABS.push([`memo`, `Memorizar`]); if (ck) TABS.push([`comp`, cpr ? `Comprobar · ${cpr.n}/${cpr.tot}` : `Comprobar · ${nChk}`]); if (vids.length) TABS.push([`video`, `Video`]);
+  const TABS = [[`leer`, `Leer`]]; if (it.memo) TABS.push([`memo`, `Memorizar`]); if (ck) TABS.push([`comp`, cpr ? `Comprobar · ${cpr.n}/${cpr.tot}` : `Comprobar · ${nChk}`]); if (vids.length) TABS.push([`video`, `Video`]);
   const apun = typeof cnPagesFor === `function` ? cnPagesFor(it.t) : []; TABS.push([`apuntes`, apun.length ? `Mis apuntes · ${apun.length}` : `Mis apuntes`]);
   if (S.x.rtabFor !== th){ S.x.rtabFor = th; S.x.rtab = `leer`; }
   if (!TABS.some(t => t[0] === S.x.rtab)) S.x.rtab = `leer`;
@@ -759,9 +816,8 @@ function vRepaso(v){
     TABS.forEach(([k, n]) => { const b = btn(n, k === `comp` ? `k` : ``, () => { S.x.rtab = k; save(); pinta(); if (tabs.getBoundingClientRect().top < 0) tabs.scrollIntoView({ block:`start`, behavior:`smooth` }); });
       b.setAttribute(`role`, `tab`); b.setAttribute(`aria-selected`, t === k); tabs.append(b); });
     if (t === `leer`){
-      panel.append(el(`div`, `reptext rleer`, it.body));
+      panel.append(fig ? leerConDibujo(it, fig, pinta) : el(`div`, `reptext rleer`, it.body));
       const más = el(`div`, `rmas`);
-      if (fig) más.append(btn(`Ver el dibujo →`, `linkbtn`, () => { S.x.rtab = `dibujo`; pinta(); }));
       if (it.memo) más.append(btn(`Memorizar →`, `linkbtn`, () => { S.x.rtab = `memo`; pinta(); }));
       if (más.children.length) panel.append(más);
     } else if (t === `dibujo`) panel.append(fig);

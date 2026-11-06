@@ -854,6 +854,38 @@ body{background:var(--bg)}
 .istat{font-size:12.5px;margin:0 0 6px}
 .kclock{cursor:pointer}
 @media (max-width:700px){ .head .tools .hbtn.cdc{padding:6px 10px;font-size:13px} }
+/* ======== Leer con dibujo ======== */
+.rlc{--stk:0px}
+.rlc.m-lado:not(.ph){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+.rlc.m-lado:not(.ph) .rfig{order:2;position:sticky;top:calc(var(--stk) + 10px)}
+.rlc.m-lado:not(.ph) .rleer{order:1}
+@media (max-width:1300px){ .rlc.m-lado:not(.ph){grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)} }
+.rfig{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 10px 10px;min-width:0}
+.rfig .fig{margin:0}
+.rfigbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.rfigl{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.rfigc{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}
+.rfigc button{min-width:32px;height:30px;padding:0 7px;border-radius:8px;border:1px solid var(--line);background:var(--sunk);color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
+.rfigc button.on{background:var(--acc);border-color:var(--acc);color:var(--onAcc)}
+.rfig.min .fig{display:none}.rfig.min .rfigbar{margin:0}
+.rlc.m-lado.ph .rfig{margin-bottom:14px}
+.rlc.m-fijo .rfig{position:sticky;top:var(--stk);z-index:7;margin:0 -2px 14px;box-shadow:0 10px 18px -12px rgba(0,0,0,.55)}
+.rlc.m-fijo .rfig .fig{max-height:36vh;overflow:auto}
+.rlc.m-fijo .rfig .fig figcaption{display:none}
+.rlc.m-flota .rfig{position:fixed;z-index:40;box-shadow:0 14px 40px rgba(0,0,0,.45);border-color:var(--line2);max-height:calc(100vh - 16px);overflow:auto}
+.rlc.m-flota .rfigbar{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;padding:2px 0}
+.rlc.m-flota .rfig.drag{opacity:.92}.rlc.m-flota .rfig.drag .rfigbar{cursor:grabbing}
+.rlc.m-flota .rfig .fig figcaption{display:none}
+.rfigrz{position:absolute;right:2px;bottom:2px;width:16px;height:16px;cursor:nwse-resize;touch-action:none;background:linear-gradient(135deg,transparent 50%,var(--line2) 50%);border-radius:0 0 10px 0}
+/* ======== panel lateral que se cierra ======== */
+@media (min-width:1100px){ .app.pcol:not(.nopanel){grid-template-columns:92px minmax(0,1fr) 58px} .app.pcol .panel{padding:10px 6px} }
+.pclose{display:flex;align-items:center;gap:6px;margin:-4px 0 8px auto;font:inherit;font-size:12.5px;color:var(--muted);background:none;border:0;cursor:pointer;padding:4px 6px;border-radius:8px}
+.pclose svg{width:15px;height:15px}.pclose:hover{background:var(--sunk);color:var(--ink)}
+.pstrip{display:flex;flex-direction:column;align-items:center;gap:8px}
+.psb{display:flex;flex-direction:column;align-items:center;gap:2px;width:46px;padding:8px 0;border-radius:12px;border:1px solid var(--line);background:var(--sunk);color:var(--ink);font:inherit;cursor:pointer}
+.psb svg{width:18px;height:18px}.psb small{font-size:10px;color:var(--muted)}
+.psb.pom .pomo-time{font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.psb.pom.run{border-color:var(--acc)}.psb.pom.run .pomo-time{color:var(--acc)}
 
 /* ======================= ORGANIZAR: AGENDA ======================= */
 .agbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
