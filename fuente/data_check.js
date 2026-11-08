@@ -1224,3 +1224,151 @@ addChecks(`Epóxidos`, [
   [`Las resinas epoxi son:`, [`Adhesivos y recubrimientos muy resistentes`, `Anestésicos`, `Combustibles`, `Esterilizantes`], `Pegamentos de dos componentes.`],
   [`El óxido de etileno es útil para material:`, [`Sensible al calor`, `Solo metálico`, `Que se esteriliza en autoclave`, `Desechable sin esterilizar`], `Alternativa a la autoclave.`],
 ]);
+
+/* ---------------- TEMA 30: ALDEHÍDOS Y CETONAS ---------------- */
+addChecks(`El grupo carbonilo: estructura y geometría`, [
+  [`Un aldehído tiene el carbonilo unido a:`, [`Un H y un grupo R`, `Dos grupos R`, `Un −OH`, `Dos H siempre`], `R−CHO.`],
+  [`La geometría alrededor del carbono carbonílico es:`, [`Trigonal plana`, `Tetraédrica`, `Lineal`, `Piramidal`], `sp², 120°.`],
+  [`El enlace π del C=O se forma por:`, [`Solapamiento lateral de orbitales p`, `Solapamiento frontal de orbitales sp³`, `Transferencia de electrones`, `Un puente de hidrógeno`], `El σ es el frontal.`],
+  [`La geometría plana deja libres para el ataque de reactivos:`, [`Las caras superior e inferior del carbono`, `Solo el oxígeno`, `Los hidrógenos`, `Ninguna zona`], `Por ahí llega el nucleófilo.`]
+]);
+addChecks(`Polaridad, resonancia y reactividad del carbonilo`, [
+  [`La forma dipolar del carbonilo se escribe:`, [`C⁺−O⁻`, `C⁻−O⁺`, `C=O⁺`, `C≡O`], `Separación de cargas.`],
+  [`El oxígeno del carbonilo, en medio ácido:`, [`Puede protonarse (actúa como base débil)`, `Pierde electrones`, `Se convierte en carbono`, `No hace nada`], `Tiene δ⁻ y pares libres.`],
+  [`El nucleófilo ataca al:`, [`Carbono δ⁺`, `Oxígeno δ⁻`, `Hidrógeno`, `Grupo R`], `El C es el electrófilo.`],
+  [`La contribución de la forma dipolar, según el material, es:`, [`Considerable`, `Nula`, `Igual a cero en cetonas`, `Solo en aldehídos`], `Pág. 4.`]
+]);
+addChecks(`Propiedades físicas: polaridad, solubilidad y punto de ebullición`, [
+  [`Los compuestos carbonílicos se disuelven en agua porque:`, [`Su oxígeno forma puentes de H con el agua`, `Son iónicos`, `Tienen −OH`, `Son apolares`], `Hasta 4 carbonos.`],
+  [`Comparados con un alcohol de masa parecida, aldehídos y cetonas hierven:`, [`Más bajo`, `Más alto`, `Igual`, `No hierven`], `No forman puente de H entre ellos.`],
+  [`Comparados con un alcano de masa parecida, hierven:`, [`Más alto`, `Más bajo`, `Igual`, `No se puede comparar`], `Dipolo-dipolo.`],
+  [`Entre dos moléculas de propanona la atracción principal es:`, [`Dipolo-dipolo`, `Puente de hidrógeno`, `Iónica`, `Covalente`], `No tiene H unido al O.`]
+]);
+addChecks(`Nomenclatura de aldehídos`, [
+  [`En un aldehído, el carbono del −CHO ocupa la posición:`, [`1`, `2`, `La última`, `Depende del sustituyente`], `Por eso no se escribe.`],
+  [`El sufijo de los aldehídos es:`, [`-al`, `-ona`, `-ol`, `-oico`], `Metanal, etanal, propanal.`],
+  [`Con un −CHO en cada extremo se usa:`, [`-dial`, `-diona`, `-diol`, `-al dos veces`], `Propanodial.`],
+  [`Otro nombre aceptado del bencenocarbaldehído es:`, [`Benzaldehído`, `Fenol`, `Acetofenona`, `Benzofenona`], `Pág. 5.`]
+]);
+addChecks(`Nomenclatura de cetonas`, [
+  [`El sufijo de las cetonas es:`, [`-ona`, `-al`, `-ol`, `-ico`], `Propanona, butan-2-ona.`],
+  [`El nombre común de la propanona es:`, [`Acetona`, `Formol`, `Acetaldehído`, `Vinagre`], `CH₃−CO−CH₃.`],
+  [`En la 2-metilciclohexanona, el metilo está:`, [`En el carbono vecino al carbonilo`, `En el carbonilo`, `Fuera del anillo, en el O`, `En el C opuesto`], `El C=O es el 1.`],
+  [`La cadena principal de una cetona es:`, [`La más larga que contenga el C=O`, `La más corta`, `La que tenga más ramificaciones`, `Siempre la de 3 C`], `Pág. 6.`]
+]);
+addChecks(`Cetonas aromáticas y nomenclatura radicofuncional`, [
+  [`En la IUPAC de una cetona aromática, la cadena principal es:`, [`La cadena abierta más larga`, `El anillo de benceno`, `El grupo metilo`, `El carbonilo solo`], `El benceno es "fenil".`],
+  [`C₆H₅−CO−CH₂−CH₃ se llama:`, [`1-fenilpropan-1-ona`, `1-feniletan-1-ona`, `Propilbenceno`, `Fenilpropanal`], `3 C en la cadena.`],
+  [`En la nomenclatura radicofuncional, los grupos se escriben:`, [`En orden alfabético, seguidos de "cetona"`, `Por tamaño`, `Al azar`, `Con el sufijo -ona`], `Fenil metil cetona.`],
+  [`C₆H₅−CO−C₆H₅ se llama (radicofuncional):`, [`Difenil cetona`, `Fenil metil cetona`, `Dibenzaldehído`, `Bifenilo`], `También benzofenona.`]
+]);
+addChecks(`Aldehídos comunes y en medicina`, [
+  [`El cinamaldehído da el sabor a:`, [`Canela`, `Vainilla`, `Almendra`, `Menta`], `(2E)-3-fenilprop-2-enal.`],
+  [`La vainillina es un:`, [`Aldehído aromático saborizante`, `Ácido graso`, `Cuerpo cetónico`, `Éter`], `4-hidroxi-3-metoxibenzaldehído.`],
+  [`El citronelal se usa como:`, [`Repelente natural de insectos`, `Anestésico`, `Filtro UV`, `Esterilizante`], `Aceite de citronela.`],
+  [`Son aldosas:`, [`Glucosa, galactosa y manosa`, `Fructosa y ribulosa`, `Acetona y acetoacetato`, `Retinal y PLP`], `Azúcares con grupo aldehído.`]
+]);
+addChecks(`Cetonas comunes y en la salud`, [
+  [`La acetona se usa sobre todo como:`, [`Solvente (esmaltes de uñas, laboratorio)`, `Saborizante`, `Filtro UV`, `Repelente`], `Propanona.`],
+  [`El alcanfor se usa como:`, [`Descongestionante y analgésico tópico`, `Endulzante`, `Solvente de pinturas`, `Esterilizante`], `Pomadas.`],
+  [`La cetogénesis se activa en:`, [`Ayuno prolongado, dieta cetogénica y diabetes descompensada`, `Después de comer carbohidratos`, `Durante el sueño normal`, `Solo en niños`], `Pág. 11.`],
+  [`Los cuerpos cetónicos son fuente de energía alternativa para:`, [`Cerebro, corazón y músculo`, `Solo el hígado`, `Los glóbulos rojos únicamente`, `Ningún órgano`], `Pág. 11.`]
+]);
+addChecks(`Reacciones de adición nucleofílica`, [
+  [`En la adición nucleofílica, el oxígeno del carbonilo termina como:`, [`−OH`, `C=O otra vez`, `−O−O−`, `Se pierde`], `Tras tomar un H⁺.`],
+  [`Las cetonas hacen la adición más lento por:`, [`Impedimento estérico y estabilización inductiva`, `No tener carbonilo`, `Ser más pequeñas`, `Ser gases`], `Dos grupos R.`],
+  [`El benzaldehído + HCN forma:`, [`Mandelonitrilo (una cianhidrina)`, `Ácido benzoico`, `Fenol`, `Acetal`], `Pág. 12.`],
+  [`"Adición" significa:`, [`Agregar una molécula pequeña a una grande`, `Quitar un grupo`, `Romper la molécula`, `Cambiar un átomo por otro`], `Pág. 12.`]
+]);
+addChecks(`Hidrógenos alfa y condensación aldólica`, [
+  [`Una cetona como la butan-2-ona tiene:`, [`Dos carbonos α`, `Ningún carbono α`, `Un solo carbono α`, `Tres carbonos α`], `Uno a cada lado.`],
+  [`Comparados con los de un aldehído, los H α de una cetona son:`, [`Un poco menos ácidos`, `Mucho más ácidos`, `Iguales`, `No existen`], `Pág. 13.`],
+  [`El primer producto de la reacción aldólica de dos acetonas es:`, [`Una β-hidroxicetona`, `Un ácido`, `Un éter`, `Un alcano`], `Luego pierde agua → enona.`],
+  [`La condensación aldólica la hacen con alta eficiencia:`, [`Los aldehídos`, `Solo los éteres`, `Los alcanos`, `Ningún compuesto`], `Las cetonas también participan.`]
+]);
+addChecks(`Oxidación y reducción`, [
+  [`El reactivo de Fehling contiene:`, [`Cu²⁺`, `Ag⁺`, `Fe³⁺`, `Na⁺`], `Tollens contiene Ag⁺.`],
+  [`Las cetonas solo se oxidan en condiciones:`, [`Muy drásticas`, `Suaves`, `Con luz`, `Nunca`], `No tienen H en el C=O.`],
+  [`Son agentes reductores de aldehídos y cetonas:`, [`NaBH₄, LiAlH₄ y H₂/Ni`, `KMnO₄ y CrO₃`, `Tollens y Fehling`, `HCl y H₂SO₄`], `Pág. 16.`],
+  [`La reducción se define en el material como:`, [`Ganancia de hidrógenos`, `Ganancia de oxígeno`, `Pérdida de carbono`, `Ganancia de nitrógeno`], `La oxidación es ganancia de oxígeno.`]
+]);
+addChecks(`Hemiacetales, acetales, hemicetales y cetales`, [
+  [`Un hemiacetal tiene, en el mismo carbono:`, [`Un −OH y un −OR`, `Dos −OR`, `Dos −OH`, `Un C=O y un −OR`], `El acetal tiene dos −OR.`],
+  [`El paso de hemiacetal a acetal está catalizado por:`, [`Solo un ácido`, `Solo una base`, `Luz`, `Nada`], `El primer paso: ácido o base.`],
+  [`Al formarse el acetal se libera:`, [`Agua`, `Hidrógeno gaseoso`, `CO₂`, `Metanol`], `Pág. 17.`],
+  [`Acetona + etanol forma:`, [`Un hemicetal`, `Un hemiacetal`, `Un éster`, `Un ácido`], `Porque parte de una cetona.`]
+]);
+addChecks(`Reactividad relativa: aldehídos frente a cetonas`, [
+  [`Frente al ataque nucleofílico es más reactivo:`, [`El aldehído`, `La cetona`, `Son iguales`, `Ninguno reacciona`], `Pág. 18.`],
+  [`El efecto inductivo de los grupos alquilo en la cetona:`, [`Estabiliza la δ⁺ del carbono (lo hace menos electrofílico)`, `Aumenta la δ⁺`, `Rompe el C=O`, `Vuelve aromático el anillo`], `Pág. 18.`],
+  [`El impedimento estérico de la cetona se debe a:`, [`Sus dos grupos alquilo o arilo`, `Su hidrógeno`, `Su oxígeno`, `Su carga negativa`], `Bloquean al nucleófilo.`],
+  [`¿Cuál reacción NO hacen bien las cetonas en condiciones suaves?`, [`Oxidación (Tollens/Fehling)`, `Reducción con NaBH₄`, `Adición de HCN`, `Formación de hemicetal`], `Resisten la oxidación.`]
+]);
+
+/* ---------------- TEMA 31: ÁCIDOS CARBOXÍLICOS ---------------- */
+addChecks(`El grupo carboxilo`, [
+  [`La fórmula general de un ácido carboxílico es:`, [`R−COOH`, `R−CHO`, `R−OH`, `R−CO−R'`], `Pág. 3.`],
+  [`Otra forma de escribir el carboxilo es:`, [`−CO₂H`, `−C₂OH`, `−HCO`, `−OCH₃`], `Pág. 3.`],
+  [`En el carboxilo, el carbonilo y el hidroxilo están unidos:`, [`Al mismo átomo de carbono`, `A carbonos distintos`, `Al oxígeno`, `Al grupo R`], `De ahí "carboxilo".`],
+  [`R en un ácido carboxílico puede ser:`, [`Una cadena alifática, un anillo aromático o H`, `Solo un metilo`, `Solo un anillo`, `Un metal`], `Pág. 3.`]
+]);
+addChecks(`Geometría, polaridad y resonancia del carboxilo`, [
+  [`Los ángulos alrededor del carbono carboxílico miden unos:`, [`120°`, `109.5°`, `180°`, `90°`], `Trigonal plano.`],
+  [`Los enlaces muy polares del carboxilo son:`, [`C=O y O−H`, `C−H y C−C`, `C−C y C=C`, `Ninguno`], `El O es muy electronegativo.`],
+  [`Por su polaridad, los ácidos carboxílicos suelen formar:`, [`Dímeros por puentes de hidrógeno`, `Polímeros iónicos`, `Cristales metálicos`, `Gases nobles`], `Pág. 4.`],
+  [`En el anión carboxilato, la carga negativa:`, [`Se reparte por igual entre los dos oxígenos`, `Queda en el carbono`, `Queda en un solo oxígeno`, `Desaparece`], `Resonancia.`]
+]);
+addChecks(`Propiedades físicas: ebullición y solubilidad`, [
+  [`En el dímero cíclico, el O del carbonilo de una molécula se une al:`, [`H del hidroxilo de la otra`, `C de la otra`, `O del hidroxilo de la otra`, `Grupo R de la otra`], `Dos puentes de H.`],
+  [`Los ácidos de 1 a 4 carbonos en agua son:`, [`Completamente solubles (miscibles)`, `Insolubles`, `Solo solubles en caliente`, `Explosivos`], `Pág. 5.`],
+  [`La cadena hidrocarbonada de un ácido es:`, [`Apolar y lipofílica`, `Polar e hidrofílica`, `Iónica`, `Ácida`], `Por eso baja la solubilidad.`],
+  [`Los puntos de ebullición y fusión de los ácidos carboxílicos son:`, [`Elevados`, `Muy bajos`, `Iguales a los alcanos`, `No tienen`], `Por los dímeros.`]
+]);
+addChecks(`Propiedades físicas: estado, olor y densidad`, [
+  [`Los ácidos de 1 a 9 carbonos a temperatura ambiente son:`, [`Líquidos incoloros`, `Sólidos cerosos`, `Gases`, `Sólidos de color`], `Pág. 5.`],
+  [`El ácido esteárico es un ejemplo de ácido:`, [`Sólido ceroso de cadena larga`, `Gaseoso`, `Líquido punzante`, `Dicarboxílico`], `Más de 10 C.`],
+  [`Los ácidos fórmico y acético tienen olor:`, [`Punzante y penetrante`, `A queso`, `A flores`, `No tienen olor`], `Pág. 5.`],
+  [`Al alargarse la cadena, la densidad de los ácidos:`, [`Disminuye hasta ser menor que la del agua`, `Aumenta`, `No cambia`, `Se vuelve infinita`], `Fórmico ≈ 1.22 g/cm³.`]
+]);
+addChecks(`Sustitución nucleofílica de acilo`, [
+  [`En la sustitución nucleofílica de acilo, el nucleófilo reemplaza normalmente al:`, [`Grupo −OH`, `Grupo R`, `Oxígeno del C=O`, `Hidrógeno del C`], `Pág. 6.`],
+  [`Un nucleófilo es una especie:`, [`Rica en electrones (donadora)`, `Pobre en electrones`, `Sin electrones`, `Siempre positiva`], `Pág. 6.`],
+  [`El primer paso del ejemplo de la pág. 6 es:`, [`La protonación del oxígeno del carbonilo`, `La eliminación de agua`, `La formación del éster`, `La pérdida del grupo R`], `Luego entra el alcohol.`],
+  [`Después de la eliminación, el doble enlace C=O:`, [`Se vuelve a formar`, `Desaparece para siempre`, `Se convierte en triple`, `Pasa al grupo R`], `Adición-eliminación.`]
+]);
+addChecks(`Reacciones de acidez`, [
+  [`Al disolverse en agua, el ácido carboxílico cede su H⁺ a:`, [`Las moléculas de agua (forma H₃O⁺)`, `El grupo R`, `Otro ácido`, `El aire`], `Pág. 7.`],
+  [`La causa principal de la acidez es:`, [`La estabilización por resonancia del carboxilato`, `El tamaño de la cadena`, `El color`, `La presencia de nitrógeno`], `Pág. 7.`],
+  [`Las dos estructuras de resonancia del carboxilato son:`, [`Idénticas en energía`, `Muy diferentes en energía`, `Imposibles`, `Iónicas y covalentes`], `Equivalencia de enlaces.`],
+  [`Con NaOH o KOH los ácidos carboxílicos forman:`, [`Sales solubles en agua`, `Gases`, `Alcoholes`, `Aldehídos`], `Neutralización.`]
+]);
+addChecks(`Nomenclatura IUPAC de ácidos monocarboxílicos`, [
+  [`La terminación de los ácidos monocarboxílicos es:`, [`-oico`, `-ol`, `-al`, `-ona`], `Pág. 8.`],
+  [`El nombre de un ácido carboxílico empieza con la palabra:`, [`"ácido"`, `"éter"`, `"sal"`, `"alcohol"`], `Pág. 8.`],
+  [`HCOOH se llama:`, [`Ácido metanoico`, `Ácido etanoico`, `Metanal`, `Metanol`], `1 C.`],
+  [`¿Cuántos carbonos tiene el ácido butanoico?`, [`4`, `3`, `5`, `2`], `Incluido el del COOH.`]
+]);
+addChecks(`Nombres comunes de los ácidos carboxílicos`, [
+  [`El ácido valérico (pentanoico) debe su nombre a:`, [`La planta Valeriana officinalis`, `El vinagre`, `La mantequilla`, `Las hormigas`], `Pág. 9.`],
+  [`El ácido propiónico viene del griego "protos pion", que significa:`, [`Primera grasa`, `Primer ácido`, `Hormiga`, `Mantequilla`], `Pág. 9.`],
+  [`El ácido acético viene del latín acetum, que significa:`, [`Vinagre`, `Hormiga`, `Palma`, `Mantequilla`], `Pág. 9.`],
+  [`¿Cuántos carbonos tiene el ácido palmítico?`, [`16`, `5`, `10`, `20`], `Hexadecanoico.`]
+]);
+addChecks(`Ácidos dicarboxílicos`, [
+  [`En los ácidos dicarboxílicos, el nombre del alcano:`, [`Se mantiene completo y se agrega -dioico`, `Pierde la -o`, `No se usa`, `Se cambia por -ona`], `Etanodioico.`],
+  [`El ácido malónico es el:`, [`Propanodioico (3 C)`, `Etanodioico (2 C)`, `Butanodioico (4 C)`, `Hexanodioico (6 C)`], `HOOC−CH₂−COOH.`],
+  [`El ácido adípico tiene:`, [`6 carbonos`, `4 carbonos`, `2 carbonos`, `3 carbonos`], `Hexanodioico.`],
+  [`El ácido oxálico es:`, [`HOOC−COOH`, `HOOC−CH₂−COOH`, `CH₃−COOH`, `HCOOH`], `Etanodioico.`]
+]);
+addChecks(`Ácidos cíclicos y aromáticos`, [
+  [`Si el −COOH está unido a un anillo, el carbono del carboxilo:`, [`No se numera dentro del anillo`, `Es el C-1 del anillo`, `Se elimina`, `Se nombra con -al`], `Se usa -carboxílico.`],
+  [`En el ácido ciclohexanocarboxílico, el C-1 es:`, [`El carbono del anillo unido al COOH`, `El carbono del COOH`, `El carbono más lejano`, `No hay C-1`], `Pág. 11.`],
+  [`C₆H₅−COOH se llama comúnmente:`, [`Ácido benzoico`, `Ácido fórmico`, `Benzaldehído`, `Fenol`], `Ácido bencenocarboxílico.`],
+  [`El sufijo para −COOH en anillos es:`, [`-carboxílico`, `-carbaldehído`, `-dioico`, `-ona`], `Pág. 11.`]
+]);
+addChecks(`Ácidos carboxílicos en medicina`, [
+  [`¿Cuál de estos medicamentos aparece como ácido carboxílico en el material?`, [`Ibuprofeno`, `Acetona`, `Formaldehído`, `Éter dietílico`], `Pág. 12.`],
+  [`El ácido araquidónico es un:`, [`Ácido graso poliinsaturado`, `Ácido dicarboxílico`, `Aldehído`, `Cuerpo cetónico`], `C₂₀H₃₂O₂.`],
+  [`El ácido valproico y el ácido clavulánico son:`, [`Medicamentos`, `Ácidos grasos`, `Metabolitos del hígado`, `Aldosas`], `Pág. 12.`],
+  [`El omega-3 es un ejemplo de:`, [`Ácido graso poliinsaturado`, `Ácido monocarboxílico de 2 C`, `Sal`, `Éter`], `Pág. 12.`]
+]);

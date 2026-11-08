@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Actualiza la versión publicada (raíz del repositorio) desde fuente/ sin reconstruir todo:
-   app.js, app.css, checks.js, versión en index.html, sw.js, core.js y README.md."""
+   app.js, app.css, checks.js, packs.js (desde fuente/material/), versión en index.html, sw.js, core.js y README.md."""
 import os, re, sys, time
 R = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/'
 F = R + 'fuente/'
@@ -12,6 +12,11 @@ wr(R + 'app.js', '\n'.join(rd(F + f) for f in files))
 css = rd(R + 'app.css'); i = css.find(rd(F + 'base.css')[:200])
 wr(R + 'app.css', css[:i] + '\n'.join(rd(F + f) for f in ['base.css', 'new.css', 'ui.css', 'agenda.css']))
 wr(R + 'checks.js', rd(F + 'data_check.js'))
+import glob
+mats = sorted(glob.glob(F + 'material/*.js'))
+os.makedirs(R + 'material', exist_ok=True)
+for m in mats: wr(R + 'material/' + os.path.basename(m), rd(m))
+wr(R + 'packs.js', '/* Material nuevo: un paquete por tema (carpeta material/). */\n' + '\n'.join(rd(m) for m in mats))
 old = re.search(r'const VERSION = `([^`]+)`', rd(R + 'sw.js')).group(1)
 idx = rd(R + 'index.html')
 if 'checks.js' not in idx: idx = idx.replace('<script src="app.js?v=', f'<script src="checks.js?v={old}"></script>\n<script src="app.js?v=')

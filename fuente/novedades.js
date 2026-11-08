@@ -2,6 +2,10 @@
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-08b`, d:`2026-11-08`, t:`Temas nuevos: 30 (aldehídos y cetonas) y 31 (ácidos carboxílicos)`, l:[
+    `Ya están en Estudiar, dentro de la Unidad VII: repaso con dibujos, fichas, Memorizar, “Comprueba lo que leíste”, preguntas, ejercicios resueltos, formulario y videos.`,
+    `En Práctica hay 6 ejercicios nuevos que cambian cada vez: nombrar aldehídos, cetonas y ácidos, reducción, Tollens/Fehling, nombres comunes y propiedades según los carbonos.`,
+    `Lee los recuadros de nota: el material tiene algunos detalles corregidos (un dibujo invertido, los cuerpos cetónicos y la última diapositiva del Tema 31, que está cortada).`] },
   { id:`2026-11-08a`, d:`2026-11-08`, t:`Nuevo color: Frambuesa`, l:[
     `En “Colores” hay un color nuevo: 🍓 Frambuesa, un rosa intenso y alegre.`,
     `Se usa en botones, pestañas y el Pomodoro, en modo día y noche. Los colores de cada tema no cambian.`] },

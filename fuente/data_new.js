@@ -411,8 +411,9 @@ const FQ = [
 
 /* ======================= REFERENCIAS (Vancouver) ======================= */
 const REFS = [
- `Grande C ME. Temas 15 a 28: soluciones, ácidos-bases, hidrocarburos, alcoholes, fenoles y éteres [presentaciones de clase]. Módulo IV, Licenciatura en Laboratorio Clínico; 2026.`,
+ `Grande C ME. Temas 15 a 31: soluciones, ácidos-bases, hidrocarburos, alcoholes, fenoles, éteres, aldehídos, cetonas y ácidos carboxílicos [presentaciones de clase]. Módulo IV, Licenciatura en Laboratorio Clínico; 2026.`,
  `Chang R, Goldsby KA. Química. 12a ed. México: McGraw-Hill Interamericana; 2017.`,
  `Brown TL, LeMay HE, Bursten BE, Murphy CJ, Woodward PM. Química: la ciencia central. 12a ed. México: Pearson Educación; 2014.`,
- `Rifai N, editor. Tietz fundamentals of clinical chemistry and molecular diagnostics. 8th ed. St. Louis: Elsevier; 2019.`
+ `Rifai N, editor. Tietz fundamentals of clinical chemistry and molecular diagnostics. 8th ed. St. Louis: Elsevier; 2019.`,
+ `McMurry J. Química orgánica. 9a ed. México: Cengage Learning; 2018.`
 ];
