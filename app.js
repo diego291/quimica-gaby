@@ -2235,7 +2235,7 @@ function renderAll(){
   renderRail(); renderBnav(); renderHead(); renderSub(); renderView(); renderPanel(); if (SH && SH.live) drawSheet(); pomoRefresh();
 }
 
-const PALS = [[`menta`,`Menta`,`#2E7D6B`,`#7CC9B5`,`Verde agua, tranquilo`],[`oceano`,`Océano`,`#2766A8`,`#8DBBE8`,`Azul sereno`],[`lavanda`,`Lavanda`,`#5B57C2`,`#ABA8F2`,`Violeta suave`],[`durazno`,`Durazno`,`#B5562F`,`#F2AA86`,`Cálido`]];
+const PALS = [[`menta`,`Menta`,`#2E7D6B`,`#7CC9B5`,`Verde agua, tranquilo`],[`oceano`,`Océano`,`#2766A8`,`#8DBBE8`,`Azul sereno`],[`lavanda`,`Lavanda`,`#5B57C2`,`#ABA8F2`,`Violeta suave`],[`durazno`,`Durazno`,`#B5562F`,`#F2AA86`,`Cálido`],[`frambuesa`,`Frambuesa`,`#B03A64`,`#F09AB8`,`Rosa intenso, alegre`]];
 function openPalette(){
   openSheet(`Colores de la página`, b => {
     b.append(el(`p`, `muted`, `Elige el color principal. Se usa en botones, pestañas y el Pomodoro; los colores de cada tema no cambian.`));
@@ -4743,6 +4743,9 @@ function dockMenu(anchor, dock){
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-08a`, d:`2026-11-08`, t:`Nuevo color: Frambuesa`, l:[
+    `En “Colores” hay un color nuevo: 🍓 Frambuesa, un rosa intenso y alegre.`,
+    `Se usa en botones, pestañas y el Pomodoro, en modo día y noche. Los colores de cada tema no cambian.`] },
   { id:`2026-11-06i`, d:`2026-11-06`, t:`Pantalla completa: el texto entra completo y se lee mejor`, l:[
     `En computadora, el texto ocupa más espacio y el dibujo se hace más compacto a la derecha.`,
     `La letra se ajusta sola para que toda la ficha se vea sin bajar (sin quedar nunca más pequeña de lo cómodo). Con A− / A+ la cambias si quieres.`,

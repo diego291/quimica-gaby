@@ -13,6 +13,7 @@
 :root[data-pal="lavanda"]{--accD:#5B57C2; --accN:#ABA8F2}
 :root[data-pal="durazno"]{--accD:#B5562F; --accN:#F2AA86}
 :root[data-pal="oceano"]{--accD:#2766A8; --accN:#8DBBE8}
+:root[data-pal="frambuesa"]{--accD:#B03A64; --accN:#F09AB8}
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#15191B; --surface:#1D2225; --sunk:#191E20; --ink:#E2E8E6; --muted:#9BA8A5; --line:#2B3336; --line2:#4A5559;

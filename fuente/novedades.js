@@ -2,6 +2,9 @@
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-08a`, d:`2026-11-08`, t:`Nuevo color: Frambuesa`, l:[
+    `En “Colores” hay un color nuevo: 🍓 Frambuesa, un rosa intenso y alegre.`,
+    `Se usa en botones, pestañas y el Pomodoro, en modo día y noche. Los colores de cada tema no cambian.`] },
   { id:`2026-11-06i`, d:`2026-11-06`, t:`Pantalla completa: el texto entra completo y se lee mejor`, l:[
     `En computadora, el texto ocupa más espacio y el dibujo se hace más compacto a la derecha.`,
     `La letra se ajusta sola para que toda la ficha se vea sin bajar (sin quedar nunca más pequeña de lo cómodo). Con A− / A+ la cambias si quieres.`,
