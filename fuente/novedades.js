@@ -2,6 +2,9 @@
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-09a`, d:`2026-11-09`, t:`Aviso de correcciones del material`, l:[
+    `Las fichas donde el material del curso tiene un error, una parte incompleta o una contradicción ahora tienen un punto naranja en su número y una franja ámbar arriba del texto.`,
+    `Toca la franja para ver qué dice el material y qué es lo correcto. El botón “⚠ Correcciones” muestra todas las del tema y te lleva a cada ficha.`] },
   { id:`2026-11-08b`, d:`2026-11-08`, t:`Temas nuevos: 30 (aldehídos y cetonas) y 31 (ácidos carboxílicos)`, l:[
     `Ya están en Estudiar, dentro de la Unidad VII: repaso con dibujos, fichas, Memorizar, “Comprueba lo que leíste”, preguntas, ejercicios resueltos, formulario y videos.`,
     `En Práctica hay 6 ejercicios nuevos que cambian cada vez: nombrar aldehídos, cetonas y ácidos, reducción, Tollens/Fehling, nombres comunes y propiedades según los carbonos.`,

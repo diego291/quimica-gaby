@@ -57,6 +57,7 @@ vRepaso = function(v){
   const x = btn(`✕<span class="lrl"> Salir</span>`, `lb`, lectOff); x.title = `Salir de pantalla completa`; x.setAttribute(`aria-label`, x.title);
   const tt = el(`div`, `ltt`, `<b>${it.title}</b><small>${TOPICS[it.t].n} · Ficha ${ti + 1} de ${tema.length} · ${it.src}</small>`);
   bar.append(x, tt);
+  if (ERRATA[it.title]){ const eb = btn(`⚠`, `lb errlb`, () => errModal(it)); eb.title = `Corrección del material en esta ficha`; eb.setAttribute(`aria-label`, eb.title); bar.append(eb); }
   const fl = btn(`☰<span class="lrl"> Fichas</span>`, `lb`, e => lectLista(fl)); fl.title = `Ver todas las fichas`; fl.setAttribute(`aria-label`, fl.title); fl.setAttribute(`aria-haspopup`, `dialog`);
   const zm = (+S.x.zoom || 1);
   const am = btn(`A−`, `lb`, () => { const k = ZOOMS.findIndex(v => v >= zm - .001); setZoom(ZOOMS[Math.max(0, k - 1)] || .9); }); am.setAttribute(`aria-label`, `Letra más pequeña`);

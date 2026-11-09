@@ -1374,3 +1374,40 @@ a.ytt{font-weight:700;text-decoration:none;background:color-mix(in srgb,var(--ac
 .hl-o{background:rgba(255,159,67,.38)}.hl-r{background:rgba(255,90,95,.32)}.hl-v{background:rgba(165,123,255,.36)}.hl-c{background:rgba(63,213,213,.32)}
 .hl-n{background:none;text-decoration:underline dotted 2px;text-decoration-color:var(--acc);text-underline-offset:3px}
 mark.hl[data-ic]::before{content:attr(data-ic);font-size:.8em;margin-right:3px;font-weight:400;text-decoration:none;display:inline-block}
+
+/* ===== Correcciones del material (ámbar fijo, distinto del color del tema y de la página) ===== */
+:root{--erA:#9A5B00;--erBg:#FFF4E0;--erLn:#E3A64A;--erBad:#FBE9E7;--erBadT:#A3322A;--erOk:#E6F4EA;--erOkT:#1F6B3A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--erA:#F2C17A;--erBg:#2E2414;--erLn:#8A6326;--erBad:#3A2425;--erBadT:#F09A90;--erOk:#1C3427;--erOkT:#8DD0A5}}
+:root[data-theme="dark"]{--erA:#F2C17A;--erBg:#2E2414;--erLn:#8A6326;--erBad:#3A2425;--erBadT:#F09A90;--erOk:#1C3427;--erOkT:#8DD0A5}
+.rsq button.errdot{position:relative}
+.rsq button.errdot::after{content:"";position:absolute;top:-4px;right:-4px;width:11px;height:11px;border-radius:50%;background:#F2A33A;border:2px solid var(--bg)}
+.btn.errbtn{color:var(--erA);border-color:var(--erLn);background:var(--erBg)}
+.errban{display:flex !important;flex-direction:row;line-height:1.4;align-items:center;gap:10px;width:100%;text-align:left;margin:8px 0 12px;padding:9px 14px;background:var(--erBg);color:var(--erA);border:0;border-left:4px solid #F2A33A;border-radius:0;font:inherit;font-size:14px;cursor:pointer}
+.errban .erbi{font-size:16px;flex:none}.errban .erbt{flex:1;min-width:0;display:block}.errban .erbv{flex:none;font-weight:700;text-decoration:underline;white-space:nowrap}
+.errban:hover{filter:brightness(1.04)}.errban:focus-visible{outline:3px solid var(--erLn);outline-offset:2px}
+.lb.errlb{color:#F2A33A;font-size:17px}
+#errroot{position:fixed;inset:0;z-index:3000}
+.errscrim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.errmod,.errpanel{position:absolute;background:var(--bg);color:var(--ink);overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.35);padding:14px 18px 20px}
+.errmod{left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,94vw);max-height:88vh;border-radius:18px;border:1px solid var(--erLn)}
+.errpanel{right:0;top:0;bottom:0;width:min(460px,92vw);border-left:1px solid var(--line2);padding-top:calc(14px + env(safe-area-inset-top,0px))}
+@media (max-width:700px){.errpanel{left:0;right:0;top:auto;bottom:0;width:auto;max-height:86vh;border-radius:18px 18px 0 0;border-left:0;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}}
+.errh{display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:-14px;background:var(--bg);padding:6px 0;z-index:1}
+.errh h3{margin:0;font-size:1.2rem;color:var(--erA)}
+.errsub{margin:2px 0 12px;color:var(--muted);font-size:13.5px}
+.erre{margin-bottom:14px}
+.errpg{margin:8px 0 6px;font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:.02em}
+.errpar{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:520px){.errpar{grid-template-columns:1fr}}
+.errbad,.errok{border-radius:10px;padding:9px 12px;font-size:14.5px;line-height:1.45}
+.errbad{background:var(--erBad)}.errok{background:var(--erOk)}
+.errbad .k,.errok .k{display:block;font-size:11.5px;font-weight:700;letter-spacing:.03em;margin-bottom:3px}
+.errbad .k{color:var(--erBadT)}.errok .k{color:var(--erOkT)}
+.errpor{margin:6px 0 0;font-size:13.5px;color:var(--muted)}
+.errall{margin-top:6px;width:100%}
+.erritem{border:1px solid var(--line2);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.erritem.cur{border-color:var(--erLn);box-shadow:0 0 0 1px var(--erLn) inset}
+.errtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.errtag{font-size:12px;font-weight:700;color:var(--erA);background:var(--erBg);border-radius:999px;padding:3px 10px}
+.errgo{font-size:12.5px;padding:4px 10px}
+.errti{margin:8px 0 0;font-weight:700}

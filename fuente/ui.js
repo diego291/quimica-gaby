@@ -770,7 +770,7 @@ function leerConDibujo(it, fig, rehacer){
   }
   return w;
 }
-function repCard(it){ const c = card(it, `rep`); c.append(el(`h3`, ``, it.title)); const body = el(`div`, `repbody`); body.append(el(`div`, `reptext`, it.body)); const f = it.fig && figure(it.fig); if (f) body.append(f); c.append(body); if (it.memo) c.append(el(`p`, `memo`, `<b>Para memorizar:</b> ${it.memo}`)); const vids = VIDEOS.filter(x => x.rep.includes(it.title)); if (vids.length) c.append(vidLinks(vids)); return c; }
+function repCard(it){ const c = card(it, `rep`); c.append(el(`h3`, ``, it.title)); { const eb = errBanner(it); if (eb) c.append(eb); } const body = el(`div`, `repbody`); body.append(el(`div`, `reptext`, it.body)); const f = it.fig && figure(it.fig); if (f) body.append(f); c.append(body); if (it.memo) c.append(el(`p`, `memo`, `<b>Para memorizar:</b> ${it.memo}`)); const vids = VIDEOS.filter(x => x.rep.includes(it.title)); if (vids.length) c.append(vidLinks(vids)); return c; }
 function tocInto(box){
   const all = filt(ALL.REPASO); const i0 = Math.min(S.x.rpos[selKey()] || 0, Math.max(0, all.length - 1));
   if (!all.length){ box.append(el(`p`, `muted`, `Elige temas para ver su índice.`)); return; }
@@ -799,14 +799,17 @@ function vRepaso(v){
   const lb = el(`div`, `rtema`); lb.style.setProperty(`--c`, `var(--${it.t})`); lb.innerHTML = `<i></i>${TOPICS[it.t].n} · ${TOPICS[it.t].name}`;
   const tools = el(`div`, `deckbar rtools`);
   if (bp() !== `wide`){ const ix = btn(``, `btn ghost`, () => openSheet(`Índice del repaso`, tocInto)); ix.innerHTML = icon(`list`) + ` Índice`; tools.append(ix); }
+  const nErr = errCount(it.t); if (nErr){ const eb = btn(`⚠ Correcciones · ${nErr}`, `btn ghost errbtn`, () => errPanel(it.t, it.title)); eb.title = `Errores del material del ${TOPICS[it.t].n} y cómo se corrigieron`; tools.prepend(eb); }
+  errJump = x => { const j = all.indexOf(x); if (j >= 0) jump(j); };
   tools.append(btn(`Ver todas`, `btn ghost`, () => { S.x.rall = true; save(); renderView(); renderPanel(); }));
   top.append(lb, tools); v.append(top);
   const sq = el(`nav`, `rsq`); sq.setAttribute(`aria-label`, `Fichas del ${TOPICS[it.t].n}`); sq.style.setProperty(`--c`, `var(--${it.t})`);
   tema.forEach((x, j) => { const b = btn(String(j + 1), (S.x.seen[hash(x.title)] ? `ok` : ``) + (x === it ? ` cur` : ``), () => jump(all.indexOf(x)));
-    b.title = x.title; b.setAttribute(`aria-label`, `Ficha ${j + 1}: ${x.title}`); if (x === it) b.setAttribute(`aria-current`, `true`); sq.append(b); });
+    b.title = x.title; b.setAttribute(`aria-label`, `Ficha ${j + 1}: ${x.title}`); if (x === it) b.setAttribute(`aria-current`, `true`); if (ERRATA[x.title]){ b.classList.add(`errdot`); b.setAttribute(`aria-label`, `Ficha ${j + 1}: ${x.title} (tiene corrección del material)`); } sq.append(b); });
   v.append(sq); requestAnimationFrame(() => { const c = sq.querySelector(`.cur`); if (c && sq.scrollWidth > sq.clientWidth) sq.scrollLeft = c.offsetLeft - sq.clientWidth / 2 + c.offsetWidth / 2; });
   v.append(el(`h2`, `rtit`, it.title));
   v.append(el(`p`, `rsub`, `Ficha ${ti + 1} de ${tema.length} · Fuente: ${it.src}${all.length > tema.length ? ` · tarjeta ${i + 1} de ${all.length}` : ``}`));
+  { const eb = errBanner(it); if (eb) v.append(eb); }
   const _was = S.x.seen[th]; S.x.seen[th] = 1; motSeen(all, it, _was); S.x.last = { mode:`repaso`, sel:selList(), i, n:all.length, title:it.title, t:Date.now() };
   // Pestañas de la ficha
   const fig = it.fig && figure(it.fig), vids = VIDEOS.filter(x => x.rep.includes(it.title));
