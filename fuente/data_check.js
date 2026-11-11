@@ -1372,3 +1372,83 @@ addChecks(`Ácidos carboxílicos en medicina`, [
   [`El ácido valproico y el ácido clavulánico son:`, [`Medicamentos`, `Ácidos grasos`, `Metabolitos del hígado`, `Aldosas`], `Pág. 12.`],
   [`El omega-3 es un ejemplo de:`, [`Ácido graso poliinsaturado`, `Ácido monocarboxílico de 2 C`, `Sal`, `Éter`], `Pág. 12.`]
 ]);
+
+/* ---------------- TEMA 32: ÉSTERES Y AMIDAS ---------------- */
+addChecks(`Ésteres y amidas: derivados de los ácidos`, [
+  [`En ésteres y amidas, el grupo del ácido que se reemplaza es:`, [`El −OH`, `El C=O`, `El grupo R`, `El hidrógeno del carbono`], `Pág. 3.`],
+  [`La parte que conservan el ácido, el éster y la amida es:`, [`El acilo R−C=O`, `El grupo −OH`, `El grupo −NH₂`, `El grupo −OR'`], `Por eso son derivados.`],
+  [`R−CO−NH₂ es:`, [`Una amida`, `Un éster`, `Un ácido`, `Una amina`], `Grupo amino en lugar del −OH.`],
+  [`R−CO−OR' es:`, [`Un éster`, `Una amida`, `Un éter`, `Un alcohol`], `Grupo alcoxi en lugar del −OH.`]
+]);
+addChecks(`Estructura de los ésteres`, [
+  [`El proceso de formar un éster se llama:`, [`Esterificación`, `Saponificación`, `Hidratación`, `Aminación`], `Ácido + alcohol.`],
+  [`En un éster, R (del lado del ácido) puede ser:`, [`Un H o una cadena`, `Solo un H`, `Solo un anillo`, `Un nitrógeno`], `Ej.: metanoato de metilo tiene R = H.`],
+  [`Si R' de un éster fuera un H, el compuesto sería:`, [`Un ácido carboxílico`, `Una amida`, `Un aldehído`, `Un éter`], `R' nunca es H.`],
+  [`La parte acilo del éster contiene:`, [`El grupo carbonilo (C=O)`, `El oxígeno sp³`, `La cadena R'`, `Un nitrógeno`], `Viene del ácido.`]
+]);
+addChecks(`Estructura y clasificación de las amidas`, [
+  [`La fórmula general de una amida es:`, [`R−CO−NR'R''`, `R−COO−R'`, `R−NH₂`, `R−O−R'`], `Pág. 4.`],
+  [`En una amida, R' y R'' pueden ser:`, [`H o cadenas carbonadas`, `Solo H`, `Solo cadenas`, `Oxígenos`], `De ellos depende el tipo.`],
+  [`Una amida con −NH₂ es:`, [`Primaria`, `Secundaria`, `Terciaria`, `No es amida`], `Ninguna cadena en el N.`],
+  [`Para clasificar una amida se cuentan las cadenas unidas al:`, [`Nitrógeno`, `Carbono del C=O`, `Oxígeno`, `Grupo R`], `0, 1 o 2.`]
+]);
+addChecks(`Esterificación de Fischer`, [
+  [`En la esterificación de Fischer, el −OH del ácido es:`, [`Un mal grupo saliente que se reemplaza por −OR'`, `Un buen nucleófilo`, `Un catalizador`, `El producto`], `Pág. 5.`],
+  [`Además del éster, la esterificación de Fischer produce:`, [`Agua`, `Amoníaco`, `Hidrógeno gaseoso`, `CO₂`], `R−COOH + R'−OH ⇌ R−COO−R' + H₂O.`],
+  [`Un catalizador típico de la esterificación de Fischer es:`, [`H₂SO₄`, `NaOH`, `NH₃`, `KMnO₄`], `O HCl anhidro.`],
+  [`Por ser reversible, el éster formado puede:`, [`Volver a romperse con agua (hidrólisis)`, `Explotar`, `Convertirse en amida solo`, `Oxidarse a cetona`], `Es un equilibrio.`]
+]);
+addChecks(`Formación de amidas: ácido + amoníaco o amina`, [
+  [`Al mezclar un ácido con una amina, la amida:`, [`No se forma de inmediato`, `Se forma al instante`, `Nunca se forma`, `Se forma solo en frío`], `Primero hay una reacción ácido-base.`],
+  [`La sal que se forma primero es una:`, [`Sal de carboxilato de amonio`, `Sal de sodio`, `Sal de cloruro`, `Sal de sulfato`], `R−COO⁻ ⁺NH₃−R'.`],
+  [`El paso final para formar la amida es una:`, [`Deshidratación (pérdida de agua) con calor`, `Hidratación`, `Oxidación`, `Reducción`], `Δ > 100 °C.`],
+  [`En el ejemplo del material, el ácido acético y el NH₃ se calientan a:`, [`150 °C`, `25 °C`, `0 °C`, `37 °C`], `Se forma acetamida.`]
+]);
+addChecks(`Nomenclatura de ésteres`, [
+  [`Las dos partes del nombre de un éster se unen con la palabra:`, [`"de"`, `"y"`, `"con"`, `"más"`], `Etanoato de etilo.`],
+  [`En la fórmula R−COO−R', la parte que se nombra al final ("de …ilo") es:`, [`R' (la del alcohol)`, `R (la del ácido)`, `El carbonilo`, `Ninguna`], `Ojo con el orden.`],
+  [`El acetato de etilo es:`, [`CH₃−COO−CH₂−CH₃`, `CH₃−CH₂−COO−CH₃`, `H−COO−CH₂CH₃`, `CH₃−O−CH₂CH₃`], `Ácido acético + etanol.`],
+  [`El formiato de metilo es:`, [`H−COO−CH₃`, `CH₃−COO−CH₃`, `CH₃−COOH`, `H−CO−NH₂`], `Del ácido fórmico.`]
+]);
+addChecks(`Ésteres ramificados, cíclicos y aromáticos`, [
+  [`En el 3-metilbutanoato de metilo, la cadena del ácido tiene:`, [`4 carbonos con un metilo en el C3`, `3 carbonos`, `5 carbonos sin ramificar`, `1 carbono`], `Butanoato.`],
+  [`C₆H₁₁−COO−CH₂CH₃ se llama:`, [`Ciclohexanocarboxilato de etilo`, `Hexanoato de etilo`, `Benzoato de etilo`, `Etil ciclohexano`], `Ácido en anillo: -carboxilato.`],
+  [`Si el oxígeno del éster está unido a un anillo de benceno, se usa:`, [`De fenilo`, `De bencilo`, `-carboxilato`, `-benzoico`], `Viene de un fenol.`],
+  [`La fórmula molecular correcta del 3-metilbutanoato de metilo es:`, [`C₆H₁₂O₂`, `C₅H₁₀O₂`, `C₄H₈O₂`, `C₆H₁₀O₂`], `El material dice C₅H₁₀O₂ (error).`]
+]);
+addChecks(`Nomenclatura de amidas primarias`, [
+  [`Para nombrar una amida primaria, la palabra "ácido":`, [`Se quita`, `Se conserva al inicio`, `Se cambia por "amina"`, `Se pone al final`], `Etanamida, no ácido etanamida.`],
+  [`CH₃−CH₂−CH₂−CONH₂ se llama:`, [`Butanamida`, `Propanamida`, `Butanamina`, `Butanoato de amonio`], `4 C.`],
+  [`CH₃−CH(OH)−CH₂−CONH₂ se llama:`, [`3-hidroxibutanamida`, `2-hidroxibutanamida`, `Butanol-amida`, `3-butanolamida`], `Se numera desde el C=O.`],
+  [`El nylon es un ejemplo de:`, [`Poliamida`, `Poliéster`, `Alcohol`, `Cetona`], `Unidades −CO−NH− repetidas.`]
+]);
+addChecks(`Amidas N-sustituidas, ramificadas y cíclicas`, [
+  [`Si hay dos sustituyentes iguales en el nitrógeno, se escribe:`, [`N,N-di…`, `N-di…`, `2,2-di…`, `di-N…`], `N,N-dimetilpropanamida.`],
+  [`CH₃−CONH−CH₂CH₃ se llama:`, [`N-etiletanamida`, `N-metilpropanamida`, `Butanamida`, `Etanoato de etilo`], `Etilo en el N.`],
+  [`En una amida unida a un anillo, el carbono del carbonilo:`, [`No se cuenta dentro del ciclo`, `Es el C1 del anillo`, `Se elimina`, `Se nombra como -oico`], `Se usa -carboxamida.`],
+  [`C₅H₉−CONH₂ se llama:`, [`Ciclopentanocarboxamida`, `Pentanamida`, `Ciclohexanocarboxamida`, `Benzamida`], `Anillo de 5 C.`]
+]);
+addChecks(`Ésteres de colesterol`, [
+  [`Los ésteres de colesterol se empaquetan en:`, [`El centro hidrofóbico de las lipoproteínas`, `La membrana del eritrocito`, `El núcleo celular`, `La orina`], `LDL y HDL.`],
+  [`Al formarse un éster de colesterol se libera:`, [`Una molécula de agua`, `CO₂`, `Amoníaco`, `Glucosa`], `Es una esterificación.`],
+  [`El ácido graso aporta a la reacción su grupo:`, [`−COOH`, `−OH`, `−NH₂`, `−CHO`], `El colesterol aporta el −OH.`],
+  [`Los ésteres de colesterol sirven para:`, [`Transportar y almacenar colesterol`, `Producir energía inmediata`, `Coagular la sangre`, `Formar urea`], `Pág. 13.`]
+]);
+addChecks(`La urea y los anestésicos locales`, [
+  [`La fórmula de la urea es:`, [`H₂N−CO−NH₂`, `CH₃−CONH₂`, `H−CONH₂`, `NH₄⁺`], `La amida más simple.`],
+  [`En el organismo, la urea se forma en:`, [`El ciclo de la urea`, `El ciclo de Krebs`, `La glucólisis`, `La cetogénesis`], `Pág. 14.`],
+  [`En dermatología, la urea se usa en cremas:`, [`Queratolíticas de alta hidratación`, `Bloqueadoras solares`, `Antibióticas`, `Anestésicas`], `Pág. 14.`],
+  [`La bupivacaína es un anestésico tipo:`, [`Amida`, `Éster`, `Éter`, `Alcohol`], `Dos "i": bup-i-vacaína.`]
+]);
+addChecks(`Propiedades físicas: ésteres frente a amidas`, [
+  [`Los ésteres de baja masa molecular son solubles en agua porque:`, [`Aceptan puentes de H del agua`, `Donan puentes de H`, `Son iónicos`, `Reaccionan con el agua`], `Hasta 3–5 C.`],
+  [`Las amidas terciarias hierven más bajo que las primarias porque:`, [`No tienen H unido al nitrógeno`, `Son más pesadas`, `Son iónicas`, `No tienen carbonilo`], `Sin N−H no forman puentes de H entre sí.`],
+  [`La alta polaridad de las amidas se debe a:`, [`La resonancia entre el C=O y el nitrógeno`, `Que no tienen oxígeno`, `Su cadena larga`, `Su olor`], `C=O ↔ C=N⁺.`],
+  [`Las ceras y grasas, ésteres de cadena muy larga, son:`, [`Sólidas`, `Gases`, `Líquidos muy volátiles`, `Explosivas`], `Pág. 15.`]
+]);
+addChecks(`Propiedades químicas: reactividad e hidrólisis`, [
+  [`Los ésteres son, frente a los haluros de acilo y anhídridos:`, [`Menos reactivos`, `Más reactivos`, `Igual de reactivos`, `No reaccionan nunca`], `Pero más reactivos que las amidas.`],
+  [`La saponificación se usa industrialmente para fabricar:`, [`Jabones`, `Plásticos`, `Fármacos anestésicos`, `Combustibles`], `Pág. 16.`],
+  [`La hidrólisis ácida de una amida produce:`, [`Ácido carboxílico y sal de amonio`, `Éster y agua`, `Alcohol y amoníaco`, `Aldehído`], `Requiere condiciones drásticas.`],
+  [`Los ésteres en cuanto a ácido-base son:`, [`Prácticamente neutros`, `Ácidos fuertes`, `Bases fuertes`, `Anfóteros fuertes`], `Solo se protonan con ácidos muy fuertes.`]
+]);

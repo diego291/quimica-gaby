@@ -4850,6 +4850,10 @@ function dockMenu(anchor, dock){
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-11a`, d:`2026-11-11`, t:`Tema nuevo: 32 (ésteres y amidas)`, l:[
+    `Ya está en Estudiar, en la Unidad VII: 13 fichas con dibujos, Memorizar, “Comprueba lo que leíste”, preguntas, ejercicios, formulario, videos y audio con voz natural.`,
+    `En Práctica hay 4 ejercicios nuevos: nombrar ésteres, nombrar amidas, clasificar amidas y productos de la hidrólisis.`,
+    `El material tiene algunas fórmulas con errores (pág. 7 y 8, entre otras): búscalas por el punto naranja en el número de la ficha.`] },
   { id:`2026-11-09a`, d:`2026-11-09`, t:`Aviso de correcciones del material`, l:[
     `Las fichas donde el material del curso tiene un error, una parte incompleta o una contradicción ahora tienen un punto naranja en su número y una franja ámbar arriba del texto.`,
     `Toca la franja para ver qué dice el material y qué es lo correcto. El botón “⚠ Correcciones” muestra todas las del tema y te lleva a cada ficha.`] },

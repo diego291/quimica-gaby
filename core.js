@@ -1407,7 +1407,7 @@ const FQ = [
 
 /* ======================= REFERENCIAS (Vancouver) ======================= */
 const REFS = [
- `Grande C ME. Temas 15 a 31: soluciones, ácidos-bases, hidrocarburos, alcoholes, fenoles, éteres, aldehídos, cetonas y ácidos carboxílicos [presentaciones de clase]. Módulo IV, Licenciatura en Laboratorio Clínico; 2026.`,
+ `Grande C ME. Temas 15 a 32: soluciones, ácidos-bases, hidrocarburos, alcoholes, fenoles, éteres, aldehídos, cetonas, ácidos carboxílicos, ésteres y amidas [presentaciones de clase]. Módulo IV, Licenciatura en Laboratorio Clínico; 2026.`,
  `Chang R, Goldsby KA. Química. 12a ed. México: McGraw-Hill Interamericana; 2017.`,
  `Brown TL, LeMay HE, Bursten BE, Murphy CJ, Woodward PM. Química: la ciencia central. 12a ed. México: Pearson Educación; 2014.`,
  `Rifai N, editor. Tietz fundamentals of clinical chemistry and molecular diagnostics. 8th ed. St. Louis: Elsevier; 2019.`,
@@ -3123,7 +3123,7 @@ function vGuia(v){
   v.append(l);
 }
 
-const APPVER = `2026.11.09-0040`;
+const APPVER = `2026.11.11-1714`;
 /* ======================= PAQUETES DE MATERIAL =======================
    Cada tema nuevo llega como un archivo que llama a registerPack({...}).
    Formato:

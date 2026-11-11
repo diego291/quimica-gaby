@@ -1,6 +1,6 @@
 # Química · Laboratorio Clínico
 
-Página de estudio (versión 2026.11.09-0040). Se abre en GitHub Pages y se actualiza sola.
+Página de estudio (versión 2026.11.11-1714). Se abre en GitHub Pages y se actualiza sola.
 
 - `material/`: un archivo por tema nuevo (`registerPack({...})`).
 - `core.js`, `app.js`, `app.css`: el programa.
