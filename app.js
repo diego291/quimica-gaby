@@ -59,7 +59,7 @@ function hoy(){ try { return new Date().toLocaleDateString(`es-SV`, { day:`numer
 
 /* ======================= ESTADO ======================= */
 const KEY = `parcialM4_v2`;
-const MODES = [[`inicio`,`Hoy`],[`hoy`,`Para hoy`],[`escuchar`,`Escuchar`],[`notas`,`Mis notas`],[`impreso`,`Parcial impreso`],[`guia`,`Cómo estudiar`],[`repaso`,`Repaso`],[`videos`,`Videos`],[`preguntar`,`Preguntar`],[`fichas`,`Fichas`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`formula`,`¿Qué fórmula uso?`],[`practica`,`Práctica infinita`],[`lab`,`Laboratorio`],[`simulacro`,`Simulacro`],[`formulario`,`Formulario`],[`progreso`,`Mi progreso`],[`agenda`,`Agenda`],[`pendientes`,`Pendientes`],[`notasr`,`Notas rápidas`],[`cuaderno`,`Cuaderno`]];
+const MODES = [[`inicio`,`Hoy`],[`hoy`,`Para hoy`],[`escuchar`,`Escuchar`],[`notas`,`Mis notas`],[`impreso`,`Parcial impreso`],[`guia`,`Cómo estudiar`],[`repaso`,`Repaso`],[`videos`,`Videos`],[`preguntar`,`Preguntar`],[`fichas`,`Fichas`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`formula`,`¿Qué fórmula uso?`],[`practica`,`Práctica infinita`],[`lab`,`Laboratorio`],[`simulacro`,`Simulacro`],[`formulario`,`Formulario`],[`progreso`,`Mi progreso`],[`agenda`,`Agenda`],[`pendientes`,`Pendientes`],[`notasr`,`Notas rápidas`],[`cuaderno`,`Cuaderno`],[`retro`,`Retroalimentación`]];
 const S = { x:{}, sel: new Set(TORDER), mode:`inicio`, simFb:`now`, st:{}, err:[], box:{}, shuffle:false, onlyErr:false, figFront:false };
 try { const s = JSON.parse(localStorage.getItem(KEY) || `null`); if (s){ S.sel = new Set(s.sel.filter(k => TORDER.includes(k))); S.mode = MODES.some(m => m[0] === s.mode) ? s.mode : `inicio`; S.x = s.x || {}; S.st = s.st || {}; S.err = s.err || []; S.box = s.box || {}; S.simFb = s.simFb || `now`; } } catch(e){}
 function save(){ try { localStorage.setItem(KEY, JSON.stringify({ sel:[...S.sel], mode:S.mode, simFb:S.simFb, st:S.st, err:S.err, box:S.box, x:S.x })); } catch(e){} }
@@ -820,8 +820,8 @@ function pdfBar(){
 /* ======================= RENDER ======================= */
 function renderView(){
   const v = $(`#view`); v.innerHTML = ``;
-  if (!S.sel.size && ![`inicio`,`progreso`,`guia`,`videos`,`preguntar`,`notas`,`hoy`,`agenda`,`pendientes`,`notasr`,`cuaderno`].includes(S.mode)){ const e = el(`div`,`empty`,`No hay temas elegidos. `); e.append(btn(`Elegir temas`, `btn acc`, () => openTopics())); v.append(e); return; }
-  ({ hoy:vHoy, escuchar:vEscuchar, notas:vNotas, inicio:vInicio, impreso:vImpreso, guia:vGuia, videos:vVideos, preguntar:vPreguntar, repaso:vRepaso, fichas:vFichas, preguntas:vPreguntas, ejercicios:vEjercicios, formula:vFormula, practica:vPractica, lab:vLab, simulacro:vSimulacro, formulario:vFormulario, progreso:vProgreso, agenda:vAgenda, pendientes:vPend, notasr:vNotasR, cuaderno:vCuaderno })[S.mode](v);
+  if (!S.sel.size && ![`inicio`,`progreso`,`guia`,`videos`,`preguntar`,`notas`,`hoy`,`agenda`,`pendientes`,`notasr`,`cuaderno`,`retro`].includes(S.mode)){ const e = el(`div`,`empty`,`No hay temas elegidos. `); e.append(btn(`Elegir temas`, `btn acc`, () => openTopics())); v.append(e); return; }
+  ({ hoy:vHoy, escuchar:vEscuchar, notas:vNotas, inicio:vInicio, impreso:vImpreso, guia:vGuia, videos:vVideos, preguntar:vPreguntar, repaso:vRepaso, fichas:vFichas, preguntas:vPreguntas, ejercicios:vEjercicios, formula:vFormula, practica:vPractica, lab:vLab, simulacro:vSimulacro, formulario:vFormulario, progreso:vProgreso, agenda:vAgenda, pendientes:vPend, notasr:vNotasR, cuaderno:vCuaderno, retro:vRetro })[S.mode](v);
   const pb = pdfBar(); if (pb){ pb.style.marginTop = `22px`; v.append(pb); }
 }
 
@@ -1495,7 +1495,8 @@ const ICONS = {
   bolt:`<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>`, play:`<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9l5 3-5 3z"/>`,
   cal:`<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>`, timer:`<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>`,
   full:`<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>`, bell:`<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21a2 2 0 0 0 4 0"/>`,
-  tag:`<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>`
+  tag:`<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>`,
+  trend:`<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>`
 };
 const icon = (n, cls = `ic`) => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ``}</svg>`;
 const SECS = [
@@ -1504,7 +1505,8 @@ const SECS = [
   { k:`practicar`, n:`Practicar`, ic:`pencil`, modes:[[`hoy`,`Para hoy`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`practica`,`Práctica`],[`formula`,`¿Qué fórmula?`],[`lab`,`Laboratorio`]] },
   { k:`examen`, n:`Examen`, ic:`clip`, modes:[[`simulacro`,`Simulacro`],[`impreso`,`Parcial impreso`]] },
   { k:`organizar`, n:`Organizar`, ic:`cal`, modes:[[`agenda`,`Agenda`],[`pendientes`,`Pendientes`],[`notasr`,`Notas`],[`cuaderno`,`Cuaderno`],[`notas`,`Mis notas`]] },
-  { k:`preguntar`, n:`Preguntar`, ic:`chat`, modes:[[`preguntar`,`Preguntar`]] }
+  { k:`preguntar`, n:`Preguntar`, ic:`chat`, modes:[[`preguntar`,`Preguntar`]] },
+  { k:`retro`, n:`Retroali­mentación`, ic:`trend`, modes:[[`retro`,`Retroalimentación`]] }
 ];
 const NEWT = [TORDER[TORDER.length - 1]];
 const MESES = [`enero`,`febrero`,`marzo`,`abril`,`mayo`,`junio`,`julio`,`agosto`,`septiembre`,`octubre`,`noviembre`,`diciembre`];
@@ -1539,7 +1541,7 @@ function markDay(){ const t = todayStr(), d = S.x.days || (S.x.days = []); if (!
 function streak(){ const d = new Set(S.x.days || []); let s = todayStr(); if (!d.has(s)) s = addDays(s, -1); let n = 0; while (d.has(s)){ n++; s = addDays(s, -1); } return n; }
 
 /* ---------- navegación ---------- */
-function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`notas`,`agenda`,`pendientes`,`notasr`,`cuaderno`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList(), t:Date.now() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
+function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`retro`,`notas`,`agenda`,`pendientes`,`notasr`,`cuaderno`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList(), t:Date.now() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
 function goSec(k){ const sc = SECS.find(s => s.k === k); go(S.x.sm[k] || sc.modes[0][0]); }
 function topScroll(){ window.scrollTo({ top:0 }); const p = $(`#panel`); if (p && S.mode !== `repaso`) p.scrollTop = 0; }
 function setSel(set){ S.sel = new Set(set); save(); SIM.on = false; stopTick(); renderAll(); }
@@ -1577,6 +1579,7 @@ function renderHead(){
   // En el Repaso, los temas se reducen a un solo botón para dejar espacio a la ficha
   if (S.mode === `inicio`){ h.classList.add(`compact`); return; }
   if (sc.k === `organizar`){ const h1 = $(`#head h1`); if (h1) h1.textContent = { agenda:`Agenda`, pendientes:`Pendientes`, notasr:`Notas`, cuaderno:`Cuaderno`, notas:`Mis notas` }[S.mode] || sc.n; const k = $(`#head .top .k`); if (k) k.textContent = `Organizar`; h.classList.add(`compact`, `nochips`); return; }
+  if (sc.k === `retro`){ const h1 = $(`#head h1`); if (h1) h1.textContent = `Retroalimentación`; const k = $(`#head .top .k`); if (k) k.textContent = `Aprende de tus evaluaciones`; h.classList.add(`compact`, `nochips`); return; }
   h.classList.remove(`nochips`);
   if (S.mode === `repaso` && !S.x.rall){ const ch = el(`div`, `chips`); const add = btn(``, `tchp add`, openTopics); add.innerHTML = icon(`plus`) + (sel.length === TORDER.length ? `Todos los temas` : `${sel.length} tema${sel.length === 1 ? `` : `s`}`) + ` · cambiar`; ch.append(add); h.append(ch); h.classList.add(`compact`); return; }
   h.classList.remove(`compact`);
@@ -1600,7 +1603,7 @@ function renderStatus(){ renderHead(); renderRail(); renderBnav(); }
 /* ---------- panel derecho ---------- */
 function panelCtx(){ return S.mode === `inicio` || secOf(S.mode).k === `organizar` ? `inicio` : S.mode === `repaso` && !S.x.rall ? `repaso` : `otro`; }
 function renderPanel(){
-  const p = $(`#panel`); p.innerHTML = ``; const np = [`agenda`, `cuaderno`].includes(S.mode); $(`#app`).classList.toggle(`nopanel`, np); if (bp() !== `wide` || np) return;
+  const p = $(`#panel`); p.innerHTML = ``; const np = [`agenda`, `cuaderno`, `retro`].includes(S.mode); $(`#app`).classList.toggle(`nopanel`, np); if (bp() !== `wide` || np) return;
   const ctx = panelCtx(); const tabs = ctx === `inicio` ? [[`agenda`,`Agenda`],[`temas`,`Temas`]] : ctx === `repaso` ? [[`indice`,`Índice del tema`],[`temas`,`Temas`]] : [[`temas`,`Temas`],[`agenda`,`Agenda`]];
   let cur = S.x.ptab[ctx]; if (!tabs.some(t => t[0] === cur)) cur = tabs[0][0];
   // Cerrado: queda una tira delgada con el Pomodoro y accesos para volver a abrirlo
@@ -2414,6 +2417,938 @@ function migrationHint(v){
   const m = el(`p`, `muted`), r = el(`div`, `btnrow`); r.style.cssText = `margin:0;flex:1 1 100%;justify-content:flex-end`;
   r.append(btn(`Restaurar`, `btn acc`, () => importBackup(m)), btn(`Empezar de cero`, `btn ghost`, () => { S.x.migr = 1; save(); a.remove(); })); a.append(r);
   v.prepend(a); v.prepend(m);
+}
+
+/* ===================== RETROALIMENTACIÓN: DATOS HISTÓRICOS =====================
+   Fuente: fotos de las evaluaciones de Gaby (Parcial 1 y 2, cortos de laboratorio y discusión).
+   Lectura de marcas del docente: "—" = correcta, "+" = incorrecta. Las notas se verifican por suma.
+   Las claves de las preguntas falladas se dedujeron por química cuando el docente no publicó clave:
+   cada una lleva su nivel de confianza (alta / media / sin confirmar). */
+
+const RF_TEMAS = {
+  atomo:{ n:`Átomo, isótopos y mol`, t:null },
+  conf:{ n:`Configuración electrónica`, t:null },
+  tabla:{ n:`Tabla periódica`, t:null },
+  enlace:{ n:`Enlace químico y Lewis`, t:null },
+  inter:{ n:`Fuerzas intermoleculares`, t:null },
+  esteq:{ n:`Estequiometría y balanceo`, t:null },
+  termo:{ n:`Cinética, termodinámica y enzimas`, t:null },
+  sol:{ n:`Soluciones y solubilidad`, t:`t15` },
+  conc:{ n:`Unidades de concentración`, t:`t16` },
+  dil:{ n:`Dilución y coligativas`, t:`t17` },
+  acb:{ n:`Ácidos y bases`, t:`t18` },
+  ph:{ n:`pH y pOH`, t:`t20` },
+  buf:{ n:`Buffers`, t:`t21` },
+  lab:{ n:`Laboratorio práctico`, t:null }
+};
+
+const RF_EVALS = [
+  { id:`dis1`, n:`Corto de discusión 1`, corto:`Discusión 1`, f:`2026-09-07`, tipo:`Corto`, nq:10, pts:10, dur:`—`, nota:5.0, tem:`Conceptos generales, tabla periódica y enlace` },
+  { id:`lab1`, n:`Corto de laboratorio 1`, corto:`Lab 1`, f:`2026-09-09`, tipo:`Corto`, nq:10, pts:10, dur:`—`, nota:3.0, tem:`Tabla periódica y enlace químico` },
+  { id:`p1`, n:`Primer examen parcial`, corto:`Parcial 1`, f:`2026-09-25`, tipo:`Parcial`, nq:50, pts:50, dur:`2 horas`, nota:6.4, tem:`Unidades 1 a 3` },
+  { id:`lab2b`, n:`Corto de laboratorio 2: disoluciones, ácidos y bases`, corto:`Lab 2 (ác./bases)`, f:`2026-10-09`, tipo:`Corto`, nq:10, pts:10, dur:`—`, nota:7.5, tem:`Disoluciones, ácidos y bases` },
+  { id:`p2`, n:`Segundo examen parcial`, corto:`Parcial 2`, f:`2026-10-16`, tipo:`Parcial`, nq:30, pts:30, dur:`1 hora`, nota:6.0, tem:`Unidades 4 y 5` },
+  { id:`lab2`, n:`Corto de laboratorio 2`, corto:`Lab 2`, f:null, fTxt:`14-?-26`, tipo:`Corto`, nq:10, pts:10, dur:`—`, nota:3.0, tem:`Disoluciones, ácidos y bases` }
+];
+
+/* Cada fila: n tema nivel respuesta clave   (nivel: r recuerdo · c comprensión · a aplicación; clave ? = sin confirmar) */
+const RF_SPEC_P1 = `1 atomo r C C|2 atomo r B B|3 atomo r C C|4 atomo c C C|5 atomo r B B|6 atomo r C C|7 atomo r A A|8 atomo r D D|9 atomo a D B|10 conf r C C|11 conf a B B|12 conf a B B|13 tabla r C C|14 tabla c B B|15 tabla c A A|16 tabla r C C|17 tabla c D A|18 tabla r B B|19 enlace a D D|20 enlace c C B|21 enlace r B C|22 enlace c A C|23 enlace c A A|24 enlace r A ?|25 enlace a A B|26 enlace a B B|27 inter c B D|28 inter c A A|29 inter c A B|30 inter r A C|31 inter r D D|32 inter c B B|33 inter r B C|34 esteq r B D|35 termo r C C|36 esteq c A A|37 esteq r B B|38 esteq r A C|39 termo a B B|40 termo c C C|41 termo a A B|42 termo c A A|43 termo c A B|44 termo c C D|45 termo c D B`;
+const RF_SPEC_P2 = `1 dil r C C|2 sol c A A|3 sol c B B|4 dil c A B|5 dil a C C|6 dil c B D|7 conc c D C|8 buf r A B|9 acb c A C|10 acb r B B|11 ph a B C|12 acb r B B|13 acb r C C|14 acb c B B|15 ph c B B|16 ph a C C|17 acb a B B|18 buf c D B|19 acb c B B|20 buf c D C`;
+/* Preguntas de desarrollo o abiertas: n tema nivel puntos */
+const RF_SPEC_D = {
+  p1:`46 esteq a 1|47 esteq a 1|48 esteq a 1|49 enlace a .5|50 enlace a .5`,
+  p2:`21 conc c 1|22 dil a 1|23 conc a 1|24 conc a 1|25 conc a 1|26 conc a 0|27 dil a 1|28 ph a 0|29 buf a 0|30 ph a 0`,
+  dis1:`1 atomo r 1|2 atomo c 1|3 atomo a 0|4 conf a 0|5 conf a 1|6 tabla c 1|7 enlace c 0|8 enlace a .5|9 enlace a 0|10 enlace a .5`,
+  lab1:`1 lab r 1|2 lab r 0|3 lab r 0|4 lab c .5|5 lab c 0|6 lab c 0|7 lab r 0|8 lab c .5|9 lab c 1|10 lab r 0`,
+  lab2:`1 sol c 1|2 sol c 0|3 sol c 1|4 conc a 0|5 conc c 0|6 conc a 0|7 dil a 0|8 acb c 0|9 ph c 0|10 buf c 1`,
+  lab2b:`1 sol c 1|2 sol c 1|3 sol c 1|4 conc a .5|5 conc a 0|6 lab a 1|7 lab r 1|8 lab r 0|9 lab r 1|10 lab r 1`
+};
+const RF_HIST = (() => {
+  const out = [];
+  const obj = (ev, spec) => spec.split(`|`).forEach(s => { const [n, tm, lv, r, k] = s.split(` `); out.push({ ev, n:+n, tipo:`o`, tm, lv, r, k:k === `?` ? null : k, ok:r === k ? 1 : 0 }); });
+  obj(`p1`, RF_SPEC_P1); obj(`p2`, RF_SPEC_P2);
+  Object.entries(RF_SPEC_D).forEach(([ev, spec]) => spec.split(`|`).forEach(s => { const [n, tm, lv, ok] = s.split(` `); out.push({ ev, n:+n, tipo:ev.startsWith(`p`) ? `p` : `a`, tm, lv, ok:+ok, r:null, k:null }); }));
+  return out;
+})();
+
+const RF_CAUSAS = {
+  inv:{ n:`Inversión de sentido`, e:`↕`, col:`#B45309`,
+    def:`Respondes lo contrario de lo correcto: lo que sube lo pones bajando, o intercambias los datos del problema.`,
+    senal:`El resultado no pasa la prueba de sentido: una dilución que concentra, 1687 mL de stock para preparar 600 mL, un pH de 1.6 para una base.`,
+    fix:`Antes de responder dibuja una flecha: ¿esto sube o baja? ¿Este dato es del stock o de la solución final? Al terminar, compara el resultado con el dato inicial.` },
+  conf:{ n:`Conceptos o especies parecidas`, e:`≈`, col:`#7C3AED`,
+    def:`Mezclas dos ideas que suenan o se escriben parecido: iónico y covalente, Z y N, H₂PO₄⁻ y HPO₄²⁻, mol y número de Avogadro.`,
+    senal:`Eliges la opción que "suena conocida" y que comparte palabras con la correcta.`,
+    fix:`Arma una tabla de dos columnas con la pregunta-llave de cada concepto (¿transfiere o comparte electrones? ¿cuenta protones o neutrones?) y repásala antes de cada examen.` },
+  base:{ n:`Concepto sin base sólida`, e:`?`, col:`#DC2626`,
+    def:`No tenías claro el mecanismo o la definición, así que elegiste por intuición.`,
+    senal:`No puedes explicar el porqué con tus palabras, solo reconoces el término.`,
+    fix:`Vuelve a la ficha del tema, explícala en voz alta en 3 frases y haz 5 preguntas del tema hasta acertarlas sin mirar.` },
+  proc:{ n:`Procedimiento o fórmula mal aplicada`, e:`ƒ`, col:`#0F766E`,
+    def:`Sabes la fórmula pero la aplicas con el dato equivocado o en el orden equivocado.`,
+    senal:`Los números "cuadran" visualmente pero las unidades no (usaste gramos donde iban equivalentes).`,
+    fix:`Escribe las unidades en cada paso y verifica que se cancelen: g ÷ (g/eq) = eq; eq ÷ L = N.` },
+  omi:{ n:`Paso omitido`, e:`⤼`, col:`#2563EB`,
+    def:`Hiciste bien casi todo y olvidaste un paso: dividir entre el volumen, multiplicar por los 2 OH⁻.`,
+    senal:`El resultado es "casi" correcto y se queda a medio camino.`,
+    fix:`Termina con una lista de verificación corta: ¿pasé a litros? ¿multipliqué por el número de H⁺ u OH⁻? ¿respondí lo que pide la pregunta?` },
+  tiempo:{ n:`Sin responder o incompleto`, e:`⏱`, col:`#9333EA`,
+    def:`Dejaste el problema en blanco o a medias.`,
+    senal:`Los últimos ejercicios del examen quedan sin resolver.`,
+    fix:`Reparte el tiempo (el Parcial 2 daba 2 minutos por pregunta), resuelve primero lo de plantilla corta y deja siempre el planteamiento escrito.` },
+  forma:{ n:`Forma y precisión`, e:`✎`, col:`#BE185D`,
+    def:`La idea es correcta pero la respuesta pierde el punto por cómo está escrita: tachadura, respuesta incompleta, redondeo, falta de la magnitud.`,
+    senal:`Tu respuesta "casi" dice lo correcto.`,
+    fix:`Contesta con la estructura "qué + cómo se calcula + unidad". Evita tachar: piensa en el borrador y pasa en limpio. Redondea, no trunques.` },
+  lab:{ n:`Vocabulario y observación de laboratorio`, e:`⚗`, col:`#4D7C0F`,
+    def:`No recuerdas el nombre exacto de un instrumento o lo que se observó en una práctica.`,
+    senal:`Respondes con un nombre genérico o inviertes un color o un resultado.`,
+    fix:`Después de cada práctica haz una tarjeta por experimento: material, qué observaste, por qué. Repásalas antes del corto.` }
+};
+
+/* ---------- Fallos con detalle ----------
+   obj: o (opciones en orden original), el (la que elegió), cl (la clave, null si no se conoce), conf (confianza de la clave)
+   prob/abi: resp (lo que escribió), ref (respuesta modelo), fam (generador de práctica relacionado) */
+const RF_FALLOS = [
+  /* ---------- Parcial 1 ---------- */
+  { id:`p1-9`, ev:`p1`, n:9, tm:`atomo`, tipo:`obj`, q:`Si el peso atómico del flúor es de 19 UMA, ¿a cuántos gramos equivale un mol de este elemento?`,
+    o:[`9 gramos`,`19 gramos`,`9.5 gramos`,`6.022 × 10²³`], el:3, cl:1, conf:`alta`, causa:`conf`,
+    por:`Eligió el número de Avogadro, que dice cuántas partículas hay en un mol, no cuánto pesa. La masa de un mol en gramos coincide con el peso atómico en UMA: 19 UMA → 19 g/mol.`,
+    tip:`Pregúntate qué te piden: ¿partículas o gramos? Gramos → masa molar.` },
+  { id:`p1-17`, ev:`p1`, n:17, tm:`tabla`, tipo:`obj`, q:`¿Cuál es el elemento con mayor radio atómico y cuál es el más electronegativo, respectivamente?`,
+    o:[`Francio y flúor`,`Hidrógeno y astato`,`Hidrógeno y francio`,`Astato y flúor`], el:3, cl:0, conf:`alta`, causa:`conf`,
+    por:`El radio atómico crece hacia abajo y hacia la izquierda de la tabla (el francio es el más grande) y la electronegatividad crece hacia arriba y hacia la derecha (el flúor es el más electronegativo). El astato está abajo, pero a la derecha, así que su radio es menor que el del francio.`,
+    tip:`Dos flechas: radio ↙ (abajo-izquierda), electronegatividad ↗ (arriba-derecha).` },
+  { id:`p1-20`, ev:`p1`, n:20, tm:`enlace`, tipo:`obj`, q:`En la jerarquía de repulsión en una molécula, ¿entre qué pares hay más distancia (repulsión)?`,
+    o:[`Pares enlazantes`,`Pares libres`,`Pares libres y enlazantes`,`Pares múltiples`], el:2, cl:1, conf:`media`, causa:`conf`,
+    por:`En la teoría RPECV la repulsión va así: par libre–par libre > par libre–par enlazante > enlazante–enlazante. Los pares libres ocupan más espacio, por eso la mayor repulsión es entre pares libres. El enunciado mezcla "distancia" con "repulsión", lo que lo vuelve ambiguo.`,
+    tip:`Orden de repulsión: libre-libre (la mayor) > libre-enlazante > enlazante-enlazante.` },
+  { id:`p1-21`, ev:`p1`, n:21, tm:`enlace`, tipo:`obj`, q:`Un compuesto iónico está formado por lo general por:`,
+    o:[`Elementos metálicos`,`Elementos no metálicos`,`Elementos metálicos con elementos no metálicos`,`Elementos no metálicos con elementos metaloides`], el:1, cl:2, conf:`alta`, causa:`conf`,
+    por:`El enlace iónico se forma por transferencia de electrones: un metal (cede) con un no metal (recibe). Dos no metales comparten electrones y forman un enlace covalente.`,
+    tip:`Iónico = metal + no metal. Covalente = no metal + no metal.` },
+  { id:`p1-22`, ev:`p1`, n:22, tm:`enlace`, tipo:`obj`, q:`¿Cómo se forma un enlace iónico?`,
+    o:[`Se forma una nube de electrones alrededor de los elementos participantes`,`Los átomos de los elementos participantes comparten pares de electrones atraídos por los núcleos`,`Los átomos tienen cargas distintas, lo que hace que se atraigan entre ellos y se mantengan juntos`,`Los pares libres atraen a un átomo cargado positivamente`], el:0, cl:2, conf:`alta`, causa:`conf`,
+    por:`La opción A describe el enlace metálico (nube o "mar" de electrones) y la B, el covalente. En el iónico un átomo cede electrones y el otro los recibe; los iones de carga opuesta se atraen.`,
+    tip:`Cada opción era la definición de un enlace distinto: asocia nube → metálico, compartir → covalente, cargas opuestas → iónico.` },
+  { id:`p1-24`, ev:`p1`, n:24, tm:`enlace`, tipo:`obj`, q:`Una característica de los compuestos iónicos es:`,
+    o:[`La mayoría presenta estado gaseoso`,`Son solubles en solventes orgánicos`,`Conducción eléctrica elevada`,`Algunos presentan extrema dureza`], el:0, cl:null, pos:[2,3], conf:`sin`, causa:`conf`,
+    por:`La A es falsa: los compuestos iónicos son sólidos cristalinos a temperatura ambiente porque sus iones se atraen con mucha fuerza. De las otras tres, dos son afirmaciones que aparecen en los textos (conducción en solución o fundidos, y dureza con fragilidad). No pude confirmar cuál es la clave del docente: pregúntale cuál marcó.`,
+    tip:`Sólidos, puntos de fusión altos, solubles en agua; solo conducen fundidos o disueltos.` },
+  { id:`p1-25`, ev:`p1`, n:25, tm:`enlace`, tipo:`obj`, q:`Si se unen dos átomos de dos elementos no metales distintos, ¿qué tipo de enlace se forma?`,
+    o:[`Iónico`,`Covalente polar`,`Covalente no polar`,`Metálico`], el:0, cl:1, conf:`alta`, causa:`conf`,
+    por:`Dos no metales comparten electrones (covalente). Como son elementos distintos, uno atrae más a los electrones y el enlace es polar. Sería no polar solo entre átomos iguales (como Cl₂).`,
+    tip:`Mismo átomo → no polar. Átomos distintos → polar.` },
+  { id:`p1-27`, ev:`p1`, n:27, tm:`inter`, tipo:`obj`, q:`Un ejemplo de enlace intramolecular es:`,
+    o:[`Enlaces de hidrógeno`,`Enlace dipolo-dipolo`,`Fuerzas de dispersión de London`,`Enlace covalente`], el:1, cl:3, conf:`alta`, causa:`conf`,
+    por:`Intramolecular significa dentro de la molécula (iónico, covalente, metálico). Tres de las cuatro opciones son fuerzas intermoleculares, que actúan entre moléculas.`,
+    tip:`Intra = dentro (enlace); inter = entre moléculas (fuerzas).` },
+  { id:`p1-29`, ev:`p1`, n:29, tm:`inter`, tipo:`obj`, q:`En cuanto a la energía de enlace, ¿cuáles son los más fuertes?`,
+    o:[`Covalentes`,`Iónicos`,`Enlaces de hidrógeno`,`Fuerzas de dispersión de London`], el:0, cl:1, conf:`media`, causa:`conf`,
+    por:`La A fue marcada incorrecta. Las fuerzas intermoleculares (C y D) son las más débiles; por eliminación la clave más probable es "iónicos". No la tengo confirmada: confírmala con el docente.`,
+    tip:`Orden general: enlaces (iónico, covalente) ≫ puente de H > dipolo-dipolo > London.` },
+  { id:`p1-30`, ev:`p1`, n:30, tm:`inter`, tipo:`obj`, q:`¿Cuáles son los elementos no metálicos que forman los enlaces de hidrógeno más fuertes con el hidrógeno?`,
+    o:[`Carbono, oxígeno y nitrógeno`,`Carbono, oxígeno y cloro`,`Oxígeno, nitrógeno y flúor`,`Carbono, nitrógeno y cloro`], el:0, cl:2, conf:`alta`, causa:`conf`,
+    por:`Solo los átomos pequeños y muy electronegativos (F, O y N) forman puentes de hidrógeno fuertes. El carbono casi no se polariza con el hidrógeno y el cloro es demasiado grande.`,
+    tip:`FON: flúor, oxígeno, nitrógeno.` },
+  { id:`p1-33`, ev:`p1`, n:33, tm:`inter`, tipo:`obj`, q:`Fuerza de Van der Waals que se forma entre moléculas apolares:`,
+    o:[`Ión-dipolo`,`Dipolo–dipolo inducido`,`Fuerzas de dispersión`,`Dipolo–dipolo`], el:1, cl:2, conf:`alta`, causa:`conf`,
+    por:`Entre moléculas apolares no hay dipolos permanentes; se forman dipolos instantáneos: fuerzas de dispersión de London. El dipolo–dipolo inducido ocurre cuando una molécula polar induce un dipolo en una apolar.`,
+    tip:`Apolar con apolar → London (dispersión).` },
+  { id:`p1-34`, ev:`p1`, n:34, tm:`esteq`, tipo:`obj`, q:`Es el cálculo de la relación cuantitativa entre reactivos y productos en el transcurso de una reacción química:`,
+    o:[`Ecuación química`,`Molaridad`,`Molalidad`,`Estequiometría`], el:1, cl:3, conf:`alta`, causa:`conf`,
+    por:`La estequiometría calcula las cantidades de reactivos y productos. La molaridad y la molalidad son unidades de concentración de una solución, no un método de cálculo de reacciones.`,
+    tip:`"Relación cuantitativa entre reactivos y productos" = estequiometría.` },
+  { id:`p1-38`, ev:`p1`, n:38, tm:`esteq`, tipo:`obj`, q:`¿Cuál es la ley que dice que "la cantidad de átomos de cada elemento debe ser igual del lado de los reactivos y en el de los productos de la reacción química"?`,
+    o:[`Ley de conservación de la masa`,`Ley de conservación de la carga`,`Ley de conservación de la materia`], el:0, cl:2, conf:`media`, causa:`conf`,
+    por:`La A fue marcada incorrecta y la B no aplica a átomos, así que por eliminación la clave es "conservación de la materia". Las dos leyes están muy relacionadas; el docente usa "materia" cuando habla de átomos en la ecuación. Confírmalo con él.`,
+    tip:`Átomos iguales a ambos lados → conservación de la materia (y de la masa).` },
+  { id:`p1-41`, ev:`p1`, n:41, tm:`termo`, tipo:`obj`, q:`En un laboratorio se determina que el cambio en la Energía Libre de Gibbs de una reacción tiene un valor negativo (menor a cero). ¿Cómo se clasifica e interpreta esta transformación?`,
+    o:[`Reacción endergónica`,`Reacción exergónica`,`Reacción en equilibrio químico`,`Reacción anabólica`], el:0, cl:1, conf:`alta`, causa:`inv`,
+    por:`ΔG < 0 significa que la reacción libera energía libre y es espontánea: exergónica. Endergónica es ΔG > 0 (necesita energía). Invirtió el signo.`,
+    tip:`ΔG negativo = exergónica (la energía "sale"). ΔG positivo = endergónica.` },
+  { id:`p1-43`, ev:`p1`, n:43, tm:`termo`, tipo:`obj`, q:`En la cinética de Michaelis–Menten, ¿cuál es la relación entre la afinidad de una enzima por su sustrato y el valor de la constante de Michaelis–Menten (Km)?`,
+    o:[`A mayor afinidad de la enzima por el sustrato, mayor es el valor de Km`,`A mayor afinidad de la enzima por el sustrato, menor es el valor de Km`,`El valor de Km aumenta cuando la velocidad de la reacción alcanza la saturación enzimática`,`La afinidad de la enzima por el sustrato es totalmente independiente del parámetro Km`], el:0, cl:1, conf:`alta`, causa:`inv`,
+    por:`Km es la concentración de sustrato a la que la velocidad es la mitad de la máxima. Si la enzima tiene alta afinidad, necesita poco sustrato para llegar a esa mitad: Km bajo. La relación es inversa.`,
+    tip:`Afinidad alta ↔ Km bajo. Afinidad baja ↔ Km alto.` },
+  { id:`p1-44`, ev:`p1`, n:44, tm:`termo`, tipo:`obj`, q:`¿Cómo afecta una alteración drástica en el pH del medio a la velocidad de una reacción catalizada por enzimas?`,
+    o:[`Incrementa exponencialmente la constante de velocidad`,`Aumenta la energía potencial almacenada en los enlaces químicos del sustrato`,`Disminuye la barrera energética de la reacción al saturar el sitio activo`,`Modifica el estado de ionización del sitio activo o causa la desnaturalización de la proteína`], el:2, cl:3, conf:`alta`, causa:`base`,
+    por:`Un pH extremo cambia las cargas de los grupos del sitio activo y puede desnaturalizar la proteína, así que la enzima trabaja peor o deja de trabajar. La opción C describe lo que hace una enzima normalmente (bajar la energía de activación), no el efecto del pH.`,
+    tip:`pH extremo → cambia la ionización del sitio activo o desnaturaliza → baja la velocidad.` },
+  { id:`p1-45`, ev:`p1`, n:45, tm:`termo`, tipo:`obj`, q:`¿Cuál es el paso intermedio fundamental antes de que se libere el producto final y la enzima intacta?`,
+    o:[`La desnaturalización reversible de la estructura tridimensional de la enzima`,`La formación reversible del complejo enzima-sustrato`,`La alteración irreversible del estado de ionización del sitio activo`,`El aumento exponencial de la energía de activación por colisión`], el:3, cl:1, conf:`alta`, causa:`conf`,
+    por:`En Michaelis–Menten: E + S ⇌ ES → E + P. El paso intermedio es el complejo enzima-sustrato. Las demás opciones describen daños a la enzima o un aumento de la energía de activación, que es lo contrario de lo que hace una enzima.`,
+    tip:`E + S ⇌ ES → E + P: el intermedio es el complejo ES.` },
+  { id:`p1-49`, ev:`p1`, n:49, tm:`enlace`, tipo:`prob`, q:`Del compuesto MgCl₂ elabore: los símbolos de puntos de Lewis, esquematice la primera ionización, la formación del compuesto y la segunda ionización.`,
+    resp:`Escribió "Hg" por Mg, trató al cloro como una unidad "Cl₂" y terminó con Mg⁺ + Cl₂⁻ y "Mg²⁺ Cl₂⁻". Nota: ½ punto.`,
+    ref:`Mg· (2 e⁻ de valencia) + 2 ·Cl̈: → Mg²⁺ + 2 [:Cl̈:]⁻ → compuesto Mg²⁺ [:Cl̈:]⁻ ₂ ; en agua: MgCl₂ → Mg²⁺ + 2 Cl⁻.`, causa:`proc`,
+    por:`El magnesio cede 2 electrones (Mg²⁺) y cada cloro recibe 1 (Cl⁻): son 2 cloruros independientes, no un "Cl₂⁻". Además verifica que el símbolo se lea Mg y no Hg (mercurio).`,
+    tip:`Cuenta los electrones: Mg da 2, cada Cl toma 1 → 1 Mg y 2 Cl. Escribe cada carga con su número: Mg²⁺ y 2 Cl⁻.` },
+  { id:`p1-50`, ev:`p1`, n:50, tm:`enlace`, tipo:`prob`, conf:`media`, q:`Del compuesto C₂H₄ (etileno) elabore los símbolos de puntos de Lewis de los elementos involucrados, esquematice la formación del compuesto y elabore la geometría molecular.`,
+    resp:`Dibujó la formación con enlace C–C sencillo y el C=C solo en el último paso. Nota: ½ punto.`,
+    ref:`2 ·C· + 4 H· → H₂C=CH₂ (cada C: 2 enlaces con H y un doble enlace con el otro C). Geometría: trigonal plana, ángulos ≈ 120° alrededor de cada C; molécula plana.`, causa:`proc`,
+    por:`Recibió ½. Este ejercicio pide dos cosas que conviene revisar: que el doble enlace C=C ya aparezca al formar el compuesto (cada carbono comparte 2 pares con el otro) y que la geometría diga trigonal plana (≈ 120°).`,
+    tip:`Cada C debe quedar con 8 e⁻ a su alrededor: 2 enlaces C–H (4 e⁻) + doble enlace C=C (4 e⁻).` },
+  /* ---------- Parcial 2 ---------- */
+  { id:`p2-4`, ev:`p2`, n:4, tm:`dil`, tipo:`obj`, q:`¿De qué depende principalmente el valor de las propiedades coligativas en una solución acuosa?`,
+    o:[`De la naturaleza química y la identidad del soluto`,`Exclusivamente de la cantidad de partículas de soluto disueltas en el solvente`,`Del volumen total del recipiente utilizado`,`Únicamente de la temperatura del ambiente`], el:0, cl:1, conf:`alta`, causa:`conf`,
+    por:`Eso es justo lo que define una propiedad coligativa: depende de cuántas partículas hay, no de cuáles son. Dos solutos distintos con la misma cantidad de partículas producen el mismo efecto.`,
+    tip:`Coligativa = "cuántas" partículas, no "cuáles".` },
+  { id:`p2-6`, ev:`p2`, n:6, tm:`dil`, tipo:`obj`, q:`Al realizar una dilución agregando solvente a una solución concentrada (madre o stock), ¿cuál de las siguientes afirmaciones es correcta?`,
+    o:[`La cantidad total de moles de soluto aumenta proporcionalmente`,`La concentración final siempre será superior a la concentración inicial`,`El volumen final siempre será inferior al volumen inicial`,`La cantidad total de moles de soluto se conserva constante`], el:1, cl:3, conf:`alta`, causa:`inv`,
+    por:`Al diluir solo se agrega solvente: los moles de soluto no cambian, el volumen aumenta y la concentración baja. Eligió lo contrario. Es llamativo porque sí resolvió bien dos problemas de dilución (22 y 27): sabe calcular pero no conectó la idea de fondo.`,
+    tip:`Diluir: n constante, V sube, C baja (C₁V₁ = C₂V₂).` },
+  { id:`p2-7`, ev:`p2`, n:7, tm:`conc`, tipo:`obj`, q:`¿En qué casos es útil el cálculo de concentración en partes por millón (ppm)?`,
+    o:[`Cuando influye la temperatura del soluto`,`Cuando la molaridad es constante`,`Cuando la solución es muy diluida`,`Cuando la solución es muy concentrada`], el:3, cl:2, conf:`alta`, causa:`inv`,
+    por:`Las ppm sirven para cantidades muy pequeñas de soluto (trazas, contaminantes). Para soluciones concentradas se usan porcentajes o molaridad.`,
+    tip:`ppm = trazas → solución muy diluida.` },
+  { id:`p2-8`, ev:`p2`, n:8, tm:`buf`, tipo:`obj`, q:`Es la capacidad del cuerpo de mantener sus condiciones internas estables a pesar de los cambios que ocurren en el exterior:`,
+    o:[`Equilibrio`,`Homeostasis`,`Sistema buffer`,`Mecanismos de compensación`], el:0, cl:1, conf:`alta`, causa:`conf`,
+    por:`"Homeostasis" es el término exacto para mantener estable el medio interno. El buffer y los mecanismos de compensación son herramientas de la homeostasis, no su definición.`,
+    tip:`Homeostasis = estabilidad interna. Buffer y compensación son los mecanismos.` },
+  { id:`p2-9`, ev:`p2`, n:9, tm:`acb`, tipo:`obj`, q:`El alcohol etílico es un ejemplo de electrolito:`,
+    o:[`Fuerte`,`Débil`,`No electrolito`,`Neutro`], el:0, cl:2, conf:`alta`, causa:`base`,
+    por:`El etanol es una molécula covalente que se disuelve en agua sin separarse en iones, por eso su solución no conduce la electricidad: es un no electrolito. Fuerte y débil se refieren a cuántos iones libera una sustancia; el etanol no libera ninguno.`,
+    tip:`Sin iones → no electrolito (etanol, sacarosa, glucosa, urea).` },
+  { id:`p2-11`, ev:`p2`, n:11, tm:`ph`, tipo:`obj`, q:`¿Cómo se puede medir el pH de un paciente?`,
+    o:[`Con papel pH`,`Con un pHmetro`,`Con los gases arteriales`,`Con tiras reactivas`], el:1, cl:2, conf:`media`, causa:`base`,
+    por:`El pH de un paciente es el de su sangre y se mide con gases arteriales (gasometría). El pHmetro es un instrumento de laboratorio para soluciones. La clave la deduje por el contexto clínico de la pregunta.`,
+    tip:`"De un paciente" → contexto clínico → gasometría arterial.` },
+  { id:`p2-18`, ev:`p2`, n:18, tm:`buf`, tipo:`obj`, q:`¿Cómo actúa el mecanismo de defensa de una solución amortiguadora (buffer) cuando se le añade una pequeña cantidad de una base fuerte (OH⁻)?`,
+    o:[`La base débil presente en el buffer neutraliza los iones OH⁻`,`El ácido débil presente en el buffer reacciona con el OH⁻`,`El agua de la disolución absorbe directamente los iones OH⁻`,`La base fuerte se precipita al reaccionar con el catión de la sal amortiguadora`], el:3, cl:1, conf:`alta`, causa:`base`,
+    por:`Un buffer tiene un ácido débil (HA) y su base conjugada (A⁻). El OH⁻ que llega lo neutraliza el ácido débil: HA + OH⁻ → A⁻ + H₂O. Si llega H⁺, lo neutraliza la base conjugada. La opción A es la trampa: una base no neutraliza a otra base.`,
+    tip:`OH⁻ entra → lo come el ácido (HA). H⁺ entra → lo come la base (A⁻).` },
+  { id:`p2-20`, ev:`p2`, n:20, tm:`buf`, tipo:`obj`, q:`En el caso del buffer fosfato, ¿cuál componente es el que absorbe o acepta los protones (H⁺)?`,
+    o:[`HCO₃`,`H₂CO₃`,`HPO₄`,`H₂PO₄`], el:3, cl:2, conf:`alta`, causa:`conf`,
+    por:`En el par H₂PO₄⁻ / HPO₄²⁻ la base es la que tiene un H menos: HPO₄²⁻ (acepta H⁺ y se vuelve H₂PO₄⁻). Es curioso: en el corto de laboratorio sí acertó con el buffer carbonato (bicarbonato), así que conoce la idea; lo que falló fue identificar la especie fosfato.`,
+    tip:`La base conjugada es la especie con un H⁺ menos: HCO₃⁻ y HPO₄²⁻.` },
+  { id:`p2-26`, ev:`p2`, n:26, tm:`conc`, tipo:`prob`, q:`Determina la normalidad (N) de una disolución acuosa que contiene 37 g de hidróxido de calcio [Ca(OH)₂] disueltos en un volumen total de 2 litros.`,
+    resp:`Peso equivalente 74/2 = 37 (bien) pero luego usó "37 peq" como número de equivalentes: N = 37/2 = 18.5 peq/L.`,
+    ref:`Peq = 74/2 = 37 g/eq → equivalentes = 37 g ÷ 37 g/eq = 1 eq → N = 1 eq ÷ 2 L = 0.5 N.`, causa:`proc`, fam:`normDoc`,
+    por:`Confundió el peso equivalente (g/eq, una masa por equivalente) con el número de equivalentes (eq). Los 37 g son la masa de la muestra; para saber cuántos equivalentes son hay que dividirla entre el peso equivalente.`,
+    tip:`Escribe las unidades: g ÷ (g/eq) = eq → eq ÷ L = N. Si no sale "eq/L", algo está mal.` },
+  { id:`p2-28`, ev:`p2`, n:28, tm:`ph`, tipo:`prob`, q:`Calcule el pH y el pOH de una disolución acuosa 0.025 M de hidróxido de bario [Ba(OH)₂] a 25 °C.`,
+    resp:`pH = −log(0.025) = 1.60 y pOH = 14 − 1.60 = 12.40.`,
+    ref:`[OH⁻] = 2 × 0.025 = 0.050 M → pOH = −log(0.050) = 1.30 → pH = 14 − 1.30 = 12.70.`, causa:`proc`, fam:`baseDoc`,
+    por:`Cometió dos errores seguidos: usó la concentración de la base como si fuera [H⁺] (la trató como ácido) y no multiplicó por los 2 OH⁻ que libera cada Ba(OH)₂. En una base se calcula primero el pOH y el pH sale de 14 − pOH.`,
+    tip:`Base → [OH⁻] = (n.º de OH) × M → pOH → pH = 14 − pOH. Un pH de 1.6 para una base debió alertarte.` },
+  { id:`p2-29`, ev:`p2`, n:29, tm:`buf`, tipo:`prob`, q:`Calcule el pH de una solución amortiguadora preparada disolviendo 0.25 moles de ácido acético (CH₃COOH) y 0.35 moles de acetato de sodio (CH₃COONa) a 25 °C (Ka del CH₃COOH = 1.8 × 10⁻⁵).`,
+    resp:`Quedó en blanco.`,
+    ref:`pKa = −log(1.8 × 10⁻⁵) = 4.74 → pH = 4.74 + log(0.35/0.25) = 4.74 + 0.15 = 4.89.`, causa:`tiempo`, fam:`bufDoc`,
+    por:`No lo resolvió. Es un problema de tres líneas: el volumen no importa porque se cancela en la razón [A⁻]/[HA]; sirve la razón de moles.`,
+    tip:`Resuelve primero los ejercicios de plantilla corta (buffer, pH de ácido fuerte) y deja los largos para el final.` },
+  { id:`p2-30`, ev:`p2`, n:30, tm:`ph`, tipo:`prob`, q:`Calcule la molaridad, el pH y el pOH de una disolución acuosa preparada al disolver 0.315 g de ácido nítrico (HNO₃) en agua suficiente hasta completar un volumen final de 250 mL de solución a 25 °C.`,
+    resp:`Llegó a PM = 63 g/mol y 0.25 L, y se detuvo.`,
+    ref:`n = 0.315 ÷ 63 = 0.005 mol → M = 0.005 ÷ 0.25 = 0.02 M → HNO₃ es ácido fuerte: [H⁺] = 0.02 M → pH = 1.70 → pOH = 14 − 1.70 = 12.30.`, causa:`tiempo`, fam:`acidG`,
+    por:`Dejó el cálculo a medias, aunque ya tenía bien el peso molecular y el volumen en litros. Escribe siempre el planteamiento completo: la instrucción pide dejar constancia del desarrollo.`,
+    tip:`Ácido fuerte → [H⁺] = M. Cuando no alcances a calcular, deja el planteamiento escrito.` },
+  /* ---------- Discusión 1 ---------- */
+  { id:`dis1-3`, ev:`dis1`, n:3, tm:`atomo`, tipo:`abi`, q:`Calcule el número de neutrones de los átomos del elemento francio.`,
+    resp:`"87 neutrones" (después corrigió a 223 − 87 = 136).`, ref:`Fr: Z = 87, A = 223 → neutrones = A − Z = 223 − 87 = 136.`, causa:`conf`,
+    por:`Respondió con el número atómico (87), que cuenta protones. Los neutrones son la masa atómica menos el número atómico.`,
+    tip:`Z = protones. A = protones + neutrones. Neutrones = A − Z.` },
+  { id:`dis1-4`, ev:`dis1`, n:4, tm:`conf`, tipo:`abi`, conf:`media`, q:`Escriba la configuración electrónica completa del elemento selenio, siguiendo la regla de las diagonales de Moeller.`,
+    resp:`1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s² 4p⁴`, ref:`Se: Z = 34 → 1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁴.`, causa:`proc`,
+    por:`La suma da 34 electrones, pero escribió 3d antes que 4s. Con las diagonales de Moeller el orden de llenado es 1s 2s 2p 3s 3p 4s 3d 4p. Es la causa más probable de que no se acreditara (su configuración abreviada [Ar] 3d¹⁰ 4s² 4p⁴ sí salió bien).`,
+    tip:`Orden de llenado por diagonales: ...3p → 4s → 3d → 4p...` },
+  { id:`dis1-7`, ev:`dis1`, n:7, tm:`enlace`, tipo:`abi`, q:`¿Cuál es la diferencia entre el enlace iónico y el covalente?`,
+    resp:`"El enlace iónico es enlaces entre diferentes cargas, covalente mismos elementos."`,
+    ref:`Iónico: se transfieren electrones (metal + no metal) y los iones de carga opuesta se atraen. Covalente: se comparten pares de electrones entre no metales (átomos iguales: no polar; distintos: polar).`, causa:`conf`,
+    por:`Definió el covalente como "mismos elementos". Lo que distingue a los enlaces es qué pasa con los electrones (transferencia o compartición), no si los elementos son iguales. Dos no metales distintos (como en HCl) forman un covalente polar.`,
+    tip:`Pregunta-llave: ¿metal + no metal (se transfieren) o no metal + no metal (se comparten)?` },
+  { id:`dis1-8`, ev:`dis1`, n:8, tm:`enlace`, tipo:`prob`, conf:`media`, q:`Del compuesto fluoruro de litio (LiF): elabore los símbolos de puntos de Lewis para cada elemento, esquematice la primera ionización, forme el compuesto y esquematice la segunda ionización en solución acuosa.`,
+    resp:`Hizo los símbolos y la transferencia; el docente marcó el paso del compuesto. Nota: ½ punto.`,
+    ref:`Li· + ·F̈: → Li⁺ + [:F̈:]⁻ → compuesto Li⁺[:F̈:]⁻ ; en agua: LiF → Li⁺ + F⁻.`, causa:`proc`,
+    por:`Los tres pasos del enunciado son: símbolos, formación del compuesto y disociación en agua. El docente marcó el paso del compuesto: revisa que quede escrito como un compuesto (Li⁺ y [:F̈:]⁻ juntos, con la carga de cada ion) antes de separarlo en agua.`,
+    tip:`Orden: átomos → transferencia → compuesto con cargas → disociación en agua.` },
+  { id:`dis1-9`, ev:`dis1`, n:9, tm:`enlace`, tipo:`prob`, q:`Del compuesto carbonato de calcio (CaCO₃): elabore los símbolos de Lewis, esquematice la formación de la molécula con su geometría molecular y la ionización en solución acuosa.`,
+    resp:`Unió el calcio al carbonato con una flecha de enlace y escribió Ca⁺ y CO₃²⁻. Nota: 0.`,
+    ref:`Ca· → Ca²⁺ (cede 2 e⁻). Carbonato CO₃²⁻: C central con un C=O y dos C–O⁻ (trigonal plano). Compuesto: Ca²⁺ [CO₃]²⁻ (iónico). En agua: CaCO₃ → Ca²⁺ + CO₃²⁻.`, causa:`proc`,
+    por:`El carbonato es un ion poliatómico: por dentro tiene enlaces covalentes, y con el calcio el enlace es iónico. El calcio pierde 2 electrones (Ca²⁺), no 1; así las cargas cuadran (2+ y 2−).`,
+    tip:`Con un ion poliatómico: covalente dentro del ion, iónico entre iones. Verifica que las cargas sumen cero.` },
+  { id:`dis1-10`, ev:`dis1`, n:10, tm:`enlace`, tipo:`prob`, conf:`media`, q:`Del compuesto ácido clorhídrico (HCl): elabore los símbolos de Lewis, esquematice la formación del compuesto con su geometría molecular y la formación de un puente de hidrógeno entre dos moléculas de este compuesto.`,
+    resp:`Dibujó H–Cl ··· H–Cl; el docente anotó "H–δ". Nota: ½ punto.`,
+    ref:`H· + ·Cl̈: → H–Cl̈: (covalente polar, lineal, Hδ⁺–Clδ⁻). Puente de hidrógeno: el Hδ⁺ de una molécula con el Clδ⁻ de la otra: Hδ⁺–Clδ⁻ ··· Hδ⁺–Clδ⁻ (línea punteada).`, causa:`forma`,
+    por:`Obtuvo ½. La anotación del docente sugiere que faltaron las cargas parciales (δ⁺ y δ⁻), que son las que explican por qué el H de una molécula atrae al Cl de la otra.`,
+    tip:`Marca siempre δ⁺ y δ⁻ y dibuja la línea punteada entre el H (δ⁺) y el átomo electronegativo de la otra molécula.` },
+  /* ---------- Lab 1 ---------- */
+  { id:`lab1-2`, ev:`lab1`, n:2, tm:`lab`, tipo:`abi`, q:`¿Cuál es el nombre de este instrumento? (pera de goma con válvulas)`,
+    resp:`"Pipeteador".`, ref:`Propipeta (pera de succión).`, causa:`lab`,
+    por:`Usó un nombre genérico. En el corto cuenta el nombre exacto del manual: propipeta o pera de succión. Gaby ya lo corrigió en su hoja aparte.`,
+    tip:`Tarjeta: propipeta = pera de succión para pipetear sin usar la boca.` },
+  { id:`lab1-3`, ev:`lab1`, n:3, tm:`lab`, tipo:`abi`, conf:`media`, q:`¿Para qué se usa el instrumento anterior?`,
+    resp:`"Para pipetear, transferir sustancias."`, ref:`Para aspirar líquidos con la pipeta sin hacerlo con la boca, por seguridad.`, causa:`lab`,
+    por:`La respuesta repite el verbo "pipetear" sin explicar la función: la propipeta crea la succión que sube el líquido a la pipeta y evita aspirar con la boca sustancias peligrosas.`,
+    tip:`Responde la función y la razón (seguridad).` },
+  { id:`lab1-4`, ev:`lab1`, n:4, tm:`lab`, tipo:`abi`, q:`En el experimento de la volatilidad, ¿cuál compuesto no presentó ni olor ni volatilidad? ¿Cuál es el motivo?`,
+    resp:`"La sal (cloruro de sodio); no posee… compuesto iónico." Nota: ½ punto.`,
+    ref:`Cloruro de sodio. Es un compuesto iónico: sus iones se atraen con fuerzas muy grandes, por eso no pasa a gas y no libera olor.`, causa:`forma`,
+    por:`Identificó bien el compuesto; la razón quedó incompleta. Debía unir "compuesto iónico" con "atracciones fuertes entre iones, por eso no es volátil".`,
+    tip:`Razón completa = tipo de enlace + consecuencia observada.` },
+  { id:`lab1-8`, ev:`lab1`, n:8, tm:`lab`, tipo:`abi`, q:`En el experimento de reactividad de los metales, ¿cuál fue el metal que no reaccionó con el agua y cuál fue el que reaccionó más violentamente?`,
+    resp:`Aluminio (bien); la segunda parte no fue acreditada. Nota: ½ punto.`,
+    ref:`Aluminio no reaccionó. El sodio reaccionó más violentamente (metal alcalino: la reactividad aumenta hacia abajo en el grupo 1).`, causa:`lab`,
+    por:`Acertó el aluminio. En la segunda parte la respuesta esperada es el sodio, el más reactivo de los metales de la práctica.`,
+    tip:`Reactividad con el agua: Na ≫ Mg > Al (el Al casi no reacciona).` },
+  { id:`lab1-10`, ev:`lab1`, n:10, tm:`lab`, tipo:`abi`, conf:`media`, q:`En el experimento de los alcalinotérreos, ¿qué compuesto se formó al añadir 5 mL de agua al residuo formado al haber quemado la cinta de magnesio?`,
+    resp:`Su respuesta en limpio no se alcanza a leer; luego anotó "hidróxido de magnesio o leche de magnesia".`,
+    ref:`Hidróxido de magnesio, Mg(OH)₂ (leche de magnesia): 2 Mg + O₂ → 2 MgO; MgO + H₂O → Mg(OH)₂.`, causa:`lab`,
+    por:`El residuo de quemar el magnesio es MgO (óxido); el óxido de un metal reacciona con agua y forma el hidróxido. El veredicto de esta pregunta lo deduje porque la suma del corto es 3.0.`,
+    tip:`Metal + O₂ → óxido; óxido + H₂O → hidróxido.` },
+  /* ---------- Lab 2 (fecha ilegible) ---------- */
+  { id:`lab2-2`, ev:`lab2`, n:2, tm:`sol`, tipo:`abi`, conf:`media`, q:`Entre el aumento de la temperatura y el aumento de la presión, ¿cuál favorece la solubilidad de un gas disuelto en un líquido?`,
+    resp:`Escribió "La temperatura", la tachó y escribió "La presión".`,
+    ref:`La presión (ley de Henry): a más presión parcial del gas, más gas se disuelve. El aumento de temperatura disminuye la solubilidad de los gases.`, causa:`forma`,
+    por:`La respuesta final era correcta, pero había una tachadura. Las indicaciones piden bolígrafo azul de tinta indeleble y la hoja del parcial advierte que borrones y tachaduras impiden la revisión; es la causa más probable de que no se diera el punto.`,
+    tip:`Si dudas, decide en borrador y pasa en limpio. Si tachas, reescribe la respuesta completa al lado.` },
+  { id:`lab2-4`, ev:`lab2`, n:4, tm:`conc`, tipo:`prob`, q:`Un paciente requiere recibir 2300 mL de una solución intravenosa de glucosa al 7 % m/v. ¿Cuántos gramos de glucosa pura consumirá tras recibir el volumen total?`,
+    resp:`0.30 g de glucosa.`, ref:`7 % m/v = 7 g por cada 100 mL → 2300 mL × 7 g/100 mL = 161 g.`, causa:`proc`, fam:`pctDoc`,
+    por:`7 % m/v significa 7 g en cada 100 mL, así que 2300 mL contienen 23 veces 7 g = 161 g. Un resultado de 0.30 g para 2.3 litros es imposible: una prueba de sentido lo habría delatado.`,
+    tip:`Estima antes de calcular: si 100 mL llevan 7 g, 2300 mL llevan unos 160 g.` },
+  { id:`lab2-5`, ev:`lab2`, n:5, tm:`conc`, tipo:`abi`, q:`¿Cuál es la diferencia conceptual principal entre la molaridad (M) y la molalidad (m)?`,
+    resp:`"M busca la totalidad de la solución; m busca la totalidad del solvente."`,
+    ref:`Molaridad = moles de soluto ÷ litros de solución. Molalidad = moles de soluto ÷ kilogramos de solvente (no depende de la temperatura).`, causa:`forma`,
+    por:`La idea de fondo (solución frente a solvente) estaba, pero faltó nombrar las magnitudes. Una respuesta completa incluye los moles de soluto y el denominador: litros de solución (M) o kilogramos de solvente (m).`,
+    tip:`M: mol/L de solución. m: mol/kg de solvente. Escribe siempre las dos fórmulas.` },
+  { id:`lab2-6`, ev:`lab2`, n:6, tm:`conc`, tipo:`prob`, q:`Si se disuelven 25 gramos de carbonato de calcio (CaCO₃) en agua destilada hasta completar un volumen total de 700 mL, ¿cuál es la normalidad (N) de la solución resultante?`,
+    resp:`Peq = 100/2 = 50; N = 25/50 = 0.5 N (no dividió entre el volumen).`,
+    ref:`Peq = 100 ÷ 2 = 50 g/eq → eq = 25 ÷ 50 = 0.5 eq → N = 0.5 eq ÷ 0.7 L = 0.71 N.`, causa:`omi`, fam:`normDoc`,
+    por:`Calculó bien el peso equivalente y los equivalentes, pero se detuvo ahí: 0.5 son equivalentes, no normalidad. Faltó dividir entre el volumen en litros.`,
+    tip:`Normalidad = eq/L. Si tu resultado no lleva "por litro", te falta un paso.` },
+  { id:`lab2-7`, ev:`lab2`, n:7, tm:`dil`, tipo:`prob`, q:`Se desea preparar 600 mL de una solución de bromuro de magnesio (MgBr₂) 1.6 M a partir de una solución stock 4.5 M. ¿Cuántos mililitros de solución stock se necesitan para prepararla?`,
+    resp:`Tomó C₁ = 1.6 y C₂ = 4.5: V = 4.5 × 600 / 1.6 = 1687.5 mL.`,
+    ref:`C₁ = 4.5 M (stock), C₂ = 1.6 M (final), V₂ = 600 mL → V₁ = C₂V₂ ÷ C₁ = 1.6 × 600 ÷ 4.5 = 213.3 mL.`, causa:`inv`, fam:`dilDoc`,
+    por:`Intercambió C₁ y C₂. El stock (4.5 M) es la solución inicial y la que se quiere preparar (1.6 M) es la final. El resultado, 1687 mL, era mayor que los 600 mL finales, algo imposible: del stock siempre se toma menos que el volumen final.`,
+    tip:`Chequeo: V₁ < V₂ y C₁ > C₂. Si no se cumple, intercambiaste los datos.` },
+  { id:`lab2-8`, ev:`lab2`, n:8, tm:`acb`, tipo:`abi`, conf:`media`, q:`¿Cuál es la diferencia entre la base de Arrhenius y la base de Brønsted–Lowry?`,
+    resp:`Arrhenius: moléculas que en agua se disocian y liberan…; BL: acepta protones (respuesta mezclada e incompleta).`,
+    ref:`Arrhenius: base = sustancia que en agua libera OH⁻ (necesita agua y OH⁻ en la fórmula). Brønsted–Lowry: base = aceptor de protones (H⁺), con o sin agua y sin necesidad de OH⁻.`, causa:`forma`,
+    por:`Puso las dos ideas, pero sin contraponerlas. La comparación pide lo que cada teoría amplía: Arrhenius exige OH⁻ en agua; Brønsted–Lowry se define por aceptar H⁺ (por eso el amoníaco, sin OH⁻, es base).`,
+    tip:`Frase modelo: "Arrhenius: libera OH⁻ en agua; Brønsted–Lowry: acepta H⁺".` },
+  { id:`lab2-9`, ev:`lab2`, n:9, tm:`ph`, tipo:`abi`, q:`En la zona básica (alcalina) de la escala de pH, ¿cómo es la concentración de iones H⁺ y OH⁻, respectivamente?`,
+    resp:`Una palabra tachada y "mayor".`, ref:`[H⁺] menor y [OH⁻] mayor (pH > 7: hay más OH⁻ que H⁺).`, causa:`forma`,
+    por:`Pedía las dos concentraciones "respectivamente" y contestó una sola palabra, con una tachadura. Debía decir: H⁺ menor y OH⁻ mayor.`,
+    tip:`Responde cada parte por separado: "[H⁺] menor, [OH⁻] mayor".` },
+  /* ---------- Lab 2: ácidos y bases ---------- */
+  { id:`lab2b-4`, ev:`lab2b`, n:4, tm:`conc`, tipo:`prob`, q:`¿Cuántos gramos de soluto y cuántos mililitros de solvente se usan para preparar 100 mL de una disolución acuosa al 1.6 % p/v de sulfato de cobre II pentahidratado (CuSO₄·5H₂O)?`,
+    resp:`1.6 g de soluto (bien) y 100 mL de solvente. Nota: ½ punto.`, ref:`1.6 g de soluto; 100 mL − 1.6 = 98.4 mL de agua.`, causa:`proc`, fam:`pctDoc`,
+    por:`Los gramos estuvieron bien. Los 100 mL son el volumen de la solución final, no el del solvente: el docente espera 100 − 1.6 = 98.4 mL de agua. En el laboratorio real se disuelve y se afora a 100 mL; en el examen se sigue esta convención.`,
+    tip:`mL de solvente = volumen de solución − gramos de soluto (convención del docente).` },
+  { id:`lab2b-5`, ev:`lab2b`, n:5, tm:`conc`, tipo:`prob`, conf:`media`, q:`Calcule el %v/v de una disolución que contiene 35 mL de etanol (C₂H₅OH) disueltos en 960 mL de disolución.`,
+    resp:`Respuesta con dos valores: "27.4 mL" tachado y "3.64 % v/v".`, ref:`%v/v = 35 ÷ 960 × 100 = 3.6458… = 3.65 %.`, causa:`forma`, fam:`pctDoc`,
+    por:`El planteamiento era correcto. Al redondear 3.6458 a dos decimales queda 3.65, no 3.64 (se redondea, no se trunca), y la línea de respuesta traía además otro valor (27.4 mL) que confunde la revisión. Es la causa más probable del punto perdido.`,
+    tip:`Una sola respuesta, con unidad y bien redondeada.` },
+  { id:`lab2b-8`, ev:`lab2b`, n:8, tm:`lab`, tipo:`abi`, q:`¿De qué color se torna una solución de hidróxido de sodio (NaOH) al agregarle unas gotas de fenolftaleína?`,
+    resp:`"Transparente o incoloro."`, ref:`Rosa o fucsia (la fenolftaleína vira a rosa a partir de pH ≈ 8.2).`, causa:`lab`,
+    por:`Invirtió el color. La fenolftaleína es incolora en medio ácido y neutro, y rosa-fucsia en medio básico, como el NaOH.`,
+    tip:`Fenolftaleína: incolora en ácido, fucsia en base.` }
+];
+const RF_FALLO = id => RF_FALLOS.find(f => f.id === id);
+
+/* ---------- Patrones: lo que se repite ---------- */
+const RF_PATRONES = [
+  { id:`enlace`, n:`Enlace iónico, covalente y fuerzas intermoleculares`, ev:`Parcial 1 (10 de 16 preguntas de enlace e intermoleculares) y Discusión 1`, falla:[`p1-20`,`p1-21`,`p1-22`,`p1-24`,`p1-25`,`p1-27`,`p1-29`,`p1-30`,`p1-33`,`dis1-7`,`dis1-9`],
+    por:`Es el patrón más grave porque se repite en tres evaluaciones. Hay una idea equivocada de fondo: "covalente = mismos elementos". Por eso falla también cuando le piden clasificar (dos no metales distintos), distinguir intramolecular de intermolecular y reconocer qué elementos forman puentes de hidrógeno.`,
+    fix:[`Aprende la pregunta-llave: ¿metal + no metal (se transfieren e⁻ → iónico) o no metal + no metal (se comparten e⁻ → covalente)?`,`Distingue dos niveles: ENLACES (dentro: iónico, covalente, metálico) y FUERZAS (entre moléculas: puente de H, dipolo-dipolo, London).`,`Memoriza FON (F, O, N) para el puente de hidrógeno y "apolar con apolar → London".`],
+    oro:`Transferir = iónico. Compartir = covalente. Dentro = enlace, entre moléculas = fuerza.`, doc:`enlace` },
+  { id:`inversion`, n:`Inversión de sentido (mayor/menor, sube/baja)`, ev:`Parcial 1, Parcial 2 y Lab 2`, falla:[`p1-41`,`p1-43`,`p2-6`,`p2-7`,`lab2-7`,`p2-28`],
+    por:`Sabe calcular pero se le da vuelta la dirección: dice que diluir concentra, que ΔG negativo es endergónico, que mayor afinidad da mayor Km, que 600 mL se preparan con 1687 mL de stock, que una base tiene pH 1.6. En casi todos el propio resultado delataba el error.`,
+    fix:[`Antes de elegir, escribe una flecha: ¿esto sube (↑) o baja (↓)?`,`Después de calcular, haz la prueba de sentido: ¿el resultado tiene sentido frente al dato inicial?`,`En diluciones: el stock siempre es C₁ y V₁ es siempre menor que V₂.`],
+    oro:`Antes de entregar cada cálculo pregúntate: ¿sube o baja? ¿Tiene sentido?`, doc:`inversion` },
+  { id:`normalidad`, n:`Normalidad: equivalentes y volumen`, ev:`Parcial 2 (problema 26) y Lab 2 (pregunta 6)`, falla:[`p2-26`,`lab2-6`],
+    por:`Dos errores distintos en el mismo tema: en el Parcial usó el peso equivalente como si fuera el número de equivalentes; en el Lab calculó los equivalentes y olvidó dividir entre el volumen. Los dos se evitan escribiendo las unidades.`,
+    fix:[`Paso 1: Peq = PM ÷ (n.º de H⁺ u OH⁻ o carga). Unidad: g/eq.`,`Paso 2: equivalentes = g ÷ Peq. Unidad: eq.`,`Paso 3: N = eq ÷ L. Unidad: eq/L. Si no termina en "por litro", falta un paso.`],
+    oro:`g ÷ (g/eq) = eq → eq ÷ L = N.`, doc:`normalidad`, gen:`normDoc` },
+  { id:`bases`, n:`Bases, pOH y buffers`, ev:`Parcial 2 (18, 20, 28, 29) y Lab 2 (8, 9)`, falla:[`p2-18`,`p2-20`,`p2-28`,`p2-29`,`lab2-8`,`lab2-9`],
+    por:`Trata las bases como ácidos (pH de Ba(OH)₂ con −log directo, sin ×2), no distingue qué especie del buffer neutraliza qué, y no contesta completo las preguntas de teorías. Sí domina el buffer carbonato y el pH de ácidos.`,
+    fix:[`Hidróxido = base: [OH⁻] = (n.º de OH) × M → pOH = −log → pH = 14 − pOH.`,`Buffer: el ácido (HA) neutraliza al OH⁻; la base conjugada (A⁻, con un H menos) neutraliza al H⁺.`,`Henderson–Hasselbalch: pH = pKa + log(base/ácido); sirve la razón de moles.`],
+    oro:`Base → pOH primero. Buffer: el ácido come OH⁻, la base come H⁺.`, doc:`bases`, gen:`baseDoc` },
+  { id:`unidades`, n:`Dilución, solvente y unidades de concentración`, ev:`Lab 2 (4, 5, 7) y Lab 2 ácidos y bases (4, 5)`, falla:[`lab2-4`,`lab2-5`,`lab2b-4`,`lab2b-5`],
+    por:`Los problemas de plantilla (molaridad, % p/v, molalidad, dilución directa) los resuelve bien. Falla cuando cambia el planteamiento: gramos de un % m/v con volumen grande, mL de solvente frente a mL de solución, y definir M y m con precisión.`,
+    fix:[`% m/v = g por cada 100 mL: escala con proporción y estima el orden de magnitud.`,`mL de solvente = volumen de solución − gramos de soluto (convención del docente).`,`Al definir, escribe la fórmula: M = mol/L de solución; m = mol/kg de solvente.`],
+    oro:`Estima antes de calcular y define con fórmula y unidad.`, doc:`unidades`, gen:`pctDoc` },
+  { id:`lab`, n:`Vocabulario y observación de laboratorio`, ev:`Lab 1 y Lab 2 ácidos y bases`, falla:[`lab1-2`,`lab1-3`,`lab1-4`,`lab1-8`,`lab1-10`,`lab2b-8`],
+    por:`Usa nombres genéricos (pipeteador por propipeta), no completa la razón de lo observado y puede invertir un color (fenolftaleína). Mejoró de 3.0 a 7.5 entre el Lab 1 y el Lab 2: lo que hizo en esa práctica funciona.`,
+    fix:[`Una tarjeta por experimento: material → qué se observó → por qué.`,`Aprende el nombre exacto de cada instrumento del manual con su función.`,`En cada respuesta de laboratorio escribe observación + razón.`],
+    oro:`Observación + razón + nombre exacto del instrumento.`, doc:`lab` },
+  { id:`enzimas`, n:`Cinética, termodinámica y enzimas`, ev:`Parcial 1 (5 de 8 preguntas)`, falla:[`p1-41`,`p1-43`,`p1-44`,`p1-45`],
+    por:`Es un bloque de nivel clínico-bioquímico que el docente sí evalúa. Se mezclan inversiones (ΔG, Km) con definiciones de pasos de la reacción enzimática.`,
+    fix:[`ΔG < 0 = exergónica (espontánea); ΔG > 0 = endergónica.`,`E + S ⇌ ES → E + P. Km bajo = afinidad alta.`,`pH extremo cambia la ionización del sitio activo o desnaturaliza la enzima.`],
+    oro:`ΔG negativo: sale energía. Km bajo: enzima ansiosa por su sustrato.`, doc:`inversion` },
+  { id:`habitos`, n:`Hábitos de examen: tiempo, forma y precisión`, ev:`Parcial 2 (29, 30), Lab 2 (2, 9) y Lab 2 ácidos y bases (5)`, falla:[`p2-29`,`p2-30`,`lab2-2`,`lab2-9`,`lab2b-5`],
+    por:`Perdió puntos que no son de conocimiento: dos problemas sin terminar, respuestas tachadas, respuestas con dos valores y redondeo truncado.`,
+    fix:[`Reparte el tiempo (1 minuto por pregunta de objetivas, 4–5 minutos por problema) y resuelve primero lo corto.`,`Usa borrador: piensa y luego escribe con tinta, sin tachar. Una sola respuesta por línea.`,`Redondea (no trunques) y escribe la unidad.`],
+    oro:`Una respuesta limpia, completa, con unidad.`, doc:null }
+];
+
+/* ---------- Familias de problemas que se repiten ---------- */
+const RF_FAMILIAS = [
+  { n:`Dilución C₁V₁ = C₂V₂`, ap:`Parcial 2: NaBr 3.5 M (650 → 1500 mL) ✓ y NaBr 2.0 M (400 → 1200 mL) ✓ · Lab 2: MgBr₂ 1.6 M desde 4.5 M ✗`, gen:`dilDoc` },
+  { n:`Normalidad de una base o sal`, ap:`Parcial 2: 37 g Ca(OH)₂ en 2 L ✗ · Lab 2: 25 g CaCO₃ en 700 mL ✗`, gen:`normDoc` },
+  { n:`Molaridad desde gramos`, ap:`Parcial 2: 49 g H₂SO₄ en 500 mL ✓`, gen:`mol` },
+  { n:`% m/v, % v/v y preparación`, ap:`Parcial 2: 15 g NaCl en 250 mL ✓ · Lab 2: glucosa 7 % m/v ✗ · Lab ác./bases: 1.6 % p/v (½) y 35 mL en 960 mL ✗`, gen:`pctDoc` },
+  { n:`Molalidad`, ap:`Parcial 2: 20 g NaOH en 400 g de agua ✓`, gen:`molalDoc` },
+  { n:`pH y pOH de una base fuerte`, ap:`Parcial 2: Ba(OH)₂ 0.025 M ✗`, gen:`baseDoc` },
+  { n:`pH de un ácido fuerte desde gramos`, ap:`Parcial 2: 0.315 g HNO₃ en 250 mL (sin terminar)`, gen:`acidG` },
+  { n:`Buffer (Henderson–Hasselbalch)`, ap:`Parcial 2: ácido acético/acetato (sin responder)`, gen:`bufDoc` },
+  { n:`Balanceo de ecuaciones`, ap:`Parcial 1: Fe + O₂, C₃H₈ + O₂, NH₃ + O₂ ✓✓✓`, gen:null },
+  { n:`Estructuras de Lewis (formación e ionización)`, ap:`Parcial 1: MgCl₂ (½), C₂H₄ (½) · Discusión: LiF (½), CaCO₃ (0), HCl (½)`, gen:null }
+];
+
+/* ---------- Perfil del docente ---------- */
+const RF_PERFIL = {
+  estructura:[
+    { n:`Parcial`, d:`Parte I objetiva de 4 opciones (a veces 3) y Parte II de problemas con procedimiento visible. Cada pregunta vale 1 punto y el problema puede dar medios puntos. Parcial 1: 45 + 5 en 2 horas. Parcial 2: 20 + 10 en 1 hora; permite calculadora, tabla periódica y hoja de fórmulas.` },
+    { n:`Corto de laboratorio / discusión`, d:`10 preguntas de respuesta corta escrita, 1 punto cada una (se dan medios puntos). Mezcla concepto, cálculo y observación de práctica. Se contesta con bolígrafo azul de tinta indeleble.` },
+    { n:`Guías de ejercicios`, d:`Tablas y estructuras a completar (hidrocarburos): clasificación por fórmula, hibridación y geometría, nombre ↔ fórmula, análisis carbono por carbono, preguntas de razonamiento y nomenclatura aromática.` }
+  ],
+  estilos:[
+    `"¿Cuál es la diferencia fundamental / principal entre…?" (compara dos conceptos).`,
+    `"Según [teoría o definición]… ¿cómo se define…?" (Arrhenius, Lewis, Brønsted–Lowry, Berzelius).`,
+    `"¿Cuál de las siguientes afirmaciones es correcta?" (cuatro frases largas, una verdadera).`,
+    `"¿Cómo afecta… a…?" y "¿Qué sucede cuando…?" (causa y efecto).`,
+    `Contexto clínico para dar sentido: venopunción, eritrocito, glucosa intravenosa, pH de un paciente, buffer de la sangre.`,
+    `Definiciones operacionales (sabor de una base) y vocabulario del laboratorio (propipeta, fenolftaleína).`
+  ],
+  distractores:[
+    { t:`Definición cambiada`, d:`Cada opción es la definición correcta de otro concepto.`, ej:`p1-22`, ex:`La opción A es el enlace metálico y la B el covalente.` },
+    { t:`Medio acierto`, d:`La opción cruzada mezcla un elemento correcto con uno incorrecto.`, ej:`p1-17`, ex:`"Astato y flúor" tiene el flúor bien y el astato mal.` },
+    { t:`Afirmación invertida`, d:`Dice lo contrario de lo correcto (más/menos, sube/baja).`, ej:`p2-6`, ex:`"La concentración final siempre será superior" tras diluir.` },
+    { t:`Fórmulas casi iguales`, d:`Opciones que difieren en un H: HCO₃, H₂CO₃, HPO₄, H₂PO₄.`, ej:`p2-20`, ex:`La base conjugada es la que tiene un H menos.` },
+    { t:`Tres de cuatro del mismo grupo`, d:`La respuesta es la única que no pertenece al grupo de las demás.`, ej:`p1-27`, ex:`Tres intermoleculares y un solo enlace intramolecular.` },
+    { t:`Trampa del rol`, d:`Una opción describe correctamente el rol de otro componente.`, ej:`p2-18`, ex:`"La base débil neutraliza el OH⁻" (lo neutraliza el ácido).` }
+  ],
+  siguiente:[
+    `Las guías de hidrocarburos aliáticos y aromáticos del zip anticipan el contenido del próximo examen.`,
+    `Alifáticos: clasificar por fórmula (CₙH₂ₙ₊₂, CₙH₂ₙ, CₙH₂ₙ₋₂), hibridación y geometría, nombre ↔ fórmula, análisis de cada carbono en HC≡C−CH=CH−CH₃, y razonamiento (por qué los alquinos son lineales, cis/trans, C₅H₁₀).`,
+    `Aromáticos: nombres comunes (fluorobenceno, ácido benzoico, fenol, anilina, alilbenceno), nombres IUPAC con o/m/p y numeración, y fórmulas a partir del nombre (TNT, ácido 4-clorobenzoico).`
+  ]
+};
+
+/* ---------- Estadísticas derivadas ---------- */
+const rfNotaCalc = ev => { const r = RF_HIST.filter(x => x.ev === ev); const p = r.reduce((s, x) => s + x.ok, 0); return { pts:p, tot:r.length, nota:+(p / r.length * 10).toFixed(1) }; };
+const rfFechaOrd = e => e.f || `9999`;
+const rfPorTema = () => { const m = {}; RF_HIST.forEach(x => { const a = m[x.tm] || (m[x.tm] = { tm:x.tm, ok:0, n:0 }); a.ok += x.ok; a.n++; }); return Object.values(m).map(a => Object.assign(a, { err:1 - a.ok / a.n })).sort((a, b) => b.err - a.err); };
+const rfPorNivel = () => { const m = { r:{ n:0, ok:0 }, c:{ n:0, ok:0 }, a:{ n:0, ok:0 } }; RF_HIST.filter(x => x.tipo === `o`).forEach(x => { m[x.lv].n++; m[x.lv].ok += x.ok; }); return m; };
+const rfClaves = () => { const c = { A:0, B:0, C:0, D:0, n:0 }, w = { A:0, B:0, C:0, D:0, n:0 }; RF_HIST.filter(x => x.tipo === `o`).forEach(x => { if (x.k){ c[x.k]++; c.n++; } if (!x.ok){ w[x.r]++; w.n++; } }); return { claves:c, falladas:w }; };
+
+/* ===================== RETROALIMENTACIÓN: GENERADORES Y BANCO ===================== */
+
+/* ---------- Generadores con las plantillas que el docente repite ---------- */
+const RF_PM = { 'Ca(OH)₂':74, 'CaCO₃':100, 'H₂SO₄':98, 'Na₂CO₃':106, 'Al(OH)₃':78, 'H₃PO₄':98, 'Mg(OH)₂':58, 'NaOH':40, 'KOH':56, 'NaCl':58.5, 'Glucosa':180, 'Urea':60, 'KCl':74.5, 'HNO₃':63, 'HCl':36.5, 'HClO₄':100.5, 'HBr':81 };
+GENS.push(
+ {id:`dilDoc`,t:`t17`,src:`Parcial 2 (22 y 27) · Lab 2 (7)`,name:`Dilución estilo parcial (sal y stock)`,make(){
+   const sal = pick([`NaBr`,`MgBr₂`,`KCl`,`NaNO₃`,`CaCl₂`,`KI`]);
+   if (Math.random() < .5){
+     const C1 = pick([3.5,4.5,5,6,2.5,8]); const C2 = pick([.5,.8,1.2,1.6,2,2.4].filter(x => x < C1)); const V2 = pick([250,300,400,500,600,750,1000]); const V1 = C2*V2/C1;
+     return { q:`Se desea preparar ${V2} mL de una solución de ${sal} ${C2} M a partir de una solución stock ${C1} M. ¿Cuántos mililitros de stock se necesitan?`, unit:`mL`, ans:V1, rel:.02,
+       pasos:[`Identifica los roles: stock → C₁ = ${C1} M; solución que se quiere → C₂ = ${C2} M y V₂ = ${V2} mL.`,`V₁ = C₂·V₂ / C₁ = ${C2} × ${V2} / ${C1} = ${nf(V1,1)} mL.`,`Prueba de sentido: V₁ (${nf(V1,1)} mL) < V₂ (${V2} mL) y C₂ < C₁ ✔. Si te sale V₁ > V₂, intercambiaste los datos.`], r:`${nf(V1,1)} mL de stock` };
+   }
+   const [V1, V2] = pick([[400,1200],[650,1500],[250,750],[300,900],[200,500],[500,1250]]); const C1 = pick([2,2.5,3.5,4,5]); const C2 = C1*V1/V2;
+   return { q:`Se tienen ${V1} mL de una solución madre de ${sal} ${C1} M. Se le añade agua destilada hasta alcanzar un volumen final de ${V2} mL. Calcule la concentración molar final.`, unit:`M`, ans:C2, rel:.02,
+     pasos:[`Datos: C₁ = ${C1} M, V₁ = ${V1} mL, V₂ = ${V2} mL.`,`C₂ = C₁·V₁ / V₂ = ${C1} × ${V1} / ${V2} = ${sci(C2,3)} M.`,`Prueba de sentido: C₂ < C₁ porque se diluyó ✔.`], r:`${sci(C2,3)} M` };
+ }},
+ {id:`normDoc`,t:`t16`,src:`Parcial 2 (26) · Lab 2 (6)`,name:`Normalidad estilo parcial`,make(){
+   const [s, k] = pick([[`Ca(OH)₂`,2],[`CaCO₃`,2],[`H₂SO₄`,2],[`Na₂CO₃`,2],[`Al(OH)₃`,3],[`H₃PO₄`,3],[`Mg(OH)₂`,2],[`NaOH`,1]]);
+   const PE = RF_PM[s]/k; const eq = pick([.25,.4,.5,.8,1,1.5,2]); const g = Math.round(eq*PE*10)/10; const [Vt, VL] = pick([[`2 litros`,2],[`700 mL`,.7],[`500 mL`,.5],[`1 litro`,1],[`250 mL`,.25]]);
+   const n = g/PE, N = n/VL;
+   return { q:`Determina la normalidad (N) de una disolución acuosa que contiene ${nf(g,1)} g de ${s} (PM ${RF_PM[s]}) disueltos en un volumen total de ${Vt}.`, unit:`N`, ans:N, rel:.02,
+     pasos:[`Peso equivalente: Peq = PM ÷ n = ${RF_PM[s]} ÷ ${k} = ${nf(PE,2)} g/eq.`,`Equivalentes = masa ÷ Peq = ${nf(g,1)} g ÷ ${nf(PE,2)} g/eq = ${sci(n,3)} eq. (Ojo: ${nf(PE,2)} es la masa de UN equivalente, no el número de equivalentes.)`,`N = eq ÷ L = ${sci(n,3)} ÷ ${nf(VL,2)} L = ${sci(N,3)} N.`,`Control de unidades: g ÷ (g/eq) = eq; eq ÷ L = N ✔.`], r:`${sci(N,3)} N` };
+ }},
+ {id:`pctDoc`,t:`t16`,src:`Lab 2 (4) · Lab ác./bases (4 y 5)`,name:`% m/v, % v/v y preparación`,make(){
+   const m = Math.floor(Math.random()*3);
+   if (m === 0){ const p = pick([2.5,3.3,5,7,10]), V = pick([500,1000,1500,2300,2500]); const g = p*V/100;
+     return { q:`Un paciente requiere recibir ${V} mL de una solución intravenosa de glucosa al ${p} % m/v. ¿Cuántos gramos de glucosa pura consumirá tras recibir el volumen total?`, unit:`g`, ans:g, rel:.02,
+       pasos:[`${p} % m/v = ${p} g de soluto por cada 100 mL de solución.`,`Estimación: ${V} mL son ${nf(V/100,1)} bloques de 100 mL → unos ${nf(V/100*p,0)} g.`,`g = ${p} × ${V} ÷ 100 = ${nf(g,1)} g.`], r:`${nf(g,1)} g de glucosa` }; }
+   if (m === 1){ const a = pick([20,25,35,40,60,75]), b = pick([480,500,600,750,960,1000]); const p = a/b*100;
+     return { q:`Calcule el %v/v de una disolución que contiene ${a} mL de etanol (C₂H₅OH) disueltos en ${b} mL de disolución. (Redondea a 2 decimales.)`, unit:`%`, ans:+p.toFixed(2), abs:.005,
+       pasos:[`%v/v = mL de soluto ÷ mL de disolución × 100.`,`= ${a} ÷ ${b} × 100 = ${p.toFixed(4)} %.`,`Redondeo a 2 decimales: ${p.toFixed(2)} % (se redondea, no se trunca).`], r:`${p.toFixed(2)} % v/v` }; }
+   const p = pick([1.6,2.5,4,5,0.9]), V = pick([100,100,250,500]); const g = p*V/100, sv = V - g;
+   return { q:`¿Cuántos mililitros de solvente (agua) se usan para preparar ${V} mL de una disolución acuosa al ${p} % p/v de sulfato de cobre II pentahidratado? (Convención del docente: mL de solvente = volumen de solución − gramos de soluto.)`, unit:`mL`, ans:sv, rel:.01,
+     pasos:[`Gramos de soluto = ${p} × ${V} ÷ 100 = ${nf(g,2)} g.`,`mL de solvente = ${V} − ${nf(g,2)} = ${nf(sv,2)} mL.`,`Los ${V} mL son la solución final, no el solvente.`], r:`${nf(sv,2)} mL de agua (con ${nf(g,2)} g de soluto)` };
+ }},
+ {id:`molalDoc`,t:`t16`,src:`Parcial 2 (25)`,name:`Molalidad (moles por kg de solvente)`,make(){
+   const s = pick([`NaOH`,`KOH`,`NaCl`,`Glucosa`,`Urea`,`KCl`]); const g = pick([10,15,20,25,30,40]); const gs = pick([200,250,400,500,800]);
+   const n = g/RF_PM[s], m = n/(gs/1000);
+   return { q:`Se disuelven ${g} g de ${s} (PM ${RF_PM[s]}) en ${gs} g de agua pura. Determine la molalidad (m) de la solución resultante.`, unit:`m`, ans:m, rel:.02,
+     pasos:[`Moles de soluto = ${g} ÷ ${RF_PM[s]} = ${sci(n,3)} mol.`,`Kilogramos de solvente = ${gs} g = ${nf(gs/1000,3)} kg (el agua, no la solución).`,`m = ${sci(n,3)} ÷ ${nf(gs/1000,3)} = ${sci(m,3)} mol/kg.`], r:`${sci(m,3)} m` };
+ }},
+ {id:`baseDoc`,t:`t20`,src:`Parcial 2 (28)`,name:`pH y pOH de una base fuerte`,make(){
+   const [s, k] = pick([[`hidróxido de bario [Ba(OH)₂]`,2],[`hidróxido de calcio [Ca(OH)₂]`,2],[`hidróxido de estroncio [Sr(OH)₂]`,2],[`hidróxido de sodio (NaOH)`,1],[`hidróxido de potasio (KOH)`,1],[`hidróxido de litio (LiOH)`,1]]);
+   const M = pick([.005,.01,.025,.04,.05,.08,.1,.15]); const OH = k*M, pOH = -Math.log10(OH), pH = 14 - pOH; const ask = pick([`pH`,`pOH`]);
+   return { q:`Calcule el ${ask} de una disolución acuosa ${M} M de ${s} a 25 °C.`, unit:``, ans:ask === `pH` ? pH : pOH, abs:.02,
+     pasos:[`Es un hidróxido: una base fuerte que se disocia por completo.`,`[OH⁻] = ${k > 1 ? `${k} × ` : ``}${M} = ${sci(OH,3)} M (cada unidad libera ${k} OH⁻).`,`pOH = −log(${sci(OH,3)}) = ${fx2(pOH)}.`,`pH = 14 − ${fx2(pOH)} = ${fx2(pH)}.`,`Prueba de sentido: una base tiene pH > 7 ✔.`], r:`pOH = ${fx2(pOH)} · pH = ${fx2(pH)}` };
+ }},
+ {id:`acidG`,t:`t20`,src:`Parcial 2 (30)`,name:`Ácido fuerte desde gramos: M, pH y pOH`,make(){
+   const s = pick([`HNO₃`,`HCl`,`HClO₄`,`HBr`]); const mol = pick([.002,.005,.01,.02,.04]); const g = +(mol*RF_PM[s]).toFixed(3); const V = pick([100,250,500,1000]);
+   const n = g/RF_PM[s], M = n/(V/1000), pH = -Math.log10(M), pOH = 14 - pH; const ask = pick([`M`,`pH`,`pOH`]);
+   const label = ask === `M` ? `la molaridad` : `el ${ask}`;
+   return { q:`Calcule ${label} de una disolución acuosa preparada al disolver ${nf(g,3)} g de ${s} (PM ${RF_PM[s]}) en agua suficiente hasta completar ${V} mL de solución a 25 °C.`, unit:ask === `M` ? `M` : ``, ans:ask === `M` ? M : ask === `pH` ? pH : pOH, rel:ask === `M` ? .02 : undefined, abs:ask === `M` ? undefined : .02,
+     pasos:[`Moles = ${nf(g,3)} ÷ ${RF_PM[s]} = ${sci(n,3)} mol.`,`M = ${sci(n,3)} ÷ ${nf(V/1000,3)} L = ${sci(M,3)} M.`,`${s} es un ácido fuerte: [H⁺] = M = ${sci(M,3)}.`,`pH = −log(${sci(M,3)}) = ${fx2(pH)} · pOH = 14 − ${fx2(pH)} = ${fx2(pOH)}.`], r:ask === `M` ? `${sci(M,3)} M` : ask === `pH` ? `pH = ${fx2(pH)}` : `pOH = ${fx2(pOH)}` };
+ }},
+ {id:`bufDoc`,t:`t21`,src:`Parcial 2 (29)`,name:`Buffer desde moles (Henderson–Hasselbalch)`,make(){
+   const [ac, sa, Ka] = pick([[`ácido acético (CH₃COOH)`,`acetato de sodio (CH₃COONa)`,1.8e-5],[`ácido fórmico (HCOOH)`,`formiato de sodio (HCOONa)`,1.8e-4],[`ácido láctico (C₃H₆O₃)`,`lactato de sodio`,1.4e-4],[`ácido benzoico (C₆H₅COOH)`,`benzoato de sodio`,6.3e-5]]);
+   const na = pick([.1,.15,.2,.25,.3]), nb = pick([.2,.25,.3,.35,.4,.5]); const V = pick([250,500,1000]); const pKa = -Math.log10(Ka), pH = pKa + Math.log10(nb/na);
+   return { q:`Calcule el pH de una solución amortiguadora preparada disolviendo ${na} moles de ${ac} y ${nb} moles de ${sa} en agua hasta completar ${V} mL de solución a 25 °C (Ka = ${sci(Ka,1)}).`, unit:``, ans:pH, abs:.03,
+     pasos:[`pKa = −log(${sci(Ka,1)}) = ${fx2(pKa)}.`,`Henderson–Hasselbalch: pH = pKa + log(base/ácido). El volumen se cancela: sirve la razón de moles.`,`pH = ${fx2(pKa)} + log(${nb}/${na}) = ${fx2(pKa)} + ${fx2(Math.log10(nb/na))} = ${fx2(pH)}.`,`Con más base que ácido el pH queda por encima del pKa ✔.`], r:`pH = ${fx2(pH)}` };
+ }},
+ {id:`espBuf`,t:`t21`,src:`Parcial 2 (18 y 20) · Lab 2 (10)`,name:`¿Qué especie del buffer neutraliza qué?`,make(){
+   const B = [[`H₂CO₃`,`HCO₃⁻`,`carbónico/bicarbonato`],[`H₂PO₄⁻`,`HPO₄²⁻`,`fosfato`],[`CH₃COOH`,`CH₃COO⁻`,`acético/acetato`],[`NH₄⁺`,`NH₃`,`amonio/amoníaco`],[`HF`,`F⁻`,`fluorhídrico/fluoruro`]];
+   const i = Math.floor(Math.random()*B.length); const [ac, ba, nm] = B[i]; const h = Math.random() < .5;
+   const ans = h ? ba : ac, par = h ? ac : ba; const otros = B.filter((_, j) => j !== i); const ex = shuf(otros).slice(0, 2).map(x => h ? x[1] : x[0]);
+   const opts = shuf([ans, par].concat(ex)); const q = h ? `En el buffer ${nm}, ¿qué especie neutraliza un exceso de iones H⁺?` : `En el buffer ${nm}, ¿qué especie neutraliza una pequeña cantidad de una base fuerte (OH⁻)?`;
+   return { q, opts, correct:opts.indexOf(ans), pasos:[h ? `El H⁺ lo acepta la base conjugada: la especie con un H menos, ${ba}.` : `El OH⁻ lo neutraliza el ácido débil: la especie con un H más, ${ac}.`, h ? `${ba} + H⁺ → ${ac}` : `${ac} + OH⁻ → ${ba} + H₂O`, `Regla: el ácido "come" OH⁻; la base "come" H⁺.`], r:ans };
+ }},
+ {id:`carbMix`,t:`t22`,src:`Guía de alifáticos, sección III`,name:`Hibridación de cada carbono (molécula mixta)`,make(){
+   let b; do { b = Array.from({ length:4 }, () => pick([1,1,2,3])); } while (!b.some(x => x > 1) || b.some((x, i) => i < 3 && x + b[i + 1] > 4));
+   const n = 5, hs = []; for (let i = 0; i < n; i++) hs.push(4 - (i > 0 ? b[i - 1] : 0) - (i < n - 1 ? b[i] : 0));
+   const sym = x => x === 1 ? `−` : x === 2 ? `=` : `≡`; const SUBS = [`₀`,`₁`,`₂`,`₃`];
+   const frm = hs.map((h, i) => `C${h ? `H${h > 1 ? SUBS[h] : ``}` : ``}` + (i < n - 1 ? sym(b[i]) : ``)).join(``);
+   const hyb = i => { const l = i > 0 ? b[i - 1] : 1, r = i < n - 1 ? b[i] : 1; return (l === 3 || r === 3 || (l === 2 && r === 2)) ? `sp` : (l === 2 || r === 2) ? `sp²` : `sp³`; };
+   const D = { sp:`sp · lineal · 180°`, 'sp²':`sp² · trigonal plana · 120°`, 'sp³':`sp³ · tetraédrica · 109.5°` };
+   const k = Math.floor(Math.random()*n), h = hyb(k); const ans = D[h];
+   const opts = shuf([ans].concat(Object.keys(D).filter(x => x !== h).map(x => D[x]), [h === `sp²` ? `sp² · tetraédrica · 109.5°` : `sp³ · trigonal plana · 120°`]));
+   return { q:`En la molécula ${frm} (carbonos numerados C1 a C5 de izquierda a derecha), ¿qué hibridación, geometría y ángulo de enlace tiene el carbono C${k + 1}?`, opts, correct:opts.indexOf(ans),
+     pasos:[`Cuenta los enlaces múltiples del C${k + 1}: ${[b[k - 1], b[k]].filter(x => x).map(sym).join(` y `)}.`,`Triple (o dos dobles) → sp; un doble → sp²; todos sencillos → sp³.`,`C${k + 1}: ${ans}.`], r:ans };
+ }}
+);
+
+/* ---------- Banco de preguntas de refuerzo, estilo docente ----------
+   rf = patrón que refuerza · tm = tema del historial · lv = nivel (r, c, a) · la opción 0 es la correcta */
+const RF_DOC = [];
+const rfD = (rf, tm, lv, q, o, e) => RF_DOC.push({ rf, tm, lv, t:(RF_TEMAS[tm] || {}).t || null, q, o, e, src:`Refuerzo de ${RF_TEMAS[tm].n.toLowerCase()}` });
+/* enlace e intermoleculares */
+rfD(`enlace`,`enlace`,`r`,`¿Entre qué tipo de elementos se forma por lo general un enlace iónico?`,[`Un metal y un no metal`,`Dos no metales distintos`,`Dos metales`,`Dos átomos iguales`],`El metal cede electrones y el no metal los recibe: se transfieren. Dos no metales comparten (covalente) y dos metales forman un enlace metálico.`);
+rfD(`enlace`,`enlace`,`c`,`¿Cuál de estas frases describe el enlace covalente?`,[`Los átomos comparten pares de electrones`,`Un átomo transfiere electrones a otro y los iones se atraen`,`Una nube de electrones rodea a los núcleos metálicos`,`Las moléculas se atraen por dipolos temporales`],`Covalente = compartir. La B es el iónico, la C el metálico y la D son fuerzas entre moléculas.`);
+rfD(`enlace`,`enlace`,`a`,`El enlace entre el hidrógeno y el cloro en la molécula de HCl es:`,[`Covalente polar`,`Covalente no polar`,`Iónico`,`Metálico`],`Son dos no metales (comparten) y son distintos: el cloro atrae más los electrones, así que el enlace es polar.`);
+rfD(`enlace`,`enlace`,`a`,`El enlace entre los dos átomos de la molécula de Cl₂ es:`,[`Covalente no polar`,`Covalente polar`,`Iónico`,`Puente de hidrógeno`],`Dos átomos iguales atraen los electrones con la misma fuerza: no hay polaridad.`);
+rfD(`enlace`,`inter`,`c`,`Un ejemplo de enlace intramolecular es:`,[`El enlace covalente dentro de una molécula`,`El puente de hidrógeno entre dos moléculas de agua`,`La atracción dipolo–dipolo`,`Las fuerzas de dispersión de London`],`Intra = dentro de la molécula. Las otras tres opciones actúan entre moléculas.`);
+rfD(`enlace`,`inter`,`r`,`¿Cuáles elementos, unidos al hidrógeno, forman los puentes de hidrógeno más fuertes?`,[`Flúor, oxígeno y nitrógeno`,`Carbono, oxígeno y nitrógeno`,`Cloro, azufre y fósforo`,`Carbono, hidrógeno y cloro`],`Solo F, O y N: pequeños y muy electronegativos. El carbono no forma puentes de hidrógeno fuertes.`);
+rfD(`enlace`,`inter`,`r`,`¿Qué fuerza intermolecular existe entre moléculas apolares como el N₂ o el CH₄?`,[`Fuerzas de dispersión de London`,`Puente de hidrógeno`,`Dipolo–dipolo permanente`,`Ión–dipolo`],`Sin dipolos permanentes solo quedan los dipolos instantáneos: dispersión de London.`);
+rfD(`enlace`,`enlace`,`c`,`El cloruro de sodio sólido no conduce la electricidad, pero disuelto en agua sí. ¿Por qué?`,[`Porque al disolverse los iones quedan libres y se mueven`,`Porque en agua se forman electrones libres`,`Porque el agua es un metal`,`Porque en estado sólido es covalente`],`En el cristal los iones están fijos. Al disolverse (o fundirse) se mueven y llevan la corriente.`);
+rfD(`enlace`,`inter`,`c`,`El agua hierve a una temperatura mucho mayor que el H₂S. La razón es que:`,[`Sus moléculas forman puentes de hidrógeno`,`El H₂S es más polar`,`El agua es un compuesto iónico`,`El agua tiene mayor masa molar`],`El H₂S pesa más (34 frente a 18 g/mol) y aun así hierve menos: la diferencia la hacen los puentes de hidrógeno del agua.`);
+rfD(`enlace`,`enlace`,`c`,`La polaridad de un enlace covalente entre dos átomos distintos depende de:`,[`La diferencia de electronegatividad entre ellos`,`El número de neutrones`,`El tamaño del núcleo únicamente`,`La temperatura del ambiente`],`A mayor diferencia de electronegatividad, más polar es el enlace.`);
+rfD(`enlace`,`enlace`,`a`,`En el carbonato de calcio (CaCO₃), ¿qué tipos de enlace hay?`,[`Iónico entre Ca²⁺ y CO₃²⁻, y covalente dentro del carbonato`,`Solo iónico`,`Solo covalente`,`Metálico entre el calcio y el carbono`],`El carbonato es un ion poliatómico: covalente por dentro, iónico con el calcio.`);
+rfD(`enlace`,`enlace`,`r`,`El enlace metálico se describe como:`,[`Núcleos metálicos rodeados de una nube de electrones`,`Transferencia de electrones de un metal a un no metal`,`Pares de electrones compartidos entre no metales`,`Atracción entre moléculas polares`],`La nube de electrones libres explica la conducción y la maleabilidad de los metales.`);
+rfD(`enlace`,`enlace`,`c`,`Según la teoría RPECV, ¿cuál es el orden de repulsión entre pares de electrones, de mayor a menor?`,[`Libre–libre > libre–enlazante > enlazante–enlazante`,`Enlazante–enlazante > libre–enlazante > libre–libre`,`Libre–enlazante > libre–libre > enlazante–enlazante`,`Todas las repulsiones son iguales`],`Los pares libres ocupan más espacio que los enlazantes, por eso se repelen más.`);
+rfD(`enlace`,`enlace`,`a`,`Un elemento tiene 4 electrones de valencia. En su símbolo de Lewis, los puntos se colocan:`,[`Uno en cada lado (arriba, derecha, abajo, izquierda)`,`Los cuatro juntos en un mismo lado`,`Dos pares en lados opuestos`,`No se colocan puntos`],`Primero se reparte un electrón por lado y solo después se aparean.`);
+/* átomo, tabla y configuración */
+rfD(`enlace`,`atomo`,`a`,`¿Cuántos neutrones tiene un átomo de francio con A = 223 y Z = 87?`,[`136`,`87`,`223`,`310`],`Neutrones = A − Z = 223 − 87 = 136. El 87 son los protones.`);
+rfD(`enlace`,`atomo`,`a`,`Si el peso atómico del flúor es 19 UMA, un mol de flúor pesa:`,[`19 g`,`9.5 g`,`6.022 × 10²³ g`,`9 g`],`La masa de un mol en gramos coincide con el peso atómico en UMA. El número de Avogadro cuenta partículas, no gramos.`);
+rfD(`enlace`,`tabla`,`c`,`¿Cuál es el elemento de mayor radio atómico y cuál el más electronegativo, respectivamente?`,[`Francio y flúor`,`Astato y flúor`,`Hidrógeno y francio`,`Flúor y francio`],`El radio crece hacia abajo y a la izquierda (Fr); la electronegatividad crece hacia arriba y a la derecha (F).`);
+rfD(`enlace`,`conf`,`a`,`La configuración electrónica del selenio (Z = 34), siguiendo el orden de llenado de Moeller, es:`,[`1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁴`,`1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s² 4p⁴`,`1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 4p⁴ 3d¹⁰`,`1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁴`],`El orden de llenado es 3p → 4s → 3d → 4p. Las demás opciones alteran el orden o no suman 34 electrones.`);
+rfD(`enlace`,`tabla`,`c`,`Los elementos que pertenecen a un mismo grupo de la tabla periódica tienen en común:`,[`El número de electrones de valencia`,`El nivel de energía`,`El radio atómico`,`La electronegatividad`],`Grupo = columna = mismos electrones de valencia. Periodo = fila = mismo nivel de energía.`);
+rfD(`enlace`,`atomo`,`c`,`Los isótopos de un elemento son átomos con:`,[`Igual número atómico y distinto número de masa`,`Igual número de masa y distinto número atómico`,`Igual número de neutrones y distinto de protones`,`Distinta carga eléctrica`],`Mismo Z (protones), distinto A (por distinto número de neutrones).`);
+/* inversión de sentido */
+rfD(`inversion`,`dil`,`c`,`Al diluir una solución agregando solvente:`,[`Los moles de soluto no cambian y la concentración disminuye`,`Los moles de soluto aumentan y la concentración aumenta`,`Los moles de soluto disminuyen y el volumen baja`,`La concentración se mantiene y el volumen baja`],`Solo se agrega solvente: n constante, volumen ↑, concentración ↓ (C₁V₁ = C₂V₂).`);
+rfD(`inversion`,`conc`,`c`,`Las partes por millón (ppm) son más útiles cuando la solución es:`,[`Muy diluida (trazas de soluto)`,`Muy concentrada`,`Saturada`,`Sobresaturada`],`ppm expresa cantidades muy pequeñas de soluto, como contaminantes.`);
+rfD(`inversion`,`termo`,`a`,`Una reacción tiene ΔG = −25 kJ/mol. Se clasifica como:`,[`Exergónica (espontánea)`,`Endergónica`,`En equilibrio químico`,`Imposible de realizar`],`ΔG negativo: la reacción libera energía libre. ΔG positivo sería endergónica.`);
+rfD(`inversion`,`termo`,`c`,`Una enzima con alta afinidad por su sustrato tiene un Km:`,[`Bajo`,`Alto`,`Igual a la velocidad máxima`,`Independiente de la afinidad`],`Con alta afinidad basta poco sustrato para llegar a la mitad de la velocidad máxima: Km bajo.`);
+rfD(`inversion`,`ph`,`a`,`¿Cuál es un valor razonable para el pH de una solución 0.025 M de Ba(OH)₂?`,[`12.7`,`1.3`,`1.6`,`7.0`],`Es una base fuerte: pH > 7. [OH⁻] = 0.05 M → pOH = 1.3 → pH = 12.7. Valores de 1.3 o 1.6 corresponden a un ácido.`);
+rfD(`inversion`,`dil`,`a`,`Para preparar 600 mL de una solución 1.6 M a partir de un stock 4.5 M, el volumen de stock será:`,[`Menor que 600 mL (≈ 213 mL)`,`Mayor que 600 mL (≈ 1687 mL)`,`Exactamente 600 mL`,`Cero: no hace falta stock`],`V₁ = C₂V₂/C₁ = 1.6 × 600 / 4.5 = 213 mL. Del stock concentrado siempre se toma menos que el volumen final.`);
+rfD(`inversion`,`sol`,`c`,`Al aumentar la temperatura, la solubilidad de un gas en un líquido:`,[`Disminuye`,`Aumenta`,`No cambia`,`Primero aumenta y luego se anula`],`Los gases se disuelven menos al calentar (la bebida gaseosa tibia pierde su gas).`);
+rfD(`inversion`,`sol`,`c`,`Al aumentar la presión parcial de un gas sobre un líquido, su solubilidad:`,[`Aumenta (ley de Henry)`,`Disminuye`,`No cambia`,`Se vuelve cero`],`Ley de Henry: la solubilidad es directamente proporcional a la presión parcial.`);
+rfD(`inversion`,`ph`,`c`,`En la zona básica de la escala de pH, las concentraciones de H⁺ y OH⁻ son, respectivamente:`,[`[H⁺] menor y [OH⁻] mayor`,`[H⁺] mayor y [OH⁻] menor`,`Ambas iguales`,`Ambas mayores que 10⁻⁷ M`],`pH > 7 significa menos H⁺ y más OH⁻ (Kw = [H⁺][OH⁻] = 10⁻¹⁴).`);
+/* bases, pOH y buffers */
+rfD(`bases`,`buf`,`c`,`Cuando se añade OH⁻ a un buffer, lo neutraliza:`,[`El componente ácido (HA)`,`El componente básico (A⁻)`,`El agua del buffer`,`El catión de la sal`],`HA + OH⁻ → A⁻ + H₂O. Una base no neutraliza a otra base.`);
+rfD(`bases`,`buf`,`c`,`Cuando se añade H⁺ a un buffer, lo neutraliza:`,[`La base conjugada (A⁻)`,`El ácido débil (HA)`,`El solvente`,`El catión de la sal`],`A⁻ + H⁺ → HA.`);
+rfD(`bases`,`buf`,`c`,`En el buffer fosfato (H₂PO₄⁻ / HPO₄²⁻), la especie que acepta H⁺ es:`,[`HPO₄²⁻`,`H₂PO₄⁻`,`Ambas por igual`,`Ninguna de las dos`],`La base conjugada es la que tiene un H menos: HPO₄²⁻.`);
+rfD(`bases`,`buf`,`c`,`En el buffer carbónico/bicarbonato, la especie que neutraliza un exceso de H⁺ es:`,[`HCO₃⁻ (bicarbonato)`,`H₂CO₃`,`El agua`,`El sodio`],`HCO₃⁻ + H⁺ → H₂CO₃. Es el principal amortiguador de la sangre.`);
+rfD(`bases`,`ph`,`a`,`¿Cómo se mide el pH de la sangre de un paciente en el laboratorio clínico?`,[`Con gases arteriales (gasometría)`,`Con papel pH`,`Con tiras reactivas de orina`,`Con fenolftaleína`],`Cuando la pregunta habla de un paciente, el contexto es clínico: gasometría arterial.`);
+rfD(`bases`,`acb`,`c`,`El alcohol etílico disuelto en agua es:`,[`Un no electrolito`,`Un electrolito fuerte`,`Un electrolito débil`,`Un ácido fuerte`],`Es una molécula que se disuelve sin formar iones; la solución no conduce la electricidad.`);
+rfD(`bases`,`acb`,`c`,`El cloruro de sodio disuelto en agua es un electrolito:`,[`Fuerte`,`Débil`,`No electrolito`,`Neutro`],`Se disocia por completo en Na⁺ y Cl⁻.`);
+rfD(`bases`,`acb`,`c`,`El ácido acético disuelto en agua es un electrolito:`,[`Débil`,`Fuerte`,`No electrolito`,`Insoluble`],`Se ioniza solo parcialmente: pocos iones.`);
+rfD(`bases`,`acb`,`r`,`Según Arrhenius, una base es una sustancia que:`,[`En agua libera iones OH⁻`,`Acepta protones`,`Dona pares de electrones`,`Acepta pares de electrones`],`Es la teoría más limitada: exige agua y OH⁻.`);
+rfD(`bases`,`acb`,`r`,`Según Brønsted–Lowry, una base es una sustancia que:`,[`Acepta protones (H⁺)`,`Libera OH⁻ en agua`,`Dona protones`,`Acepta pares de electrones`],`Por eso el amoníaco (NH₃), sin OH⁻ en la fórmula, es una base.`);
+rfD(`bases`,`acb`,`r`,`Según Lewis, un ácido es una sustancia que puede:`,[`Aceptar un par de electrones`,`Donar un par de electrones`,`Donar solo protones`,`Liberar OH⁻`],`Lewis es la definición más amplia: ácido = aceptor de par de electrones.`);
+rfD(`bases`,`ph`,`a`,`Una disolución de Ba(OH)₂ 0.01 M tiene una concentración de OH⁻ igual a:`,[`0.02 M`,`0.01 M`,`0.005 M`,`1 × 10⁻¹² M`],`Cada Ba(OH)₂ libera 2 OH⁻: [OH⁻] = 2 × 0.01 = 0.02 M.`);
+rfD(`bases`,`ph`,`a`,`El pH de una solución de HCl 0.01 M es:`,[`2`,`12`,`0.01`,`7`],`Ácido fuerte: [H⁺] = 0.01 = 10⁻² → pH = 2.`);
+rfD(`bases`,`buf`,`c`,`Un buffer resiste mejor los cambios de pH cuando:`,[`El pH es cercano al pKa y hay buena cantidad de ácido y de base conjugada`,`Solo contiene un ácido fuerte`,`Su pH es siempre 7`,`No contiene ninguna sal`],`El buffer actúa en pKa ± 1 y necesita las dos formas, ácido y base.`);
+rfD(`bases`,`buf`,`r`,`La capacidad del cuerpo de mantener estables sus condiciones internas frente a los cambios del exterior se llama:`,[`Homeostasis`,`Equilibrio`,`Sistema buffer`,`Mecanismos de compensación`],`El buffer y la compensación son herramientas de la homeostasis.`);
+/* unidades de concentración y soluciones */
+rfD(`normalidad`,`conc`,`a`,`El número de equivalentes que hay en 37 g de Ca(OH)₂ (PM 74) es:`,[`1 eq`,`37 eq`,`0.5 eq`,`2 eq`],`Peq = 74/2 = 37 g/eq → equivalentes = 37 g ÷ 37 g/eq = 1 eq. El 37 es una masa por equivalente, no un número de equivalentes.`);
+rfD(`normalidad`,`conc`,`c`,`La normalidad se define como:`,[`Equivalentes de soluto por litro de solución`,`Moles de soluto por litro de solución`,`Moles de soluto por kilogramo de solvente`,`Gramos de soluto por 100 mL de solución`],`N = eq/L. Molaridad = mol/L; molalidad = mol/kg de solvente.`);
+rfD(`normalidad`,`conc`,`a`,`El peso equivalente del CaCO₃ (PM 100, carga 2) es:`,[`50 g/eq`,`100 g/eq`,`200 g/eq`,`25 g/eq`],`Peq = PM ÷ carga = 100 ÷ 2 = 50 g/eq.`);
+rfD(`unidades`,`conc`,`c`,`La molalidad se define como:`,[`Moles de soluto por kilogramo de solvente`,`Moles de soluto por litro de solución`,`Equivalentes por litro de solución`,`Gramos de soluto por 100 g de solución`],`Usa la masa del solvente; por eso no cambia con la temperatura.`);
+rfD(`unidades`,`conc`,`c`,`La molaridad se define como:`,[`Moles de soluto por litro de solución`,`Moles de soluto por kilogramo de solvente`,`Equivalentes por litro de solución`,`Gramos de soluto por litro de solvente`],`Usa el volumen de la solución completa.`);
+rfD(`unidades`,`conc`,`a`,`Una solución al 7 % m/v tiene 7 g de soluto en cada:`,[`100 mL de solución`,`100 g de solvente`,`1 L de solvente`,`100 g de soluto`],`m/v = masa de soluto por volumen de solución.`);
+rfD(`unidades`,`conc`,`a`,`¿Cuántos gramos de glucosa hay en 2300 mL de una solución al 7 % m/v?`,[`161 g`,`16.1 g`,`0.3 g`,`7 g`],`7 g por cada 100 mL × 23 bloques de 100 mL = 161 g.`);
+rfD(`unidades`,`conc`,`a`,`35 mL de etanol en 960 mL de disolución equivalen aproximadamente a:`,[`3.65 % v/v`,`27.4 % v/v`,`36.5 % v/v`,`0.365 % v/v`],`35 ÷ 960 × 100 = 3.6458 → 3.65 % (se redondea, no se trunca).`);
+rfD(`unidades`,`conc`,`a`,`Para preparar 100 mL de disolución al 1.6 % p/v se usan 1.6 g de soluto y, según la convención del docente, ¿cuántos mL de agua?`,[`98.4 mL`,`100 mL`,`101.6 mL`,`1.6 mL`],`mL de solvente = 100 − 1.6 = 98.4 mL. Los 100 mL son el volumen de la solución final.`);
+rfD(`unidades`,`dil`,`c`,`Las propiedades coligativas de una solución dependen de:`,[`La cantidad de partículas de soluto, no de su identidad`,`La identidad química del soluto`,`El volumen del recipiente`,`Únicamente de la temperatura ambiente`],`Coligativa = cuántas partículas, no cuáles.`);
+rfD(`unidades`,`dil`,`a`,`Un eritrocito sumergido en una solución hipotónica:`,[`Se hincha y se rompe (hemólisis)`,`Se arruga (crenación)`,`No cambia de forma`,`Se evapora`],`El agua entra por ósmosis hacia el medio más concentrado (el interior de la célula).`);
+rfD(`unidades`,`sol`,`c`,`En una solución, el soluto es:`,[`El componente que está en menor cantidad`,`El componente que está en mayor cantidad`,`Siempre un sólido`,`Siempre el agua`],`Soluto = el que se disuelve y está en menor cantidad; solvente = el que está en mayor cantidad.`);
+/* laboratorio */
+rfD(`lab`,`lab`,`r`,`La propipeta (pera de succión) se usa para:`,[`Aspirar líquido con la pipeta sin usar la boca`,`Medir el pH`,`Calentar soluciones`,`Pesar sólidos`],`Es un instrumento de seguridad para pipetear.`);
+rfD(`lab`,`lab`,`r`,`La fenolftaleína en una solución de NaOH se torna:`,[`Rosa o fucsia`,`Incolora`,`Amarilla`,`Azul`],`En medio básico (pH > 8.2) la fenolftaleína es rosa.`);
+rfD(`lab`,`lab`,`r`,`La fenolftaleína en medio ácido es:`,[`Incolora`,`Rosa`,`Roja`,`Verde`],`Incolora en ácido y neutro; rosa en base.`);
+rfD(`lab`,`lab`,`r`,`El extracto de repollo morado en un medio fuertemente ácido (jugo de limón) toma color:`,[`Rosado o rojo`,`Verde`,`Azul`,`Incoloro`],`El repollo morado es indicador universal: rojo en ácidos y verde-amarillo en bases fuertes.`);
+rfD(`lab`,`lab`,`r`,`El gas que se produce al reaccionar magnesio con ácido sulfúrico es:`,[`Hidrógeno`,`Oxígeno`,`Dióxido de carbono`,`Cloro`],`Mg + H₂SO₄ → MgSO₄ + H₂.`);
+rfD(`lab`,`lab`,`r`,`El precipitado marrón que se forma al mezclar FeCl₃ con NaOH es:`,[`Hidróxido de hierro III, Fe(OH)₃`,`Cloruro de sodio`,`Óxido de sodio`,`Hierro metálico`],`FeCl₃ + 3 NaOH → Fe(OH)₃↓ + 3 NaCl.`);
+rfD(`lab`,`lab`,`r`,`El gas que se libera al agregar HCl a carbonato de calcio es:`,[`Dióxido de carbono (CO₂)`,`Hidrógeno`,`Oxígeno`,`Cloro`],`2 HCl + CaCO₃ → CaCl₂ + H₂O + CO₂.`);
+rfD(`lab`,`lab`,`c`,`Al añadir agua al residuo de quemar cinta de magnesio se forma:`,[`Hidróxido de magnesio (leche de magnesia)`,`Cloruro de magnesio`,`Magnesio metálico`,`Carbonato de magnesio`],`Mg → MgO (al quemar); MgO + H₂O → Mg(OH)₂.`);
+rfD(`lab`,`lab`,`c`,`El NaCl no presenta olor ni volatilidad porque:`,[`Es un compuesto iónico con fuertes atracciones entre iones`,`Es una molécula covalente apolar`,`Es un gas a temperatura ambiente`,`Es un metal`],`Sus iones se atraen muy fuerte: no pasa a gas, no libera olor.`);
+rfD(`lab`,`lab`,`r`,`Entre sodio, magnesio y aluminio, el metal que reacciona más violentamente con el agua es:`,[`Sodio`,`Magnesio`,`Aluminio`,`Los tres reaccionan igual`],`La reactividad con el agua baja en el orden Na ≫ Mg > Al.`);
+
+/* ---------- Preguntas abiertas de respuesta corta (para el Corto) ---------- */
+const RF_ABI = [];
+const rfA = (rf, tm, q, a, k) => RF_ABI.push({ rf, tm, t:(RF_TEMAS[tm] || {}).t || null, q, a, k, src:`Refuerzo de ${RF_TEMAS[tm].n.toLowerCase()}` });
+rfA(`unidades`,`sol`,`¿Cuál es la diferencia entre el soluto y el solvente de una solución?`,`El soluto es el componente que está en menor cantidad y se disuelve; el solvente es el que está en mayor cantidad y lo disuelve.`,[`menor cantidad`,`mayor cantidad`]);
+rfA(`unidades`,`conc`,`¿Cuál es la diferencia conceptual principal entre la molaridad (M) y la molalidad (m)?`,`Molaridad = moles de soluto ÷ litros de solución. Molalidad = moles de soluto ÷ kilogramos de solvente (no depende de la temperatura).`,[`moles de soluto`,`litros de solución`,`kg de solvente`]);
+rfA(`bases`,`acb`,`¿Cuál es la diferencia entre la base de Arrhenius y la de Brønsted–Lowry?`,`Arrhenius: base = sustancia que en agua libera OH⁻. Brønsted–Lowry: base = aceptor de protones (H⁺), con o sin agua y sin OH⁻ en la fórmula.`,[`libera OH⁻ en agua`,`acepta H⁺`]);
+rfA(`enlace`,`enlace`,`¿Cuál es la diferencia entre el enlace iónico y el covalente?`,`Iónico: se transfieren electrones (metal + no metal) y los iones de carga opuesta se atraen. Covalente: se comparten pares de electrones entre no metales.`,[`transfieren`,`comparten`,`metal + no metal`]);
+rfA(`enlace`,`atomo`,`Explique qué son los isótopos y cómo se calcula el número de neutrones.`,`Isótopos: átomos del mismo elemento (igual Z) con distinto número de masa (A). Neutrones = A − Z.`,[`igual Z`,`distinto A`,`A − Z`]);
+rfA(`inversion`,`sol`,`Entre aumentar la temperatura y aumentar la presión, ¿cuál favorece la solubilidad de un gas en un líquido? Explique.`,`La presión (ley de Henry): la solubilidad del gas es directamente proporcional a su presión parcial. Al aumentar la temperatura la solubilidad del gas disminuye.`,[`presión`,`Henry`,`temperatura disminuye`]);
+rfA(`unidades`,`sol`,`Explique en qué consiste el grado de subdivisión de un soluto sólido y cómo influye en la velocidad de disolución.`,`Es qué tan pequeñas son las partículas del soluto. A mayor subdivisión (más superficie de contacto), el soluto se disuelve más rápido.`,[`partículas pequeñas`,`superficie de contacto`,`más rápido`]);
+rfA(`inversion`,`ph`,`En la zona básica de la escala de pH, ¿cómo son las concentraciones de H⁺ y OH⁻, respectivamente?`,`[H⁺] menor y [OH⁻] mayor (pH > 7).`,[`H⁺ menor`,`OH⁻ mayor`]);
+rfA(`bases`,`buf`,`¿Qué componente del buffer ácido carbónico/bicarbonato neutraliza un exceso de H⁺? Escriba la reacción.`,`El bicarbonato (base conjugada): HCO₃⁻ + H⁺ → H₂CO₃.`,[`bicarbonato`,`HCO₃⁻`]);
+rfA(`unidades`,`dil`,`¿De qué dependen las propiedades coligativas? Nombre dos.`,`Dependen del número de partículas de soluto, no de su naturaleza. Ejemplos: descenso de la presión de vapor, aumento del punto de ebullición, descenso del punto de congelación y presión osmótica.`,[`número de partículas`,`dos ejemplos`]);
+rfA(`lab`,`lab`,`¿Para qué sirve la propipeta? ¿Por qué se usa?`,`Para aspirar líquidos en la pipeta sin hacerlo con la boca; es una medida de seguridad ante sustancias peligrosas.`,[`aspirar`,`sin la boca`,`seguridad`]);
+rfA(`enlace`,`inter`,`Explique por qué las moléculas de agua forman puentes de hidrógeno.`,`El H está unido al oxígeno, muy electronegativo: queda con carga parcial positiva (δ⁺) y es atraído por el par libre del oxígeno (δ⁻) de otra molécula.`,[`H δ⁺`,`O δ⁻`,`par libre`]);
+rfA(`inversion`,`termo`,`¿Qué indica un valor negativo de ΔG en una reacción?`,`Que la reacción es espontánea y libera energía libre: exergónica.`,[`espontánea`,`exergónica`]);
+rfA(`bases`,`acb`,`¿Por qué el etanol no conduce la electricidad en solución acuosa?`,`Porque es un no electrolito: se disuelve como moléculas sin formar iones, y la corriente necesita iones móviles.`,[`no electrolito`,`no forma iones`]);
+const RF_DOCS = () => RF_DOC.concat(typeof PACKS !== `undefined` && PACKS.DOC ? PACKS.DOC : []);
+const RF_ABIS = () => RF_ABI.concat(typeof PACKS !== `undefined` && PACKS.DOCA ? PACKS.DOCA : []);
+
+/* ===================== RETROALIMENTACIÓN: MÓDULO ===================== */
+const RF_TABS = [[`diag`,`Diagnóstico`],[`fallos`,`Mis fallos`],[`eval`,`Cómo evalúan`],[`sim`,`Simulacro`]];
+const RFX = { on:false };
+const RF_GENS_DOC = [`dilDoc`,`normDoc`,`pctDoc`,`molalDoc`,`baseDoc`,`acidG`,`bufDoc`,`espBuf`,`carbMix`];
+const RF_DEBIL = [`enlace`,`inversion`,`bases`,`normalidad`,`unidades`,`lab`];
+const rfEsc = s => String(s == null ? `` : s).replace(/[&<>"]/g, c => ({ '&':`&amp;`, '<':`&lt;`, '>':`&gt;`, '"':`&quot;` }[c]));
+const rfS = () => { const x = S.x; const r = x.rf || (x.rf = {}); r.tab = r.tab || `diag`; r.box = r.box || {}; r.sims = r.sims || []; r.extra = r.extra || []; r.cls = r.cls || {}; r.fil = r.fil || { ev:``, ca:``, es:``, pat:`` }; return r; };
+const rfEvOf = id => id === `sim` ? { n:`Simulacro`, corto:`Simulacro` } : (RF_EVALS.find(e => e.id === id) || { n:id, corto:id });
+const rfAll = () => RF_FALLOS.concat(rfS().extra);
+const rfCausaOf = f => rfS().cls[f.id] || f.causa || null;
+const rfEstado = f => { const b = rfS().box[f.id]; if (!b) return `nuevo`; if (b.b >= 3) return `dominada`; return b.due <= todayStr() ? `hoy` : `proceso`; };
+const RF_EST = { nuevo:`Por reintentar`, hoy:`Para repasar hoy`, proceso:`En proceso`, dominada:`Dominada` };
+function rfSched(id, ok){ const r = rfS(); const b = r.box[id] || { b:0, n:0 }; b.n++; b.last = todayStr(); if (ok >= 1){ b.b = Math.min(3, b.b + 1); b.due = addDays(todayStr(), [1,3,7,14][b.b]); } else if (ok > 0){ b.due = addDays(todayStr(), 2); } else { b.b = 0; b.due = addDays(todayStr(), 1); } r.box[id] = b; save(); }
+const rfDue = () => rfAll().filter(f => rfEstado(f) === `hoy`);
+const rfFmtDia = f => { if (!f) return `fecha ilegible`; const d = pdate(f); return `${d.getDate()} ${MESES[d.getMonth()].slice(0, 3)}`; };
+const rfLbl = it => { const t = it.t || (it.tm && RF_TEMAS[it.tm] ? RF_TEMAS[it.tm].t : null); return t && TOPICS[t] ? `${TOPICS[t].n} · ${TOPICS[t].name}` : it.tm && RF_TEMAS[it.tm] ? RF_TEMAS[it.tm].n : `Otros`; };
+function rfLv(it){ if (it.lv) return it.lv; const q = String(it.q).toLowerCase();
+  if (/calcul|cuánt|nombre iupac|elige el nombre|qué productos|clasific|qué tipo de|hibridaci|escribe la|determina/.test(q)) return `a`;
+  if (/diferencia|por qué|explica|afirmaci|relaci|compar|cómo (afecta|act|se)|justific|razón|ventaja|según/.test(q)) return `c`;
+  return `r`; }
+const rfGoTema = t => { S.sel = new Set([t]); save(); go(`repaso`); };
+const rfIni = () => { const o = RF_EVALS.slice().sort((a, b) => rfFechaOrd(a).localeCompare(rfFechaOrd(b))); return o; };
+
+/* ---------- pieza común ---------- */
+function rfSec(titulo, sub){ const c = el(`section`, `rfcard`); if (titulo) c.append(el(`h2`, ``, titulo)); if (sub) c.append(el(`p`, `muted rfsub`, sub)); return c; }
+function rfBar(frac, col){ const b = el(`div`, `hbar`); b.append(el(`i`)); b.firstChild.style.cssText = `width:${Math.max(2, frac * 100)}%;background:${col}`; return b; }
+const rfErrCol = e => e > .5 ? `var(--bad)` : e > .3 ? `#C77D12` : `var(--ok)`;
+const rfPct = x => `${Math.round(x * 100)} %`;
+
+/* ======================= VISTA PRINCIPAL ======================= */
+function vRetro(v){
+  const r = rfS();
+  if (RFX.tick && !(RFX.on && !RFX.done)){ clearInterval(RFX.tick); RFX.tick = null; }
+  const bar = el(`div`, `rftabs`); bar.setAttribute(`role`, `tablist`);
+  RF_TABS.forEach(([k, n]) => { const b = btn(n, `rft`, () => { r.tab = k; save(); renderView(); topScroll(); }); b.setAttribute(`role`, `tab`); b.setAttribute(`aria-selected`, r.tab === k); if (k === `fallos`){ const d = rfDue().length; if (d) b.append(el(`i`, `rfn`, String(d))); } bar.append(b); });
+  v.append(bar);
+  ({ diag:rfDiag, fallos:rfFallos, eval:rfEval, sim:rfSim })[r.tab](v);
+}
+
+/* ======================= 1 · DIAGNÓSTICO ======================= */
+function rfTimeline(ev){
+  const W = 560, H = 214, pad = 30, bw = 52, gap = (W - pad * 2 - bw * ev.length) / (ev.length - 1), Y = n => 150 - n / 10 * 118;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Notas de las ${ev.length} evaluaciones, de la más antigua a la más reciente">`;
+  s += `<line x1="${pad - 14}" x2="${W - pad + 14}" y1="${Y(6)}" y2="${Y(6)}" class="rfpass"/><text x="${W - pad + 14}" y="${Y(6) - 5}" text-anchor="end" class="rftm">aprobado 6.0</text>`;
+  ev.forEach((e, i) => { const x = pad + i * (bw + gap), h = e.nota / 10 * 118, tok = e.corto.split(` `), l1 = tok.length > 2 ? tok.slice(0, 2).join(` `) : tok[0], l2 = tok.length > 2 ? tok.slice(2).join(` `) : tok.slice(1).join(` `);
+    s += `<rect x="${x}" y="${150 - h}" width="${bw}" height="${h}" rx="6" class="${e.nota >= 6 ? `rfbok` : `rfbno`}"/><text x="${x + bw / 2}" y="${150 - h - 6}" text-anchor="middle" class="rftb">${e.nota.toFixed(1)}</text>`
+       + `<text x="${x + bw / 2}" y="168" text-anchor="middle" class="rftl">${rfEsc(l1)}</text><text x="${x + bw / 2}" y="181" text-anchor="middle" class="rftl">${rfEsc(l2)}</text><text x="${x + bw / 2}" y="196" text-anchor="middle" class="rftm">${rfEsc(rfFmtDia(e.f))}</text>`; });
+  return s + `</svg>`;
+}
+function rfDiag(v){
+  const ev = rfIni(), prom = ev.reduce((s, e) => s + e.nota, 0) / ev.length, mej = ev.slice().sort((a, b) => b.nota - a.nota)[0];
+  const tem = rfPorTema(), niv = rfPorNivel(), cl = rfClaves(), c1 = rfSec(`Tu historial en ${ev.length} evaluaciones`, `Leí las fotos de tus exámenes, verifiqué cada nota con la suma de las marcas del docente y clasifiqué cada pregunta por tema, nivel y causa del error.`);
+  const t1 = el(`div`, `rftl1`); const tv = el(`div`, `rftlv`); tv.innerHTML = rfTimeline(ev); const th = el(`div`, `rftlh`); th.setAttribute(`role`, `list`);
+  ev.forEach(e => { const r = el(`div`, `rftlr`); r.setAttribute(`role`, `listitem`); r.innerHTML = `<span class="n">${rfEsc(e.n.length > 40 ? e.corto : e.n)}<small>${rfEsc(rfFmtDia(e.f))}</small></span><b class="${e.nota >= 6 ? `rfok` : `rfno`}">${e.nota.toFixed(1)}</b>`; const tk = el(`div`, `rftrack`); tk.append(rfBar(e.nota / 10, e.nota >= 6 ? `var(--ok)` : `var(--bad)`)); r.append(tk); th.append(r); });
+  th.append(el(`p`, `rftm`, `La línea punteada marca el 6.0 para aprobar.`)); t1.append(tv, th); c1.append(t1);
+  const k = el(`div`, `rfkpis`); const kp = (n, t) => el(`div`, `rfkpi`, `<b>${n}</b><span>${t}</span>`);
+  k.append(kp(prom.toFixed(1), `promedio (aprobar es 6.0)`), kp(String(mej.nota.toFixed(1)), `mejor: ${rfEsc(mej.corto)}`), kp(String(rfAll().length), `preguntas falladas con análisis`)); c1.append(k); v.append(c1);
+
+  const c2 = rfSec(`Lo que dicen los números`);
+  const li = el(`ul`, `rfli`);
+  li.append(el(`li`, ``, `<b>Tu punto débil es la comprensión, no el cálculo.</b> En las preguntas objetivas aciertas ${rfPct(niv.r.ok / niv.r.n)} en recuerdo, <b>${rfPct(niv.c.ok / niv.c.n)} en comprensión</b> y ${rfPct(niv.a.ok / niv.a.n)} en aplicación. Fallas más cuando hay que entender o comparar conceptos que cuando hay que calcular.`));
+  li.append(el(`li`, ``, `<b>Dominas las plantillas de problemas.</b> Molaridad, % p/v, molalidad, dilución directa y balanceo: 8 de 8 correctos. Los problemas que fallas son los que cambian el planteamiento o exigen cuidado con las unidades.`));
+  li.append(el(`li`, ``, `<b>Mejoraste en el laboratorio:</b> de 3.0 en el Lab 1 a 7.5 en el Lab 2 de ácidos y bases.`));
+  li.append(el(`li`, ``, `<b>Cuando dudas, eliges A.</b> Fue tu respuesta en ${cl.falladas.A} de tus ${cl.falladas.n} errores objetivos (${rfPct(cl.falladas.A / cl.falladas.n)}), pero la clave del docente es A en solo ${cl.claves.A} de ${cl.claves.n} preguntas (${rfPct(cl.claves.A / cl.claves.n)}). B y C suman ${cl.claves.B + cl.claves.C} de ${cl.claves.n} (${rfPct((cl.claves.B + cl.claves.C) / cl.claves.n)}). <i>Es una muestra pequeña: úsalo como alerta para releer cuando eliges A por duda, no para adivinar.</i>`));
+  c2.append(li); v.append(c2);
+
+  const c3 = rfSec(`Dónde más fallas, por tema`, `Porcentaje de error en tus evaluaciones, ordenado del más alto al más bajo.`);
+  tem.forEach(t => { const T = RF_TEMAS[t.tm], row = el(`div`, `rftr`); row.innerHTML = `<span class="rftn">${T.n}</span><span class="rftv">${rfPct(t.err)}</span><span class="rfts">${nf(t.ok, 1)} de ${t.n}</span>`; row.insertBefore(rfBar(t.err, rfErrCol(t.err)), row.children[1]);
+    if (T.t && TOPICS[T.t]){ const g = btn(`Estudiar`, `rfgo`, () => rfGoTema(T.t)); g.setAttribute(`aria-label`, `Estudiar ${T.n} en la app`); row.append(g); } else row.append(el(`span`, `rfnoapp`, `aún no en la app`)); c3.append(row); });
+  v.append(c3);
+
+  const c4 = rfSec(`Por qué fallas: causas`, `Cada pregunta fallada tiene una causa. Toca una para ver cómo reconocerla y corregirla.`);
+  const cnt = {}; rfAll().forEach(f => { const c = rfCausaOf(f); if (c) cnt[c] = (cnt[c] || 0) + 1; }); const mx = Math.max(...Object.values(cnt));
+  Object.entries(cnt).sort((a, b) => b[1] - a[1]).forEach(([k, n]) => { const C = RF_CAUSAS[k], d = el(`details`, `rfdet`); const sm = el(`summary`, ``, `<span class="rfce" style="background:${C.col}">${C.e}</span><b>${C.n}</b><span class="rfcn">${n}</span>`); sm.insertBefore(rfBar(n / mx, C.col), sm.lastChild);
+    d.append(sm, el(`div`, `rfdb`, `<p><b>Qué es:</b> ${C.def}</p><p><b>Cómo se reconoce:</b> ${C.senal}</p><p><b>Cómo corregirlo:</b> ${C.fix}</p>`)); c4.append(d); });
+  v.append(c4);
+
+  const c5 = rfSec(`Tus ${RF_PATRONES.length} patrones y cómo corregirlos`, `Lo que se repite entre evaluaciones. Cada uno trae pasos concretos, su regla de oro y ejercicios para practicarlo.`);
+  RF_PATRONES.forEach((p, i) => { const d = el(`details`, `rfdet rfpat`); if (i === 0) d.open = true;
+    d.append(el(`summary`, ``, `<span class="rfpi">${i + 1}</span><b>${p.n}</b><span class="rfcn">${p.falla.length} fallos</span>`));
+    const b = el(`div`, `rfdb`); b.append(el(`p`, `rfev`, `<b>Dónde pasó:</b> ${p.ev}.`), el(`p`, ``, `<b>Por qué ocurre:</b> ${p.por}`)); b.append(el(`p`, `rfh`, `<b>Cómo corregirlo</b>`));
+    const ol = el(`ol`, `rfol`); p.fix.forEach(x => ol.append(el(`li`, ``, x))); b.append(ol, el(`p`, `rforo`, `<b>Regla de oro:</b> ${p.oro}`));
+    const row = el(`div`, `btnrow`); row.append(btn(`Ver mis ${p.falla.length} fallos`, `btn ghost`, () => { const r = rfS(); r.fil = { ev:``, ca:``, es:``, pat:p.id }; r.tab = `fallos`; save(); renderView(); topScroll(); }));
+    if (p.doc) row.append(btn(`Practicar este patrón`, `btn`, () => rfStartRefuerzo(p)));
+    b.append(row); d.append(b); c5.append(d); });
+  v.append(c5);
+}
+
+/* ======================= 2 · MIS FALLOS ======================= */
+function rfFiltrar(){
+  const r = rfS(), f = r.fil, pat = f.pat ? RF_PATRONES.find(p => p.id === f.pat) : null;
+  return rfAll().filter(x => (!f.ev || x.ev === f.ev) && (!f.ca || rfCausaOf(x) === f.ca) && (!f.es || rfEstado(x) === f.es) && (!pat || pat.falla.includes(x.id)));
+}
+function rfFallos(v){
+  const r = rfS(), f = r.fil, todos = rfAll(), due = rfDue();
+  const c0 = rfSec(`Mis fallos`, `Cada pregunta que fallaste, con lo que contestaste, la respuesta correcta, por qué fallaste y cómo evitarlo. Reinténtalas: las que aciertas vuelven a salir en 1, 3, 7 y 14 días hasta quedar dominadas.`);
+  const ds = todos.filter(x => rfEstado(x) === `dominada`).length, row = el(`div`, `rfkpis`); const kp = (n, t) => el(`div`, `rfkpi`, `<b>${n}</b><span>${t}</span>`);
+  row.append(kp(String(todos.length), `fallos en total`), kp(String(due.length), `para repasar hoy`), kp(String(ds), `dominados`)); c0.append(row);
+  const act = el(`div`, `btnrow`);
+  if (due.length) act.append(btn(`Repasar los ${due.length} de hoy`, `btn`, () => rfStartFallos(due)));
+  act.append(btn(`Repasar 10 al azar`, `btn ghost`, () => rfStartFallos(shuf(todos.filter(x => rfEstado(x) !== `dominada`)).slice(0, 10))));
+  c0.append(act);
+  const fl = el(`div`, `rffil`); const sel = (lab, key, opts) => { const w = el(`label`, `rfsel`); w.append(el(`span`, ``, lab)); const s = el(`select`); opts.forEach(([val, t]) => { const o = el(`option`, ``, t); o.value = val; if (f[key] === val) o.selected = true; s.append(o); }); s.onchange = () => { f[key] = s.value; save(); renderView(); }; w.append(s); return w; };
+  fl.append(sel(`Evaluación`, `ev`, [[``, `Todas`]].concat(RF_EVALS.map(e => [e.id, e.corto]), r.extra.length ? [[`sim`, `Simulacros`]] : [])),
+    sel(`Causa`, `ca`, [[``, `Todas`]].concat(Object.entries(RF_CAUSAS).map(([k, c]) => [k, c.n]))),
+    sel(`Estado`, `es`, [[``, `Todos`]].concat(Object.entries(RF_EST).map(([k, t]) => [k, t]))),
+    sel(`Patrón`, `pat`, [[``, `Todos`]].concat(RF_PATRONES.map(p => [p.id, p.n.length > 34 ? p.n.slice(0, 33) + `…` : p.n])))); c0.append(fl); v.append(c0);
+  const lista = rfFiltrar();
+  if (!lista.length){ v.append(el(`div`, `empty`, `No hay fallos con esos filtros.`)); return; }
+  v.append(el(`p`, `muted rfcount`, `${lista.length} fallo${lista.length === 1 ? `` : `s`}`));
+  lista.forEach(x => v.append(rfFalloCard(x)));
+}
+function rfLetra(i){ return LET[i]; }
+function rfFalloCard(f){
+  const ev = rfEvOf(f.ev), T = RF_TEMAS[f.tm], causa = rfCausaOf(f), C = causa ? RF_CAUSAS[causa] : null, est = rfEstado(f);
+  const c = el(`article`, `rffa`); c.style.setProperty(`--cc`, C ? C.col : `var(--line2)`);
+  const h = btn(``, `rffh`); h.setAttribute(`aria-expanded`, `false`);
+  h.innerHTML = `<span class="rffe">${rfEsc(ev.corto)} · ${f.ev === `sim` ? rfEsc(f.fecha || ``) : `#${f.n}`}</span><span class="rffq">${rfEsc(f.q)}</span><span class="rffm"><i class="rfchip" style="background:${C ? C.col : `var(--muted)`}">${C ? C.e + ` ` + C.n : `Por clasificar`}</i><i class="rfst rfst-${est}">${RF_EST[est]}</i></span>`;
+  const b = el(`div`, `rffb`); b.hidden = true; let built = false;
+  h.onclick = () => { const open = b.hidden; b.hidden = !open; h.setAttribute(`aria-expanded`, open); if (open && !built){ built = true; rfFalloBody(b, f, T); } };
+  c.append(h, b); return c;
+}
+function rfFalloBody(b, f, T){
+  b.innerHTML = ``;
+  b.append(el(`p`, `rffq2`, `<b>Pregunta:</b> ${rfEsc(f.q)}`));
+  if (f.o){
+    const ul = el(`div`, `opts`);
+    f.o.forEach((t, i) => { const cl = i === f.cl, pos = f.cl == null && f.pos && f.pos.includes(i), mine = i === f.el; const o = el(`div`, `opt${cl ? ` right` : ``}${mine && !cl ? ` wrong` : ``}`, `<span class="k">${rfLetra(i)}</span><span>${rfEsc(t)}${mine ? ` <em class="rfmine">tu respuesta</em>` : ``}${cl ? ` <em class="rfkey">clave${f.conf === `media` ? ` (probable)` : ``}</em>` : ``}${pos ? ` <em class="rfkey">clave posible</em>` : ``}</span>`); ul.append(o); });
+    b.append(ul);
+    if (f.conf === `media`) b.append(el(`p`, `rfwarn`, `La clave la deduje por química y por la marca del docente; no es una clave oficial. Confírmala con tu docente.`));
+    if (f.conf === `sin`) b.append(el(`p`, `rfwarn`, `No pude confirmar la clave de esta pregunta. Pregúntale al docente cuál marcó.`));
+  } else {
+    b.append(el(`p`, ``, `<b>Lo que contestaste:</b> ${rfEsc(f.resp)}`), el(`p`, `rfref`, `<b>Respuesta correcta:</b> ${rfEsc(f.ref)}`));
+  }
+  b.append(el(`p`, `rfpor`, `<b>Por qué fallaste:</b> ${rfEsc(f.por)}`));
+  if (f.tip) b.append(el(`p`, `rftip`, `<b>Cómo evitarlo:</b> ${rfEsc(f.tip)}`));
+  if (!f.causa || f.ev === `sim`){ const w = el(`label`, `rfsel inl`); w.append(el(`span`, ``, `Causa del error`)); const s = el(`select`); [[``, `Por clasificar`]].concat(Object.entries(RF_CAUSAS).map(([k, c]) => [k, c.n])).forEach(([val, t]) => { const o = el(`option`, ``, t); o.value = val; if ((rfCausaOf(f) || ``) === val) o.selected = true; s.append(o); }); s.onchange = () => { rfS().cls[f.id] = s.value; save(); }; w.append(s); b.append(w); }
+  const row = el(`div`, `btnrow`), slot = el(`div`, `rfretry`);
+  const puede = f.o ? f.cl != null : true;
+  if (puede) row.append(btn(`Reintentar`, `btn`, () => { row.hidden = true; rfRetry(slot, f, () => { row.hidden = false; rfFalloBody(b, f, T); const card = b.closest(`.rffa`); if (card) { const st = card.querySelector(`.rfst`); if (st){ const e = rfEstado(f); st.className = `rfst rfst-${e}`; st.textContent = RF_EST[e]; } } }); }));
+  if (f.fam){ const g = GENS.find(x => x.id === f.fam); if (g) row.append(btn(`Practicar esta familia`, `btn ghost`, () => { S.sel.add(g.t); PR.gen = g; PR.cur = null; PR.rand = false; save(); go(`practica`); })); }
+  if (T && T.t && TOPICS[T.t]) row.append(btn(`Ver el tema en la app`, `btn ghost`, () => rfGoTema(T.t)));
+  b.append(row, slot);
+}
+function rfRetry(slot, f, done){
+  slot.innerHTML = ``;
+  const fin = (ok, extra) => { rfSched(f.id, ok); slot.append(el(`div`, `fb ${ok >= 1 ? `ok` : ok > 0 ? `ok` : `no`}`, `<strong>${ok >= 1 ? `¡Bien!` : ok > 0 ? `A medias.` : `Todavía no.`}</strong> ${extra || ``}`)); slot.append(btn(`Listo`, `btn ghost`, done)); };
+  if (f.o){
+    slot.append(el(`p`, `q`, rfEsc(f.q))); const o = shuf(f.o.map((t, i) => ({ t, ok:i === f.cl }))), box = el(`div`, `opts`);
+    o.forEach((x, i) => { const bt = el(`button`, `opt`, `<span class="k">${LET[i]}</span><span>${rfEsc(x.t)}</span>`); bt.type = `button`; bt.onclick = () => { [...box.children].forEach((y, j) => { y.disabled = true; if (o[j].ok) y.classList.add(`right`); else if (y !== bt) y.classList.add(`dim`); }); if (!x.ok) bt.classList.add(`wrong`); fin(x.ok ? 1 : 0, x.ok ? rfEsc(f.tip || ``) : `La respuesta es: ${rfEsc(o.find(y => y.ok).t)}. ${rfEsc(f.tip || ``)}`); }; box.append(bt); }); slot.append(box); return;
+  }
+  slot.append(el(`p`, `q`, rfEsc(f.q)));
+  const ta = el(`textarea`, `rfta`); ta.rows = 3; ta.placeholder = `Escribe tu respuesta o piénsala antes de ver la correcta`; ta.setAttribute(`aria-label`, `Tu respuesta`); slot.append(ta);
+  const rv = btn(`Ver la respuesta correcta`, `btn`, () => { rv.hidden = true; ta.disabled = true; slot.append(el(`p`, `rfref`, `<b>Respuesta correcta:</b> ${rfEsc(f.ref)}`)); const q = el(`div`, `btnrow`); q.append(el(`span`, `muted`, `¿La tenías?`), btn(`Sí, completa`, `btn ok`, () => { q.remove(); fin(1, ``); }), btn(`A medias`, `btn ghost`, () => { q.remove(); fin(.5, ``); }), btn(`No`, `btn ghost`, () => { q.remove(); fin(0, rfEsc(f.tip || ``)); })); slot.append(q); }); slot.append(rv);
+}
+
+/* ======================= 3 · CÓMO EVALÚAN ======================= */
+function rfEval(v){
+  const c1 = rfSec(`Cómo es cada evaluación`, `Lo que observé en tus 6 evaluaciones.`);
+  RF_PERFIL.estructura.forEach(e => c1.append(el(`div`, `rfest`, `<b>${e.n}</b><p>${e.d}</p>`)));
+  const tb = el(`div`, `scroll`); tb.innerHTML = `<table class="tbl"><thead><tr><th>Evaluación</th><th>Fecha</th><th>Preguntas</th><th>Tiempo</th><th>Tu nota</th></tr></thead><tbody>${rfIni().map(e => `<tr><td>${rfEsc(e.n)}</td><td>${rfEsc(rfFmtDia(e.f))}</td><td>${e.nq}</td><td>${e.dur}</td><td><b>${e.nota.toFixed(1)}</b></td></tr>`).join(``)}</tbody></table>`; c1.append(tb); v.append(c1);
+
+  const niv = rfPorNivel(), nt = niv.r.n + niv.c.n + niv.a.n, c2 = rfSec(`Qué nivel piden las preguntas objetivas`, `Clasifiqué las ${nt} preguntas objetivas por lo que exigen: recordar un dato, comprender un concepto o aplicarlo. Este es el perfil que usa el simulacro.`);
+  [[`r`,`Recuerdo`,`un dato o definición`],[`c`,`Comprensión`,`comparar, explicar o relacionar`],[`a`,`Aplicación`,`calcular, clasificar o predecir`]].forEach(([k, n, d]) => { const x = niv[k], row = el(`div`, `rftr rfniv`); row.innerHTML = `<span class="rftn"><b>${n}</b><small>${d}</small></span><span class="rftv">${rfPct(x.n / nt)} de las preguntas</span><span class="rfts">tu acierto: <b>${rfPct(x.ok / x.n)}</b></span>`; row.insertBefore(rfBar(x.n / nt, `var(--acc)`), row.children[1]); c2.append(row); });
+  c2.append(el(`p`, `muted`, `Además, el docente suma una parte de problemas, que siempre son de aplicación. Tu mayor pérdida está en comprensión.`)); v.append(c2);
+
+  const c3 = rfSec(`Cómo redacta las preguntas`);
+  const ul = el(`ul`, `rfli`); RF_PERFIL.estilos.forEach(x => ul.append(el(`li`, ``, rfEsc(x)))); c3.append(ul); v.append(c3);
+
+  const c4 = rfSec(`Las trampas de las opciones`, `Las opciones incorrectas no son al azar: siguen patrones. Toca uno para ver un ejemplo real de tu examen.`);
+  RF_PERFIL.distractores.forEach(d => { const f = RF_FALLO(d.ej), det = el(`details`, `rfdet`); det.append(el(`summary`, ``, `<b>${d.t}</b><span class="rfcn">${f ? rfEvOf(f.ev).corto + ` #` + f.n : ``}</span>`));
+    const b = el(`div`, `rfdb`); b.append(el(`p`, ``, rfEsc(d.d)));
+    if (f){ b.append(el(`p`, `rffq2`, `<b>${rfEsc(f.q)}</b>`)); const o = el(`div`, `opts`); f.o.forEach((t, i) => o.append(el(`div`, `opt${i === f.cl ? ` right` : i === f.el ? ` wrong` : ``}`, `<span class="k">${LET[i]}</span><span>${rfEsc(t)}${i === f.el ? ` <em class="rfmine">tu respuesta</em>` : ``}${i === f.cl ? ` <em class="rfkey">clave</em>` : ``}</span>`))); b.append(o); }
+    b.append(el(`p`, `rftip`, rfEsc(d.ex))); det.append(b); c4.append(det); });
+  v.append(c4);
+
+  const c5 = rfSec(`Los problemas que se repiten`, `El docente reutiliza las mismas plantillas con otros números. Dominar estas ${RF_FAMILIAS.length} familias cubre casi todos los problemas.`);
+  RF_FAMILIAS.forEach(fm => { const row = el(`div`, `rffam`); row.append(el(`div`, ``, `<b>${fm.n}</b><span>${fm.ap}</span>`)); const g = fm.gen && GENS.find(x => x.id === fm.gen); if (g) row.append(btn(`Practicar`, `btn ghost`, () => { S.sel.add(g.t); PR.gen = g; PR.cur = null; PR.rand = false; save(); go(`practica`); })); c5.append(row); }); v.append(c5);
+
+  const cl = rfClaves(), c6 = rfSec(`Dónde cae la respuesta correcta`, `De ${cl.claves.n} preguntas con clave conocida y de tus ${cl.falladas.n} errores objetivos. Muestra pequeña: es una alerta, no una regla.`);
+  ['A','B','C','D'].forEach(L => { const row = el(`div`, `rftr rfniv`); row.innerHTML = `<span class="rftn"><b>${L}</b></span><span class="rftv">clave: ${cl.claves[L]} (${rfPct(cl.claves[L] / cl.claves.n)})</span><span class="rfts">tus errores: <b>${cl.falladas[L]}</b></span>`; row.insertBefore(rfBar(cl.claves[L] / cl.claves.n, `var(--acc)`), row.children[1]); c6.append(row); });
+  c6.append(el(`p`, `muted`, `Cuando dudas tiendes a elegir A, que casi nunca es la clave. Si notas que vas a marcar A por duda, relee la pregunta una vez más.`)); v.append(c6);
+
+  const c7 = rfSec(`Lo que probablemente viene`); const u = el(`ul`, `rfli`); RF_PERFIL.siguiente.forEach(x => u.append(el(`li`, ``, rfEsc(x)))); c7.append(u);
+  const rb = el(`div`, `btnrow`); rb.append(btn(`Simulacro de hidrocarburos (tipo guía)`, `btn`, () => { const r = rfS(); r.tab = `sim`; r.cfg = Object.assign(rfCfg(), { temas:[`h`] }); save(); renderView(); topScroll(); })); c7.append(rb); v.append(c7);
+}
+
+/* ======================= 4 · SIMULACRO ======================= */
+const RF_GRUPOS = [
+  { k:`u45`, n:`Unidades 4–5 · soluciones y ácido-base`, ts:[`t15`,`t16`,`t17`,`t18`,`t19`,`t20`,`t21`] },
+  { k:`u13`, n:`Unidades 1–3 · átomo, enlace y laboratorio (refuerzo)`, ts:[`u13`] },
+  { k:`h`, n:`Hidrocarburos`, ts:[`t22`,`t23`,`t24`,`t25`,`t26`] },
+  { k:`ox`, n:`Funciones oxigenadas`, ts:[`t27`,`t28`,`t30`,`t31`,`t32`] }
+];
+const RF_MODOS = {
+  parcial:{ n:`Parcial`, d:`20 preguntas objetivas y 10 problemas, como el Parcial 2. Se califica sobre 10.`, min:60 },
+  corto:{ n:`Corto`, d:`10 preguntas de respuesta corta, cálculo y objetivas, 1 punto cada una, como los cortos de laboratorio.`, min:30 }
+};
+const rfCfg = () => { const r = rfS(); r.cfg = r.cfg || { modo:`parcial`, temas:[`u45`], debil:true }; return r.cfg; };
+const rfTemasSel = cfg => { const s = new Set(); cfg.temas.forEach(k => { const g = RF_GRUPOS.find(x => x.k === k); if (g) g.ts.forEach(t => s.add(t)); }); return s; };
+
+function rfSim(v){
+  if (RFX.on){ if (RFX.done) rfResultado(v); else rfExamen(v); return; }
+  const r = rfS(), cfg = rfCfg();
+  const c = rfSec(`Simulacro con la dificultad del docente`, `Arma un examen con la estructura de tus parciales y cortos: mismas proporciones de recuerdo, comprensión y aplicación, y problemas con las plantillas que el docente repite. Usa los temas que hay cargados en la app, incluidos los nuevos que vayas agregando.`);
+  const m = el(`div`, `rfmodos`);
+  Object.entries(RF_MODOS).forEach(([k, M]) => { const b = btn(`<b>${M.n}</b><span>${M.d}</span><small>${M.min} min</small>`, `rfmodo`, () => { cfg.modo = k; save(); renderView(); }); b.setAttribute(`aria-pressed`, cfg.modo === k); m.append(b); }); c.append(m);
+  c.append(el(`h3`, `rfh3`, `Temas`)); const ch = el(`div`, `rfchips`);
+  RF_GRUPOS.forEach(g => { const n = rfConteo(g), on = cfg.temas.includes(g.k); const b = btn(`${on ? `✓ ` : ``}${g.n}<small>${n} preguntas · ${rfConteoGen(g)} generadores</small>`, `rfchipb`, () => { const i = cfg.temas.indexOf(g.k); if (i >= 0){ if (cfg.temas.length > 1) cfg.temas.splice(i, 1); } else cfg.temas.push(g.k); save(); renderView(); }); b.setAttribute(`aria-pressed`, on); ch.append(b); }); c.append(ch);
+  const dw = el(`label`, `rfcheck`); const cb = el(`input`); cb.type = `checkbox`; cb.checked = !!cfg.debil; cb.onchange = () => { cfg.debil = cb.checked; save(); }; dw.append(cb, el(`span`, ``, `<b>Reforzar mis puntos débiles</b> <small>Más preguntas de enlace, inversión de sentido, bases, normalidad, unidades y laboratorio.</small>`)); c.append(dw);
+  const row = el(`div`, `btnrow`); row.append(btn(`Empezar simulacro`, `btn`, () => rfStartSim(cfg))); c.append(row); v.append(c);
+  if (r.sims.length){ const h = rfSec(`Tus últimos simulacros`); r.sims.slice(-6).reverse().forEach(s => h.append(el(`div`, `rfhist`, `<span>${rfEsc(s.d)} · ${rfEsc(s.n)}</span><b class="${s.nota >= 6 ? `rfok` : `rfno`}">${s.nota.toFixed(1)}</b><span class="muted">${nf(s.pts, 1)}/${s.tot}</span>`))); v.append(h); }
+}
+function rfPoolObj(sel, debil){
+  const all = sel.has(`*`), mc = ALL.MCQ.filter(x => all || sel.has(x.t)).map(x => ({ src:x, doc:false, lv:rfLv(x), w:1 }));
+  const dc = RF_DOCS().filter(x => all || (x.t ? sel.has(x.t) : sel.has(`u13`))).map(x => ({ src:x, doc:true, lv:x.lv || rfLv(x), w:debil && RF_DEBIL.includes(x.rf) ? 3 : 1 }));
+  return mc.concat(dc);
+}
+const rfGensSel = sel => GENS.filter(g => sel.has(`*`) || sel.has(g.t) || (g.ts || []).some(t => sel.has(t)));
+const rfConteo = g => rfPoolObj(new Set(g.ts), false).length;
+const rfConteoGen = g => rfGensSel(new Set(g.ts)).length;
+function rfWPick(arr, n){ const a = arr.slice(), out = []; const vistos = new Set(); while (out.length < n && a.length){ const tot = a.reduce((s, x) => s + x.w, 0); let t = Math.random() * tot, i = 0; for (; i < a.length - 1; i++){ t -= a[i].w; if (t <= 0) break; } const x = a.splice(i, 1)[0]; if (vistos.has(x.src.q)) continue; vistos.add(x.src.q); out.push(x); } return out; }
+function rfObjItem(p){ const it = p.src; const opts = shuf(it.o.map((t, i) => ({ t, ok:i === 0 }))); return { k:`o`, id:it.id || `D${hash(it.q)}`, q:it.q, opts, e:it.e || ``, src:it.src || ``, t:it.t || null, tm:it.tm || null, lbl:rfLbl(it), lv:p.lv, pick:null, mcq:!!it.id && it.id[0] === `M`, rf:it.rf || null }; }
+function rfGenItem(g, soloNum){
+  for (let i = 0; i < 6; i++){ const P = g.make(); if (P.opts){ if (soloNum) continue; return { k:`o`, id:`G_${g.id}`, q:P.q, opts:P.opts.map((t, j) => ({ t, ok:j === P.correct })), e:(P.pasos || []).join(` `), src:g.src, t:g.t, lbl:rfLbl({ t:g.t }), lv:`a`, pick:null, gen:g.id }; }
+    return { k:`n`, id:`G_${g.id}`, gid:g.id, q:P.q, unit:P.unit || ``, ans:P.ans, rel:P.rel, abs:P.abs, pasos:P.pasos || [], r:P.r, src:g.src, t:g.t, lbl:rfLbl({ t:g.t }), lv:`a`, val:``, gen:g.id }; }
+  return null;
+}
+function rfAbiItem(x, tipo){ return { k:`a`, id:`A${hash(x.q)}`, q:x.q, a:x.a, kw:x.k || [], src:x.src || ``, t:x.t || null, tm:x.tm || null, lbl:rfLbl(x), lv:`c`, val:``, grade:null }; }
+function rfPickGens(sel, n, debil){
+  const gs = rfGensSel(sel); if (!gs.length || n <= 0) return [];
+  const pref = debil ? shuf(gs.filter(g => RF_GENS_DOC.includes(g.id))) : [];
+  const orden = pref.concat(shuf(gs.filter(g => !pref.includes(g)))), out = [];
+  let guard = 0;
+  while (out.length < n && orden.length && guard++ < n * 8){ const g = orden[out.length % orden.length]; const it = rfGenItem(g, true); if (it) out.push(it); else orden.splice(orden.indexOf(g), 1); }
+  return out;
+}
+function rfStartSim(cfg){
+  const sel = rfTemasSel(cfg), pool = rfPoolObj(sel, cfg.debil), M = RF_MODOS[cfg.modo]; let items = [];
+  if (cfg.modo === `parcial`){
+    const cuota = { r:8, c:8, a:4 }, usados = new Set(); let obj = [];
+    Object.entries(cuota).forEach(([lv, n]) => { const sub = rfWPick(pool.filter(p => p.lv === lv), n); sub.forEach(p => { obj.push(p); usados.add(p.src.q); }); });
+    if (obj.length < 20){ const resto = pool.filter(p => !usados.has(p.src.q)); obj = obj.concat(rfWPick(resto, 20 - obj.length)); }
+    items = shuf(obj).map(rfObjItem); const probs = rfPickGens(sel, 10, cfg.debil); items = items.concat(probs);
+  } else {
+    const ab = rfWPick(RF_ABIS().filter(x => (sel.has(`*`) || (x.t ? sel.has(x.t) : sel.has(`u13`)))).map(x => ({ src:x, w:cfg.debil && RF_DEBIL.includes(x.rf) ? 3 : 1 })), 4).map(p => rfAbiItem(p.src));
+    const ab2 = ab.length < 4 ? rfWPick(ALL.ABIERTAS.filter(x => sel.has(x.t)).map(x => ({ src:x, w:1 })), 4 - ab.length).map(p => rfAbiItem(p.src)) : [];
+    const nu = rfPickGens(sel, 3, cfg.debil), ob = rfWPick(pool, 3).map(rfObjItem);
+    items = shuf(ab.concat(ab2, ob)).concat(nu);
+  }
+  if (!items.length){ alert(`No hay preguntas para esos temas. Elige otro grupo.`); return; }
+  const nota = cfg.modo === `parcial` ? `Parcial` : `Corto`;
+  Object.assign(RFX, { on:true, done:false, modo:cfg.modo, nombre:nota, items, i:0, t0:Date.now(), limit:M.min * 60, simIdx:null, refuerzo:null }); rfTick(); renderView(); topScroll();
+}
+function rfStartRefuerzo(p){
+  const docs = rfWPick(RF_DOCS().filter(x => x.rf === p.doc).map(x => ({ src:x, lv:x.lv, w:1 })), 8).map(rfObjItem);
+  const g = p.gen && GENS.find(x => x.id === p.gen); const probs = g ? [rfGenItem(g, true), rfGenItem(g, true)].filter(Boolean) : [];
+  const items = docs.concat(probs); if (!items.length) return;
+  const r = rfS(); r.tab = `sim`; save();
+  Object.assign(RFX, { on:true, done:false, modo:`refuerzo`, nombre:`Refuerzo: ${p.n}`, items, i:0, t0:Date.now(), limit:0, simIdx:null }); renderView(); topScroll();
+}
+function rfFalloItem(f){
+  if (f.o){ const o = shuf(f.o.map((t, i) => ({ t, ok:i === f.cl }))); return { k:`o`, id:f.id, q:f.q, opts:o, e:`${f.por} ${f.tip || ``}`, src:`${rfEvOf(f.ev).corto}, #${f.n}`, t:null, lbl:rfLbl({ tm:f.tm }), lv:`c`, pick:null, fallo:f.id }; }
+  const g = f.fam && GENS.find(x => x.id === f.fam); if (g){ const it = rfGenItem(g, true); if (it){ it.fallo = f.id; it.src = `${rfEvOf(f.ev).corto}, #${f.n} (con números nuevos)`; return it; } }
+  return { k:`a`, id:f.id, q:f.q, a:f.ref, kw:[], src:`${rfEvOf(f.ev).corto}, #${f.n}`, t:null, lbl:rfLbl({ tm:f.tm }), lv:`c`, val:``, grade:null, fallo:f.id, tip:f.tip };
+}
+function rfStartFallos(lista){
+  const ok = lista.filter(f => !f.o || f.cl != null); if (!ok.length) return;
+  const r = rfS(); r.tab = `sim`; save();
+  Object.assign(RFX, { on:true, done:false, modo:`fallos`, nombre:`Repaso de mis fallos`, items:ok.map(rfFalloItem), i:0, t0:Date.now(), limit:0, simIdx:null }); renderView(); topScroll();
+}
+function rfTick(){ if (RFX.tick) clearInterval(RFX.tick); if (!RFX.limit) return; RFX.tick = setInterval(() => { const t = $(`#rftimer`); if (!t || !RFX.on || RFX.done){ clearInterval(RFX.tick); RFX.tick = null; return; } const left = Math.max(0, RFX.limit - Math.round((Date.now() - RFX.t0) / 1000)); t.textContent = `${Math.floor(left / 60)}:${pad2(left % 60)}`; t.classList.toggle(`rflow`, left < 300); if (left <= 0){ clearInterval(RFX.tick); RFX.tick = null; rfEntregar(true); } }, 1000); }
+
+/* ---------- pantalla de examen ---------- */
+const rfRespondida = it => it.k === `o` ? it.pick != null : it.val != null && String(it.val).trim() !== ``;
+function rfExamen(v){
+  const X = RFX, n = X.items.length, it = X.items[X.i], c = el(`section`, `rfcard rfex`);
+  const nObj = X.items.filter(x => x.k === `o`).length, parte = X.modo === `parcial` ? (it.k === `o` ? `Parte I · objetiva` : `Parte II · problemas`) : X.nombre;
+  const top = el(`div`, `rfextop`); top.append(el(`div`, ``, `<b>${rfEsc(parte)}</b><span>Pregunta ${X.i + 1} de ${n}</span>`));
+  if (X.limit){ const left = Math.max(0, X.limit - Math.round((Date.now() - X.t0) / 1000)); top.append(el(`div`, `rftime`, `<span>Tiempo</span><b id="rftimer">${Math.floor(left / 60)}:${pad2(left % 60)}</b>`)); }
+  c.append(top);
+  const nav = el(`div`, `rfnav`); X.items.forEach((x, i) => { const b = btn(String(i + 1), `rfq${rfRespondida(x) ? ` ok` : ``}${i === X.i ? ` cur` : ``}`, () => { X.i = i; renderView(); }); b.setAttribute(`aria-label`, `Ir a la pregunta ${i + 1}${rfRespondida(x) ? ` (respondida)` : ``}`); if (i === X.i) b.setAttribute(`aria-current`, `true`); nav.append(b); }); c.append(nav);
+  const card = el(`div`, `rfqc`); card.append(el(`div`, `meta`, `<span class="rfmeta">${rfEsc(it.lbl)}</span>`), el(`p`, `q`, `<span class="qn">${X.i + 1}.</span> ${rfEsc(it.q)}`));
+  if (it.k === `o`){ const box = el(`div`, `opts`); it.opts.forEach((o, i) => { const b = el(`button`, `opt${it.pick === i ? ` picked` : ``}`, `<span class="k">${LET[i]}</span><span>${rfEsc(o.t)}</span>`); b.type = `button`; b.setAttribute(`aria-pressed`, it.pick === i); b.onclick = () => { it.pick = i; [...box.children].forEach((y, j) => { y.classList.toggle(`picked`, j === i); y.setAttribute(`aria-pressed`, j === i); }); const q = nav.children[X.i]; if (q) q.classList.add(`ok`); }; box.append(b); }); card.append(box); }
+  else if (it.k === `n`){ const w = el(`div`, `ansrow`); w.innerHTML = `<label for="rfans">Tu respuesta${it.unit ? ` (${rfEsc(it.unit)})` : ``}</label><div class="inrow"><input id="rfans" inputmode="decimal" autocomplete="off" placeholder="Escribe solo el número" value="${rfEsc(it.val)}"></div><p class="muted">Acepta 0.0034, 3.4e-3 o 3.4x10^-3. Deja el planteamiento en tu cuaderno.</p>`; card.append(w); const inp = $(`#rfans`, w); inp.oninput = () => { it.val = inp.value; const q = nav.children[X.i]; if (q) q.classList.toggle(`ok`, rfRespondida(it)); }; }
+  else { const ta = el(`textarea`, `rfta`); ta.rows = 5; ta.placeholder = `Escribe tu respuesta como la escribirías en el examen`; ta.value = it.val; ta.setAttribute(`aria-label`, `Tu respuesta`); ta.oninput = () => { it.val = ta.value; const q = nav.children[X.i]; if (q) q.classList.toggle(`ok`, rfRespondida(it)); }; card.append(ta); card.append(el(`p`, `muted`, `Al entregar verás la respuesta modelo y te calificas tú misma.`)); }
+  c.append(card);
+  const row = el(`div`, `btnrow rfexrow`); const prev = btn(`← Anterior`, `btn ghost`, () => { X.i--; renderView(); topScroll(); }); prev.disabled = X.i === 0; row.append(prev);
+  if (X.i < n - 1) row.append(btn(`Siguiente →`, `btn`, () => { X.i++; renderView(); topScroll(); })); else row.append(btn(`Entregar`, `btn ok`, () => rfEntregar(false)));
+  row.append(btn(`Entregar ahora`, `btn ghost`, () => rfEntregar(false))); c.append(row); v.append(c);
+  const out = btn(`Salir sin entregar`, `btn ghost rfsalir`, () => { if (confirm(`¿Salir del simulacro? Se pierden tus respuestas.`)){ RFX.on = false; if (RFX.tick) clearInterval(RFX.tick); renderView(); } }); v.append(out);
+}
+function rfEntregar(auto){
+  const X = RFX; if (X.done) return; const sin = X.items.filter(x => !rfRespondida(x)).length;
+  if (!auto && sin && !confirm(`Te faltan ${sin} pregunta${sin === 1 ? `` : `s`} sin responder. ¿Entregar de todos modos?`)) return;
+  X.done = true; if (X.tick){ clearInterval(X.tick); X.tick = null; } X.seg = Math.round((Date.now() - X.t0) / 1000);
+  X.items.forEach(it => { it.pts = rfCalif(it); if (it.pts != null && it.pts < 1) rfRegistrarFallo(it); if (it.mcq) record({ id:it.id, t:it.t }, it.pts >= 1); else if (it.gen && it.k !== `a`) record({ id:`G_${it.gen}`, t:it.t }, it.pts >= 1); if (it.fallo && it.pts != null) rfSched(it.fallo, it.pts); });
+  rfGuardarSim(); renderView(); topScroll();
+}
+function rfCalif(it){
+  if (it.k === `o`) return it.pick != null && it.opts[it.pick].ok ? 1 : 0;
+  if (it.k === `n`){ const x = parseNum(it.val); if (!isFinite(x)) return 0; const tol = it.abs != null ? Math.abs(x - it.ans) <= it.abs + 1e-9 : Math.abs(x - it.ans) <= Math.abs(it.ans) * it.rel; if (tol) return 1; const cerca = it.abs != null ? Math.abs(x - it.ans) <= it.abs * 3 : Math.abs(x - it.ans) <= Math.abs(it.ans) * .06; return cerca ? .5 : 0; }
+  return it.grade;
+}
+function rfRegistrarFallo(it){
+  if (it.fallo) return; const r = rfS(), id = `x${hash(it.q)}`; if (r.extra.some(x => x.id === id)) return;
+  const base = { id, ev:`sim`, n:r.extra.length + 1, fecha:todayStr().slice(5).split(`-`).reverse().join(`/`), tm:it.tm && RF_TEMAS[it.tm] ? it.tm : `lab`, q:it.q, causa:null };
+  let f; if (it.k === `o`){ const cl = it.opts.findIndex(o => o.ok); f = Object.assign(base, { tipo:`obj`, o:it.opts.map(o => o.t), el:it.pick == null ? -1 : it.pick, cl, conf:`alta`, por:it.e || `Revisa el tema para entender por qué esta opción es la correcta.`, tip:`Fuente: ${it.src}` }); }
+  else if (it.k === `n`){ f = Object.assign(base, { tipo:`prob`, resp:it.val ? String(it.val) : `(sin responder)`, ref:`${it.r}. Pasos: ${it.pasos.join(` `)}`, por:`Tu resultado no coincidió con el esperado. Compara tus pasos con la solución y revisa las unidades.`, tip:`Fuente: ${it.src}`, fam:it.gen }); }
+  else f = Object.assign(base, { tipo:`abi`, resp:it.val || `(sin responder)`, ref:it.a, por:`Tu respuesta no cubrió los puntos clave${it.kw && it.kw.length ? `: ${it.kw.join(`; `)}` : ``}.`, tip:`Fuente: ${it.src}` });
+  r.extra.push(f); if (r.extra.length > 80) r.extra.shift(); save();
+}
+function rfTotales(){ const X = RFX; let pts = 0, pend = 0; X.items.forEach(it => { if (it.pts == null) pend++; else pts += it.pts; }); return { pts, pend, tot:X.items.length, nota:pts / X.items.length * 10 }; }
+function rfGuardarSim(){ const X = RFX, r = rfS(); if (X.modo === `fallos` || X.modo === `refuerzo`) return; const t = rfTotales(); const reg = { d:todayStr(), n:X.nombre, nota:t.nota, pts:t.pts, tot:t.tot }; if (X.simIdx != null && r.sims[X.simIdx]) r.sims[X.simIdx] = reg; else { r.sims.push(reg); X.simIdx = r.sims.length - 1; } save(); }
+function rfResultado(v){
+  const X = RFX, t = rfTotales(), c = el(`section`, `rfcard rfres`);
+  const aprob = t.nota >= 6, esReto = X.modo === `fallos` || X.modo === `refuerzo`;
+  c.append(el(`h2`, ``, esReto ? `${rfEsc(X.nombre)}: resultado` : `Resultado del simulacro`));
+  const sc = el(`div`, `rfscore`); sc.innerHTML = `<p class="score ${aprob ? `rfok` : `rfno`}" id="rfnota">${t.nota.toFixed(1)}<small> / 10</small></p><p id="rfpts">${nf(t.pts, 1)} de ${t.tot} puntos${X.seg ? ` · ${Math.floor(X.seg / 60)} min ${X.seg % 60} s` : ``}</p>`; c.append(sc);
+  if (t.pend) c.append(el(`p`, `rfwarn`, `Te faltan ${t.pend} respuesta${t.pend === 1 ? `` : `s`} abierta${t.pend === 1 ? `` : `s`} por calificar: es tu nota provisional. Califícalas abajo.`));
+  const prom = RF_EVALS.reduce((s, e) => s + e.nota, 0) / RF_EVALS.length;
+  c.append(el(`p`, `muted`, esReto ? `Las preguntas que aciertas se espacian y las que fallas vuelven mañana.` : `Tu promedio real en las evaluaciones es ${prom.toFixed(1)}. ${aprob ? `Este simulacro quedó por encima de 6.0.` : `Este simulacro quedó por debajo de 6.0: revisa los errores de abajo.`}`));
+  const by = {}; X.items.forEach(it => { const b = by[it.lbl] || (by[it.lbl] = { ok:0, n:0 }); b.n++; b.ok += it.pts || 0; });
+  const bt = el(`div`, `rfby`); bt.append(el(`h3`, `rfh3`, `Rendimiento por tema`)); Object.entries(by).sort((a, b) => a[1].ok / a[1].n - b[1].ok / b[1].n).forEach(([k, b]) => { const row = el(`div`, `rftr`); row.innerHTML = `<span class="rftn">${rfEsc(k)}</span><span class="rftv">${nf(b.ok, 1)}/${b.n}</span>`; row.insertBefore(rfBar(b.ok / b.n, b.ok / b.n >= .6 ? `var(--ok)` : `var(--bad)`), row.children[1]); bt.append(row); }); c.append(bt);
+  const rev = el(`div`, `rfrev`); rev.append(el(`h3`, `rfh3`, `Revisión pregunta por pregunta`));
+  X.items.forEach((it, i) => rev.append(rfRevItem(it, i))); c.append(rev);
+  const row = el(`div`, `btnrow`); row.append(btn(`Nuevo simulacro`, `btn`, () => { RFX.on = false; renderView(); topScroll(); }));
+  const malas = X.items.filter(x => x.pts != null && x.pts < 1).length; if (malas) row.append(btn(`Ver mis fallos`, `btn ghost`, () => { RFX.on = false; const r = rfS(); r.tab = `fallos`; r.fil = { ev:`sim`, ca:``, es:``, pat:`` }; save(); renderView(); topScroll(); })); c.append(row); v.append(c);
+}
+function rfActualizarNota(){ const t = rfTotales(), n = $(`#rfnota`), p = $(`#rfpts`); if (n){ n.className = `score ${t.nota >= 6 ? `rfok` : `rfno`}`; n.innerHTML = `${t.nota.toFixed(1)}<small> / 10</small>`; } if (p) p.textContent = `${nf(t.pts, 1)} de ${t.tot} puntos${RFX.seg ? ` · ${Math.floor(RFX.seg / 60)} min ${RFX.seg % 60} s` : ``}`; const w = $(`.rfres > .rfwarn`); if (w){ if (!t.pend) w.remove(); else w.textContent = `Te faltan ${t.pend} respuesta${t.pend === 1 ? `` : `s`} abierta${t.pend === 1 ? `` : `s`} por calificar: es tu nota provisional. Califícalas abajo.`; } rfGuardarSim(); }
+function rfRevItem(it, i){
+  const st = it.pts == null ? `pend` : it.pts >= 1 ? `ok` : it.pts > 0 ? `med` : `no`, mark = { pend:`•`, ok:`✓`, med:`½`, no:`✕` }[st];
+  const c = el(`article`, `rfri rfri-${st}`); c.append(el(`div`, `rfrih`, `<span class="rfmk">${mark}</span><span><b>${i + 1}.</b> ${rfEsc(it.q)}</span>`));
+  const b = el(`div`, `rfrib`);
+  if (it.k === `o`){ it.opts.forEach((o, j) => b.append(el(`div`, `opt${o.ok ? ` right` : j === it.pick ? ` wrong` : ``}`, `<span class="k">${LET[j]}</span><span>${rfEsc(o.t)}${j === it.pick && o.ok ? ` <em class="rfkey">tu respuesta · correcta</em>` : `${j === it.pick ? ` <em class="rfmine">tu respuesta</em>` : ``}${o.ok ? ` <em class="rfkey">correcta</em>` : ``}`}</span>`))); if (it.pick == null) b.append(el(`p`, `rfwarn`, `Sin responder.`)); if (it.e) b.append(el(`p`, `rftip`, rfEsc(it.e))); }
+  else if (it.k === `n`){ b.append(el(`p`, ``, `<b>Tu respuesta:</b> ${it.val ? rfEsc(it.val) : `(sin responder)`}`), el(`p`, `rfref`, `<b>Resultado esperado:</b> ${rfEsc(it.r)}`)); if (it.pts === .5) b.append(el(`p`, `rfwarn`, `Medio punto: tu valor está cerca. Revisa el redondeo y las cifras.`)); const ol = el(`ol`, `steps`); it.pasos.forEach(p => ol.append(el(`li`, ``, rfEsc(p)))); b.append(ol); }
+  else { b.append(el(`p`, ``, `<b>Tu respuesta:</b> ${it.val ? rfEsc(it.val) : `(sin responder)`}`), el(`p`, `rfref`, `<b>Respuesta modelo:</b> ${rfEsc(it.a)}`)); if (it.kw && it.kw.length) b.append(el(`p`, `muted`, `Puntos clave: ${it.kw.map(rfEsc).join(` · `)}`));
+    const g = el(`div`, `btnrow rfgrade`); g.append(el(`span`, `muted`, `Califícate:`)); [[1, `Completa (1)`, `btn ok`], [.5, `A medias (½)`, `btn ghost`], [0, `No (0)`, `btn ghost`]].forEach(([p, t, cl]) => { const bt = btn(t, cl, () => { it.pts = p; it.grade = p; if (p < 1) rfRegistrarFallo(it); if (it.fallo) rfSched(it.fallo, p); rfActualizarNota(); const nuevo = rfRevItem(it, i); c.replaceWith(nuevo); }); bt.setAttribute(`aria-pressed`, it.pts === p); if (it.pts === p) bt.classList.add(`sel`); g.append(bt); }); b.append(g); }
+  c.append(b); return c;
 }
 
 /* ======================= MIS NOTAS (gestión de módulos por ciclo) =======================
@@ -4850,6 +5785,10 @@ function dockMenu(anchor, dock){
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-12a`, d:`2026-11-12`, t:`Nueva sección: Retroalimentación`, l:[
+    `Está debajo de Preguntar. Analiza tus 6 evaluaciones y las 52 preguntas que fallaste: dónde, por qué y cómo corregirlo.`,
+    `Tiene 4 pestañas: Diagnóstico (tus patrones), Mis fallos (se repasan en 1, 3, 7 y 14 días), Cómo evalúan (estructura y trampas del docente) y Simulacro (parciales y cortos con su estructura y dificultad).`,
+    `Los simulacros usan los temas que hay cargados en la app. Lo que falles en ellos se suma a Mis fallos.`] },
   { id:`2026-11-11a`, d:`2026-11-11`, t:`Tema nuevo: 32 (ésteres y amidas)`, l:[
     `Ya está en Estudiar, en la Unidad VII: 13 fichas con dibujos, Memorizar, “Comprueba lo que leíste”, preguntas, ejercicios, formulario, videos y audio con voz natural.`,
     `En Práctica hay 4 ejercicios nuevos: nombrar ésteres, nombrar amidas, clasificar amidas y productos de la hidrólisis.`,

@@ -29,10 +29,10 @@ function registerPack(p){
 function packTopics(){ return Object.values(PK.list).map(p => p.topic).sort((a, b) => parseInt(a.t.slice(1)) - parseInt(b.t.slice(1))); }
 function applyPacks(){
   const packs = Object.values(PK.list).sort((a, b) => parseInt(a.topic.t.slice(1)) - parseInt(b.topic.t.slice(1)));
-  const out = { REPASO:[], MCQ:[], ABIERTAS:[], EJ:[], FORM:[], FICHAS:[], FQ:[], GENS:[], GUIA:[], SYN:{}, css:`` };
+  const out = { REPASO:[], MCQ:[], ABIERTAS:[], EJ:[], FORM:[], FICHAS:[], FQ:[], DOC:[], DOCA:[], GENS:[], GUIA:[], SYN:{}, css:`` };
   packs.forEach(p => {
     const t = p.topic.t;
-    [`REPASO`,`MCQ`,`ABIERTAS`,`EJ`,`FORM`,`FICHAS`,`FQ`].forEach(k => (p[k] || []).forEach(x => { if (!x.t) x.t = t; out[k].push(x); }));
+    [`REPASO`,`MCQ`,`ABIERTAS`,`EJ`,`FORM`,`FICHAS`,`FQ`,`DOC`,`DOCA`].forEach(k => (p[k] || []).forEach(x => { if (!x.t) x.t = t; out[k].push(x); }));
     (p.VIDEOS || []).forEach(v => { if (!v.t) v.t = t; if (!VIDEOS.some(x => x.id === v.id && x.t === v.t)) VIDEOS.push(v); });
     (p.GENS || []).forEach(g => { if (!g.t) g.t = t; out.GENS.push(g); });
     (p.GUIA || []).forEach(g => out.GUIA.push(g));
