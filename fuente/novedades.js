@@ -3,7 +3,7 @@
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
   { id:`2026-11-12a`, d:`2026-11-12`, t:`Nueva sección: Retroalimentación`, l:[
-    `Está debajo de Preguntar. Analiza tus 6 evaluaciones y las 52 preguntas que fallaste: dónde, por qué y cómo corregirlo.`,
+    `Está debajo de Preguntar. Analiza tus evaluaciones anteriores: dónde fallas, por qué y cómo corregirlo. Tu historial se carga desde un archivo y queda solo en tu navegador y en tu cuenta, no en el sitio público.`,
     `Tiene 4 pestañas: Diagnóstico (tus patrones), Mis fallos (se repasan en 1, 3, 7 y 14 días), Cómo evalúan (estructura y trampas del docente) y Simulacro (parciales y cortos con su estructura y dificultad).`,
     `Los simulacros usan los temas que hay cargados en la app. Lo que falles en ellos se suma a Mis fallos.`] },
   { id:`2026-11-11a`, d:`2026-11-11`, t:`Tema nuevo: 32 (ésteres y amidas)`, l:[

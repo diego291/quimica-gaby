@@ -48,7 +48,7 @@ const unitOf = t => UNITS.find(u => u.ts.includes(t));
 
 /* ---------- estado extra (se guarda dentro de S.x) ---------- */
 function initX(){
-  const x = S.x;
+  const x = S.x; if (typeof rfAplicar === `function`) rfAplicar(x.rfd);
   x.pomo = Object.assign({ study:25, short:5, long:15, cycles:4, goal:6, sound:`campana`, autoBreak:true, autoStudy:false, focus:false, link:`` }, x.pomo || {});
   x.pst = x.pst || { phase:`study`, cycle:1, run:false, end:0, left:x.pomo.study * 60 };
   x.plog = x.plog || {}; x.ev = x.ev || []; x.seen = x.seen || {}; x.days = x.days || []; x.sm = x.sm || {}; x.rpos = x.rpos || {}; x.ptab = x.ptab || {}; x.chkModo = x.chkModo || {};

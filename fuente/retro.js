@@ -2,7 +2,7 @@
 const RF_TABS = [[`diag`,`Diagnóstico`],[`fallos`,`Mis fallos`],[`eval`,`Cómo evalúan`],[`sim`,`Simulacro`]];
 const RFX = { on:false };
 const RF_GENS_DOC = [`dilDoc`,`normDoc`,`pctDoc`,`molalDoc`,`baseDoc`,`acidG`,`bufDoc`,`espBuf`,`carbMix`];
-const RF_DEBIL = [`enlace`,`inversion`,`bases`,`normalidad`,`unidades`,`lab`];
+const rfDebil = () => RF_PATRONES.map(p => p.doc).filter(Boolean);
 const rfEsc = s => String(s == null ? `` : s).replace(/[&<>"]/g, c => ({ '&':`&amp;`, '<':`&lt;`, '>':`&gt;`, '"':`&quot;` }[c]));
 const rfS = () => { const x = S.x; const r = x.rf || (x.rf = {}); r.tab = r.tab || `diag`; r.box = r.box || {}; r.sims = r.sims || []; r.extra = r.extra || []; r.cls = r.cls || {}; r.fil = r.fil || { ev:``, ca:``, es:``, pat:`` }; return r; };
 const rfEvOf = id => id === `sim` ? { n:`Simulacro`, corto:`Simulacro` } : (RF_EVALS.find(e => e.id === id) || { n:id, corto:id });
@@ -27,6 +27,24 @@ function rfBar(frac, col){ const b = el(`div`, `hbar`); b.append(el(`i`)); b.fir
 const rfErrCol = e => e > .5 ? `var(--bad)` : e > .3 ? `#C77D12` : `var(--ok)`;
 const rfPct = x => `${Math.round(x * 100)} %`;
 
+/* ======================= HISTORIAL PERSONAL (se carga desde archivo) ======================= */
+function rfImportUI(){
+  const w = el(`div`, `rfimp`), inp = el(`input`); inp.type = `file`; inp.accept = `.json,application/json`; inp.hidden = true; inp.setAttribute(`aria-label`, `Archivo de historial`);
+  const msg = el(`p`, `rfwarn`); msg.hidden = true; msg.setAttribute(`role`, `alert`);
+  const aviso = t => { msg.textContent = t; msg.hidden = false; };
+  inp.onchange = () => { const f = inp.files && inp.files[0]; if (!f) return; if (f.size > 2e6) return aviso(`El archivo es demasiado grande para ser un historial.`);
+    const rd = new FileReader(); rd.onload = () => { let d; try { d = JSON.parse(rd.result); } catch(e){ return aviso(`No pude leer el archivo: no es un JSON válido.`); } const err = rfValida(d); if (err) return aviso(err); S.x.rfd = d; rfAplicar(d); save(); renderView(); topScroll(); }; rd.onerror = () => aviso(`No pude abrir el archivo.`); rd.readAsText(f); };
+  const b = btn(`Cargar mi historial (archivo .json)`, `btn`, () => inp.click()); w.append(b, inp, msg); return w;
+}
+function rfVacio(v, que){
+  const c = rfSec(`Carga tu historial`, `Esta sección analiza ${que}. Son datos personales, por eso no están en el sitio público: se cargan desde un archivo y se guardan solo en tu navegador y en tu cuenta. Una vez cargado, queda guardado y se sincroniza con tu cuenta si iniciaste sesión.`);
+  c.append(rfImportUI(), el(`p`, `muted`, `Mientras tanto, la pestaña Simulacro ya funciona con todos los temas de la app.`)); v.append(c);
+}
+function rfPrivacidad(v){
+  const c = rfSec(`Tu historial es privado`, `Tus notas, respuestas y fallos están guardados solo en este navegador y en tu cuenta de sincronización. No están en el sitio público. Si quitas el historial se borran las notas, respuestas y fallos cargados; tu avance de repaso se conserva.`);
+  const r = el(`div`, `btnrow`); r.append(btn(`Quitar mi historial`, `btn ghost`, () => { if (!confirm(`¿Quitar tu historial de este navegador? Podrás volver a cargarlo desde el archivo.`)) return; delete S.x.rfd; rfAplicar(null); save(); renderView(); topScroll(); })); c.append(r); v.append(c);
+}
+
 /* ======================= VISTA PRINCIPAL ======================= */
 function vRetro(v){
   const r = rfS();
@@ -48,6 +66,7 @@ function rfTimeline(ev){
   return s + `</svg>`;
 }
 function rfDiag(v){
+  if (!rfTieneDatos()){ rfVacio(v, `tus evaluaciones anteriores: tus notas, dónde fallas, por qué y cómo corregirlo`); return; }
   const ev = rfIni(), prom = ev.reduce((s, e) => s + e.nota, 0) / ev.length, mej = ev.slice().sort((a, b) => b.nota - a.nota)[0];
   const tem = rfPorTema(), niv = rfPorNivel(), cl = rfClaves(), c1 = rfSec(`Tu historial en ${ev.length} evaluaciones`, `Leí las fotos de tus exámenes, verifiqué cada nota con la suma de las marcas del docente y clasifiqué cada pregunta por tema, nivel y causa del error.`);
   const t1 = el(`div`, `rftl1`); const tv = el(`div`, `rftlv`); tv.innerHTML = rfTimeline(ev); const th = el(`div`, `rftlh`); th.setAttribute(`role`, `list`);
@@ -84,6 +103,7 @@ function rfDiag(v){
     if (p.doc) row.append(btn(`Practicar este patrón`, `btn`, () => rfStartRefuerzo(p)));
     b.append(row); d.append(b); c5.append(d); });
   v.append(c5);
+  rfPrivacidad(v);
 }
 
 /* ======================= 2 · MIS FALLOS ======================= */
@@ -92,6 +112,7 @@ function rfFiltrar(){
   return rfAll().filter(x => (!f.ev || x.ev === f.ev) && (!f.ca || rfCausaOf(x) === f.ca) && (!f.es || rfEstado(x) === f.es) && (!pat || pat.falla.includes(x.id)));
 }
 function rfFallos(v){
+  if (!rfTieneDatos() && !rfS().extra.length){ rfVacio(v, `cada pregunta que fallaste: lo que contestaste, la correcta y cómo evitar el error`); return; }
   const r = rfS(), f = r.fil, todos = rfAll(), due = rfDue();
   const c0 = rfSec(`Mis fallos`, `Cada pregunta que fallaste, con lo que contestaste, la respuesta correcta, por qué fallaste y cómo evitarlo. Reinténtalas: las que aciertas vuelven a salir en 1, 3, 7 y 14 días hasta quedar dominadas.`);
   const ds = todos.filter(x => rfEstado(x) === `dominada`).length, row = el(`div`, `rfkpis`); const kp = (n, t) => el(`div`, `rfkpi`, `<b>${n}</b><span>${t}</span>`);
@@ -156,6 +177,7 @@ function rfRetry(slot, f, done){
 
 /* ======================= 3 · CÓMO EVALÚAN ======================= */
 function rfEval(v){
+  if (!rfTieneDatos()){ rfVacio(v, `cómo evalúa tu docente: estructura, nivel de las preguntas, trampas de las opciones y problemas que se repiten`); return; }
   const c1 = rfSec(`Cómo es cada evaluación`, `Lo que observé en tus 6 evaluaciones.`);
   RF_PERFIL.estructura.forEach(e => c1.append(el(`div`, `rfest`, `<b>${e.n}</b><p>${e.d}</p>`)));
   const tb = el(`div`, `scroll`); tb.innerHTML = `<table class="tbl"><thead><tr><th>Evaluación</th><th>Fecha</th><th>Preguntas</th><th>Tiempo</th><th>Tu nota</th></tr></thead><tbody>${rfIni().map(e => `<tr><td>${rfEsc(e.n)}</td><td>${rfEsc(rfFmtDia(e.f))}</td><td>${e.nq}</td><td>${e.dur}</td><td><b>${e.nota.toFixed(1)}</b></td></tr>`).join(``)}</tbody></table>`; c1.append(tb); v.append(c1);
@@ -207,13 +229,13 @@ function rfSim(v){
   Object.entries(RF_MODOS).forEach(([k, M]) => { const b = btn(`<b>${M.n}</b><span>${M.d}</span><small>${M.min} min</small>`, `rfmodo`, () => { cfg.modo = k; save(); renderView(); }); b.setAttribute(`aria-pressed`, cfg.modo === k); m.append(b); }); c.append(m);
   c.append(el(`h3`, `rfh3`, `Temas`)); const ch = el(`div`, `rfchips`);
   RF_GRUPOS.forEach(g => { const n = rfConteo(g), on = cfg.temas.includes(g.k); const b = btn(`${on ? `✓ ` : ``}${g.n}<small>${n} preguntas · ${rfConteoGen(g)} generadores</small>`, `rfchipb`, () => { const i = cfg.temas.indexOf(g.k); if (i >= 0){ if (cfg.temas.length > 1) cfg.temas.splice(i, 1); } else cfg.temas.push(g.k); save(); renderView(); }); b.setAttribute(`aria-pressed`, on); ch.append(b); }); c.append(ch);
-  const dw = el(`label`, `rfcheck`); const cb = el(`input`); cb.type = `checkbox`; cb.checked = !!cfg.debil; cb.onchange = () => { cfg.debil = cb.checked; save(); }; dw.append(cb, el(`span`, ``, `<b>Reforzar mis puntos débiles</b> <small>Más preguntas de enlace, inversión de sentido, bases, normalidad, unidades y laboratorio.</small>`)); c.append(dw);
+  const dw = el(`label`, `rfcheck`); const cb = el(`input`); cb.type = `checkbox`; cb.checked = !!cfg.debil; cb.onchange = () => { cfg.debil = cb.checked; save(); }; cb.disabled = !rfTieneDatos(); if (cb.disabled) cb.checked = false; dw.append(cb, el(`span`, ``, `<b>Reforzar mis puntos débiles</b> <small>${rfTieneDatos() ? `Más preguntas de los temas donde más fallas, según tu historial.` : `Se activa cuando cargas tu historial.`}</small>`)); c.append(dw);
   const row = el(`div`, `btnrow`); row.append(btn(`Empezar simulacro`, `btn`, () => rfStartSim(cfg))); c.append(row); v.append(c);
   if (r.sims.length){ const h = rfSec(`Tus últimos simulacros`); r.sims.slice(-6).reverse().forEach(s => h.append(el(`div`, `rfhist`, `<span>${rfEsc(s.d)} · ${rfEsc(s.n)}</span><b class="${s.nota >= 6 ? `rfok` : `rfno`}">${s.nota.toFixed(1)}</b><span class="muted">${nf(s.pts, 1)}/${s.tot}</span>`))); v.append(h); }
 }
 function rfPoolObj(sel, debil){
   const all = sel.has(`*`), mc = ALL.MCQ.filter(x => all || sel.has(x.t)).map(x => ({ src:x, doc:false, lv:rfLv(x), w:1 }));
-  const dc = RF_DOCS().filter(x => all || (x.t ? sel.has(x.t) : sel.has(`u13`))).map(x => ({ src:x, doc:true, lv:x.lv || rfLv(x), w:debil && RF_DEBIL.includes(x.rf) ? 3 : 1 }));
+  const dc = RF_DOCS().filter(x => all || (x.t ? sel.has(x.t) : sel.has(`u13`))).map(x => ({ src:x, doc:true, lv:x.lv || rfLv(x), w:debil && rfDebil().includes(x.rf) ? 3 : 1 }));
   return mc.concat(dc);
 }
 const rfGensSel = sel => GENS.filter(g => sel.has(`*`) || sel.has(g.t) || (g.ts || []).some(t => sel.has(t)));
@@ -243,7 +265,7 @@ function rfStartSim(cfg){
     if (obj.length < 20){ const resto = pool.filter(p => !usados.has(p.src.q)); obj = obj.concat(rfWPick(resto, 20 - obj.length)); }
     items = shuf(obj).map(rfObjItem); const probs = rfPickGens(sel, 10, cfg.debil); items = items.concat(probs);
   } else {
-    const ab = rfWPick(RF_ABIS().filter(x => (sel.has(`*`) || (x.t ? sel.has(x.t) : sel.has(`u13`)))).map(x => ({ src:x, w:cfg.debil && RF_DEBIL.includes(x.rf) ? 3 : 1 })), 4).map(p => rfAbiItem(p.src));
+    const ab = rfWPick(RF_ABIS().filter(x => (sel.has(`*`) || (x.t ? sel.has(x.t) : sel.has(`u13`)))).map(x => ({ src:x, w:cfg.debil && rfDebil().includes(x.rf) ? 3 : 1 })), 4).map(p => rfAbiItem(p.src));
     const ab2 = ab.length < 4 ? rfWPick(ALL.ABIERTAS.filter(x => sel.has(x.t)).map(x => ({ src:x, w:1 })), 4 - ab.length).map(p => rfAbiItem(p.src)) : [];
     const nu = rfPickGens(sel, 3, cfg.debil), ob = rfWPick(pool, 3).map(rfObjItem);
     items = shuf(ab.concat(ab2, ob)).concat(nu);
