@@ -15,13 +15,15 @@ const ICONS = {
   cal:`<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>`, timer:`<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>`,
   full:`<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>`, bell:`<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21a2 2 0 0 0 4 0"/>`,
   tag:`<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>`,
-  trend:`<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>`
+  trend:`<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>`,
+  hex:`<path d="M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9z"/><circle cx="12" cy="12" r="3"/>`
 };
 const icon = (n, cls = `ic`) => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ``}</svg>`;
 const SECS = [
   { k:`inicio`, n:`Inicio`, ic:`home`, modes:[[`inicio`,`Hoy`],[`guia`,`Cómo estudiar`],[`progreso`,`Mi progreso`]] },
   { k:`estudiar`, n:`Estudiar`, ic:`book`, modes:[[`repaso`,`Repaso`],[`escuchar`,`Escuchar`],[`fichas`,`Fichas`],[`videos`,`Videos`],[`formulario`,`Formulario`]] },
   { k:`practicar`, n:`Practicar`, ic:`pencil`, modes:[[`hoy`,`Para hoy`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`practica`,`Práctica`],[`formula`,`¿Qué fórmula?`],[`lab`,`Laboratorio`]] },
+  { k:`dibujo`, n:`Dibujar`, ic:`hex`, modes:[[`dibujo`,`Dibujar`]] },
   { k:`examen`, n:`Examen`, ic:`clip`, modes:[[`simulacro`,`Simulacro`],[`impreso`,`Parcial impreso`]] },
   { k:`organizar`, n:`Organizar`, ic:`cal`, modes:[[`agenda`,`Agenda`],[`pendientes`,`Pendientes`],[`notasr`,`Notas`],[`cuaderno`,`Cuaderno`],[`notas`,`Mis notas`]] },
   { k:`preguntar`, n:`Preguntar`, ic:`chat`, modes:[[`preguntar`,`Preguntar`]] },
@@ -60,7 +62,7 @@ function markDay(){ const t = todayStr(), d = S.x.days || (S.x.days = []); if (!
 function streak(){ const d = new Set(S.x.days || []); let s = todayStr(); if (!d.has(s)) s = addDays(s, -1); let n = 0; while (d.has(s)){ n++; s = addDays(s, -1); } return n; }
 
 /* ---------- navegación ---------- */
-function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`retro`,`notas`,`agenda`,`pendientes`,`notasr`,`cuaderno`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList(), t:Date.now() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
+function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`retro`,`dibujo`,`notas`,`agenda`,`pendientes`,`notasr`,`cuaderno`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList(), t:Date.now() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
 function goSec(k){ const sc = SECS.find(s => s.k === k); go(S.x.sm[k] || sc.modes[0][0]); }
 function topScroll(){ window.scrollTo({ top:0 }); const p = $(`#panel`); if (p && S.mode !== `repaso`) p.scrollTop = 0; }
 function setSel(set){ S.sel = new Set(set); save(); SIM.on = false; stopTick(); renderAll(); }
@@ -98,6 +100,7 @@ function renderHead(){
   // En el Repaso, los temas se reducen a un solo botón para dejar espacio a la ficha
   if (S.mode === `inicio`){ h.classList.add(`compact`); return; }
   if (sc.k === `organizar`){ const h1 = $(`#head h1`); if (h1) h1.textContent = { agenda:`Agenda`, pendientes:`Pendientes`, notasr:`Notas`, cuaderno:`Cuaderno`, notas:`Mis notas` }[S.mode] || sc.n; const k = $(`#head .top .k`); if (k) k.textContent = `Organizar`; h.classList.add(`compact`, `nochips`); return; }
+  if (sc.k === `dibujo`){ const h1 = $(`#head h1`); if (h1) h1.textContent = `Dibujar`; const k = $(`#head .top .k`); if (k) k.textContent = `Aprende y practica a dibujar compuestos`; h.classList.add(`compact`, `nochips`); return; }
   if (sc.k === `retro`){ const h1 = $(`#head h1`); if (h1) h1.textContent = `Retroalimentación`; const k = $(`#head .top .k`); if (k) k.textContent = `Aprende de tus evaluaciones`; h.classList.add(`compact`, `nochips`); return; }
   h.classList.remove(`nochips`);
   if (S.mode === `repaso` && !S.x.rall){ const ch = el(`div`, `chips`); const add = btn(``, `tchp add`, openTopics); add.innerHTML = icon(`plus`) + (sel.length === TORDER.length ? `Todos los temas` : `${sel.length} tema${sel.length === 1 ? `` : `s`}`) + ` · cambiar`; ch.append(add); h.append(ch); h.classList.add(`compact`); return; }
@@ -122,7 +125,7 @@ function renderStatus(){ renderHead(); renderRail(); renderBnav(); }
 /* ---------- panel derecho ---------- */
 function panelCtx(){ return S.mode === `inicio` || secOf(S.mode).k === `organizar` ? `inicio` : S.mode === `repaso` && !S.x.rall ? `repaso` : `otro`; }
 function renderPanel(){
-  const p = $(`#panel`); p.innerHTML = ``; const np = [`agenda`, `cuaderno`, `retro`].includes(S.mode); $(`#app`).classList.toggle(`nopanel`, np); if (bp() !== `wide` || np) return;
+  const p = $(`#panel`); p.innerHTML = ``; const np = [`agenda`, `cuaderno`, `retro`, `dibujo`].includes(S.mode); $(`#app`).classList.toggle(`nopanel`, np); if (bp() !== `wide` || np) return;
   const ctx = panelCtx(); const tabs = ctx === `inicio` ? [[`agenda`,`Agenda`],[`temas`,`Temas`]] : ctx === `repaso` ? [[`indice`,`Índice del tema`],[`temas`,`Temas`]] : [[`temas`,`Temas`],[`agenda`,`Agenda`]];
   let cur = S.x.ptab[ctx]; if (!tabs.some(t => t[0] === cur)) cur = tabs[0][0];
   // Cerrado: queda una tira delgada con el Pomodoro y accesos para volver a abrirlo

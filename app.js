@@ -59,7 +59,7 @@ function hoy(){ try { return new Date().toLocaleDateString(`es-SV`, { day:`numer
 
 /* ======================= ESTADO ======================= */
 const KEY = `parcialM4_v2`;
-const MODES = [[`inicio`,`Hoy`],[`hoy`,`Para hoy`],[`escuchar`,`Escuchar`],[`notas`,`Mis notas`],[`impreso`,`Parcial impreso`],[`guia`,`Cómo estudiar`],[`repaso`,`Repaso`],[`videos`,`Videos`],[`preguntar`,`Preguntar`],[`fichas`,`Fichas`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`formula`,`¿Qué fórmula uso?`],[`practica`,`Práctica infinita`],[`lab`,`Laboratorio`],[`simulacro`,`Simulacro`],[`formulario`,`Formulario`],[`progreso`,`Mi progreso`],[`agenda`,`Agenda`],[`pendientes`,`Pendientes`],[`notasr`,`Notas rápidas`],[`cuaderno`,`Cuaderno`],[`retro`,`Retroalimentación`]];
+const MODES = [[`inicio`,`Hoy`],[`hoy`,`Para hoy`],[`escuchar`,`Escuchar`],[`notas`,`Mis notas`],[`impreso`,`Parcial impreso`],[`guia`,`Cómo estudiar`],[`repaso`,`Repaso`],[`videos`,`Videos`],[`preguntar`,`Preguntar`],[`fichas`,`Fichas`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`formula`,`¿Qué fórmula uso?`],[`practica`,`Práctica infinita`],[`lab`,`Laboratorio`],[`simulacro`,`Simulacro`],[`formulario`,`Formulario`],[`progreso`,`Mi progreso`],[`agenda`,`Agenda`],[`pendientes`,`Pendientes`],[`notasr`,`Notas rápidas`],[`cuaderno`,`Cuaderno`],[`retro`,`Retroalimentación`],[`dibujo`,`Dibujar`]];
 const S = { x:{}, sel: new Set(TORDER), mode:`inicio`, simFb:`now`, st:{}, err:[], box:{}, shuffle:false, onlyErr:false, figFront:false };
 try { const s = JSON.parse(localStorage.getItem(KEY) || `null`); if (s){ S.sel = new Set(s.sel.filter(k => TORDER.includes(k))); S.mode = MODES.some(m => m[0] === s.mode) ? s.mode : `inicio`; S.x = s.x || {}; S.st = s.st || {}; S.err = s.err || []; S.box = s.box || {}; S.simFb = s.simFb || `now`; } } catch(e){}
 function save(){ try { localStorage.setItem(KEY, JSON.stringify({ sel:[...S.sel], mode:S.mode, simFb:S.simFb, st:S.st, err:S.err, box:S.box, x:S.x })); } catch(e){} }
@@ -820,8 +820,8 @@ function pdfBar(){
 /* ======================= RENDER ======================= */
 function renderView(){
   const v = $(`#view`); v.innerHTML = ``;
-  if (!S.sel.size && ![`inicio`,`progreso`,`guia`,`videos`,`preguntar`,`notas`,`hoy`,`agenda`,`pendientes`,`notasr`,`cuaderno`,`retro`].includes(S.mode)){ const e = el(`div`,`empty`,`No hay temas elegidos. `); e.append(btn(`Elegir temas`, `btn acc`, () => openTopics())); v.append(e); return; }
-  ({ hoy:vHoy, escuchar:vEscuchar, notas:vNotas, inicio:vInicio, impreso:vImpreso, guia:vGuia, videos:vVideos, preguntar:vPreguntar, repaso:vRepaso, fichas:vFichas, preguntas:vPreguntas, ejercicios:vEjercicios, formula:vFormula, practica:vPractica, lab:vLab, simulacro:vSimulacro, formulario:vFormulario, progreso:vProgreso, agenda:vAgenda, pendientes:vPend, notasr:vNotasR, cuaderno:vCuaderno, retro:vRetro })[S.mode](v);
+  if (!S.sel.size && ![`inicio`,`progreso`,`guia`,`videos`,`preguntar`,`notas`,`hoy`,`agenda`,`pendientes`,`notasr`,`cuaderno`,`retro`,`dibujo`].includes(S.mode)){ const e = el(`div`,`empty`,`No hay temas elegidos. `); e.append(btn(`Elegir temas`, `btn acc`, () => openTopics())); v.append(e); return; }
+  ({ hoy:vHoy, escuchar:vEscuchar, notas:vNotas, inicio:vInicio, impreso:vImpreso, guia:vGuia, videos:vVideos, preguntar:vPreguntar, repaso:vRepaso, fichas:vFichas, preguntas:vPreguntas, ejercicios:vEjercicios, formula:vFormula, practica:vPractica, lab:vLab, simulacro:vSimulacro, formulario:vFormulario, progreso:vProgreso, agenda:vAgenda, pendientes:vPend, notasr:vNotasR, cuaderno:vCuaderno, retro:vRetro, dibujo:vDibujo })[S.mode](v);
   const pb = pdfBar(); if (pb){ pb.style.marginTop = `22px`; v.append(pb); }
 }
 
@@ -1496,13 +1496,15 @@ const ICONS = {
   cal:`<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>`, timer:`<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>`,
   full:`<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>`, bell:`<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21a2 2 0 0 0 4 0"/>`,
   tag:`<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>`,
-  trend:`<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>`
+  trend:`<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>`,
+  hex:`<path d="M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9z"/><circle cx="12" cy="12" r="3"/>`
 };
 const icon = (n, cls = `ic`) => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ``}</svg>`;
 const SECS = [
   { k:`inicio`, n:`Inicio`, ic:`home`, modes:[[`inicio`,`Hoy`],[`guia`,`Cómo estudiar`],[`progreso`,`Mi progreso`]] },
   { k:`estudiar`, n:`Estudiar`, ic:`book`, modes:[[`repaso`,`Repaso`],[`escuchar`,`Escuchar`],[`fichas`,`Fichas`],[`videos`,`Videos`],[`formulario`,`Formulario`]] },
   { k:`practicar`, n:`Practicar`, ic:`pencil`, modes:[[`hoy`,`Para hoy`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`practica`,`Práctica`],[`formula`,`¿Qué fórmula?`],[`lab`,`Laboratorio`]] },
+  { k:`dibujo`, n:`Dibujar`, ic:`hex`, modes:[[`dibujo`,`Dibujar`]] },
   { k:`examen`, n:`Examen`, ic:`clip`, modes:[[`simulacro`,`Simulacro`],[`impreso`,`Parcial impreso`]] },
   { k:`organizar`, n:`Organizar`, ic:`cal`, modes:[[`agenda`,`Agenda`],[`pendientes`,`Pendientes`],[`notasr`,`Notas`],[`cuaderno`,`Cuaderno`],[`notas`,`Mis notas`]] },
   { k:`preguntar`, n:`Preguntar`, ic:`chat`, modes:[[`preguntar`,`Preguntar`]] },
@@ -1541,7 +1543,7 @@ function markDay(){ const t = todayStr(), d = S.x.days || (S.x.days = []); if (!
 function streak(){ const d = new Set(S.x.days || []); let s = todayStr(); if (!d.has(s)) s = addDays(s, -1); let n = 0; while (d.has(s)){ n++; s = addDays(s, -1); } return n; }
 
 /* ---------- navegación ---------- */
-function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`retro`,`notas`,`agenda`,`pendientes`,`notasr`,`cuaderno`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList(), t:Date.now() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
+function go(mode){ if (S.mode === `escuchar` && mode !== `escuchar` && typeof auStop === `function` && AU.on) auStop(); S.mode = mode; S.x.sm[secOf(mode).k] = mode; if (![`inicio`,`guia`,`progreso`,`preguntar`,`retro`,`dibujo`,`notas`,`agenda`,`pendientes`,`notasr`,`cuaderno`].includes(mode)) S.x.last = Object.assign(S.x.last && S.x.last.mode === mode ? S.x.last : {}, { mode, sel:selList(), t:Date.now() }); save(); SIM.on = false; stopTick(); closeSheet(); renderAll(); topScroll(); }
 function goSec(k){ const sc = SECS.find(s => s.k === k); go(S.x.sm[k] || sc.modes[0][0]); }
 function topScroll(){ window.scrollTo({ top:0 }); const p = $(`#panel`); if (p && S.mode !== `repaso`) p.scrollTop = 0; }
 function setSel(set){ S.sel = new Set(set); save(); SIM.on = false; stopTick(); renderAll(); }
@@ -1579,6 +1581,7 @@ function renderHead(){
   // En el Repaso, los temas se reducen a un solo botón para dejar espacio a la ficha
   if (S.mode === `inicio`){ h.classList.add(`compact`); return; }
   if (sc.k === `organizar`){ const h1 = $(`#head h1`); if (h1) h1.textContent = { agenda:`Agenda`, pendientes:`Pendientes`, notasr:`Notas`, cuaderno:`Cuaderno`, notas:`Mis notas` }[S.mode] || sc.n; const k = $(`#head .top .k`); if (k) k.textContent = `Organizar`; h.classList.add(`compact`, `nochips`); return; }
+  if (sc.k === `dibujo`){ const h1 = $(`#head h1`); if (h1) h1.textContent = `Dibujar`; const k = $(`#head .top .k`); if (k) k.textContent = `Aprende y practica a dibujar compuestos`; h.classList.add(`compact`, `nochips`); return; }
   if (sc.k === `retro`){ const h1 = $(`#head h1`); if (h1) h1.textContent = `Retroalimentación`; const k = $(`#head .top .k`); if (k) k.textContent = `Aprende de tus evaluaciones`; h.classList.add(`compact`, `nochips`); return; }
   h.classList.remove(`nochips`);
   if (S.mode === `repaso` && !S.x.rall){ const ch = el(`div`, `chips`); const add = btn(``, `tchp add`, openTopics); add.innerHTML = icon(`plus`) + (sel.length === TORDER.length ? `Todos los temas` : `${sel.length} tema${sel.length === 1 ? `` : `s`}`) + ` · cambiar`; ch.append(add); h.append(ch); h.classList.add(`compact`); return; }
@@ -1603,7 +1606,7 @@ function renderStatus(){ renderHead(); renderRail(); renderBnav(); }
 /* ---------- panel derecho ---------- */
 function panelCtx(){ return S.mode === `inicio` || secOf(S.mode).k === `organizar` ? `inicio` : S.mode === `repaso` && !S.x.rall ? `repaso` : `otro`; }
 function renderPanel(){
-  const p = $(`#panel`); p.innerHTML = ``; const np = [`agenda`, `cuaderno`, `retro`].includes(S.mode); $(`#app`).classList.toggle(`nopanel`, np); if (bp() !== `wide` || np) return;
+  const p = $(`#panel`); p.innerHTML = ``; const np = [`agenda`, `cuaderno`, `retro`, `dibujo`].includes(S.mode); $(`#app`).classList.toggle(`nopanel`, np); if (bp() !== `wide` || np) return;
   const ctx = panelCtx(); const tabs = ctx === `inicio` ? [[`agenda`,`Agenda`],[`temas`,`Temas`]] : ctx === `repaso` ? [[`indice`,`Índice del tema`],[`temas`,`Temas`]] : [[`temas`,`Temas`],[`agenda`,`Agenda`]];
   let cur = S.x.ptab[ctx]; if (!tabs.some(t => t[0] === cur)) cur = tabs[0][0];
   // Cerrado: queda una tira delgada con el Pomodoro y accesos para volver a abrirlo
@@ -3044,6 +3047,788 @@ function rfRevItem(it, i){
   else { b.append(el(`p`, ``, `<b>Tu respuesta:</b> ${it.val ? rfEsc(it.val) : `(sin responder)`}`), el(`p`, `rfref`, `<b>Respuesta modelo:</b> ${rfEsc(it.a)}`)); if (it.kw && it.kw.length) b.append(el(`p`, `muted`, `Puntos clave: ${it.kw.map(rfEsc).join(` · `)}`));
     const g = el(`div`, `btnrow rfgrade`); g.append(el(`span`, `muted`, `Califícate:`)); [[1, `Completa (1)`, `btn ok`], [.5, `A medias (½)`, `btn ghost`], [0, `No (0)`, `btn ghost`]].forEach(([p, t, cl]) => { const bt = btn(t, cl, () => { it.pts = p; it.grade = p; if (p < 1) rfRegistrarFallo(it); if (it.fallo) rfSched(it.fallo, p); rfActualizarNota(); const nuevo = rfRevItem(it, i); c.replaceWith(nuevo); }); bt.setAttribute(`aria-pressed`, it.pts === p); if (it.pts === p) bt.classList.add(`sel`); g.append(bt); }); b.append(g); }
   c.append(b); return c;
+}
+
+/* ===================== DIBUJAR: NÚCLEO =====================
+   Modelo de molécula, verificación por isomorfismo de grafos, geometría (RPECV), fórmulas condensadas y dibujo SVG.
+   molécula = { n, atoms:[{ i, el, x, y, q, d, g? }], bonds:[{ a, b, o, s? }], txt?:[], dash?:[] }
+   o = orden de enlace (1, 2, 3 o 1.5 aromático) · d = electrones sin compartir (puntos) · q = carga */
+
+const DB_EL = {
+  H:{ e:1, oct:2, en:2.20 }, He:{ e:2, oct:2, en:0 },
+  Li:{ e:1, en:.98, met:1 }, Na:{ e:1, en:.93, met:1 }, K:{ e:1, en:.82, met:1 },
+  Be:{ e:2, oct:4, en:1.57, met:1 }, Mg:{ e:2, en:1.31, met:1 }, Ca:{ e:2, en:1.00, met:1 }, Ba:{ e:2, en:.89, met:1 },
+  B:{ e:3, v:[3], oct:6, en:2.04 }, Al:{ e:3, oct:6, en:1.61, met:1 },
+  C:{ e:4, v:[4], en:2.55 }, N:{ e:5, v:[3], en:3.04 }, P:{ e:5, v:[3,5], en:2.19 },
+  O:{ e:6, v:[2], en:3.44 }, S:{ e:6, v:[2,4,6], en:2.58 },
+  F:{ e:7, v:[1], en:3.98 }, Cl:{ e:7, v:[1], en:3.16 }, Br:{ e:7, v:[1], en:2.96 }, I:{ e:7, v:[1], en:2.66 },
+  Ne:{ e:8, en:0 }, Ar:{ e:8, en:0 }
+};
+const DB_SUBS = `₀₁₂₃₄₅₆₇₈₉`;
+const dbSub = n => String(n).replace(/\d/g, d => DB_SUBS[+d]);
+const dbSup = q => q === 0 ? `` : (Math.abs(q) > 1 ? String(Math.abs(q)) : ``) + (q > 0 ? `+` : `−`);
+const DB_SUPS = { '0':`⁰`, '1':`¹`, '2':`²`, '3':`³`, '4':`⁴`, '5':`⁵`, '6':`⁶`, '7':`⁷`, '8':`⁸`, '9':`⁹`, '+':`⁺`, '−':`⁻` };
+const dbSupU = q => dbSup(q).replace(/[0-9+−]/g, c => DB_SUPS[c]);
+/* grupos abreviados que el estudiante puede colocar; al verificar se expanden a átomos */
+const DB_GRP = {
+  'NO₂':{ at:[{ el:`N`, q:1 }, { el:`O`, q:0 }, { el:`O`, q:-1 }], bd:[[0, 1, 2], [0, 2, 1]] },
+  'COOH':{ at:[{ el:`C`, q:0 }, { el:`O`, q:0 }, { el:`O`, q:0 }], bd:[[0, 1, 2], [0, 2, 1]] },
+  'SO₃H':{ at:[{ el:`S`, q:0 }, { el:`O`, q:0 }, { el:`O`, q:0 }, { el:`O`, q:0 }], bd:[[0, 1, 2], [0, 2, 2], [0, 3, 1]] },
+  'CHO':{ at:[{ el:`C`, q:0 }, { el:`O`, q:0 }], bd:[[0, 1, 2]] },
+  'CN':{ at:[{ el:`C`, q:0 }, { el:`N`, q:0 }], bd:[[0, 1, 3]] }
+};
+
+/* ---------- modelo ---------- */
+const dbNew = () => ({ n:0, atoms:[], bonds:[] });
+const dbClone = m => JSON.parse(JSON.stringify(m));
+function dbAdd(m, el, x, y, o){ const a = Object.assign({ i:++m.n, el, x, y, q:0, d:0 }, o || {}); m.atoms.push(a); return a.i; }
+function dbBond(m, a, b, o = 1, s){ const k = { a, b, o }; if (s) k.s = s; m.bonds.push(k); return k; }
+const dbAt = (m, i) => m.atoms.find(a => a.i === i);
+const dbNb = (m, i) => m.bonds.filter(b => b.a === i || b.b === i).map(b => ({ j:b.a === i ? b.b : b.a, o:b.o, b }));
+const dbBS = (m, i) => dbNb(m, i).reduce((s, x) => s + x.o, 0);
+const dbOct = a => (DB_EL[a.el] && DB_EL[a.el].oct) || 8;
+
+/* valencias permitidas según el elemento y su carga */
+function dbVal(el, q){
+  if (el === `H`) return q === 0 ? [1] : [0];
+  const E = DB_EL[el]; if (!E || !E.v) return null;
+  return E.v.map(v => el === `C` ? v - Math.abs(q) : v + q).filter(v => v >= 0);
+}
+/* hidrógenos implícitos (modo esqueleto): -1 si el átomo tiene más enlaces de los permitidos */
+function dbHImp(m, a){
+  const vs = dbVal(a.el, a.q || 0); if (!vs) return 0; const s = dbBS(m, a.i);
+  for (const v of vs.slice().sort((x, y) => x - y)) if (v >= s - 1e-9){ const h = v - s; return Math.abs(h - Math.round(h)) < 1e-9 ? Math.round(h) : -1; }
+  return -1;
+}
+/* electrones de los puntos que le corresponden por defecto (octeto completo) */
+function dbAuto(m){
+  m.atoms.forEach(a => { if (a.auto){ const E = DB_EL[a.el]; const s = dbBS(m, a.i);
+    if (E && E.met && a.q > 0 && s === 0) a.d = 0; else a.d = Math.max(0, dbOct(a) - 2 * s); delete a.auto; } });
+  return m;
+}
+
+/* ---------- preparación para comparar ---------- */
+function dbExpand(m){
+  m.atoms.slice().forEach(a => { if (!a.g) return; const G = DB_GRP[a.g]; if (!G){ return; }
+    const ids = G.at.map((s, k) => { if (k === 0){ a.el = s.el; a.q = s.q; delete a.g; return a.i; } return dbAdd(m, s.el, a.x, a.y, { q:s.q }); });
+    G.bd.forEach(([p, q, o]) => dbBond(m, ids[p], ids[q], o)); });
+  return m;
+}
+function dbCollapseH(m){
+  const quitar = new Set(); m.atoms.forEach(a => { if (a.el !== `H`) return; const nb = dbNb(m, a.i); if (nb.length === 1 && nb[0].o === 1 && dbAt(m, nb[0].j).el !== `H`) quitar.add(a.i); });
+  m.atoms = m.atoms.filter(a => !quitar.has(a.i)); m.bonds = m.bonds.filter(b => !quitar.has(b.a) && !quitar.has(b.b)); return m;
+}
+/* anillos de 6 carbonos con enlaces alternados (Kekulé) → aromáticos (1.5) */
+function dbArom(m){
+  const adj = {}; m.bonds.forEach(b => { (adj[b.a] = adj[b.a] || []).push([b.b, b]); (adj[b.b] = adj[b.b] || []).push([b.a, b]); });
+  const C = new Set(m.atoms.filter(a => a.el === `C`).map(a => a.i)), vistos = new Set(), cic = [];
+  C.forEach(s => { const path = [s], bs = [];
+    (function dfs(u){ if (path.length === 6){ const e = (adj[u] || []).find(x => x[0] === s); if (!e) return; const bb = bs.concat([e[1]]); const key = path.slice().sort((a, b) => a - b).join(`,`);
+        if (vistos.has(key)) return; const os = bb.map(b => b.o); const alt = (os[0] === 1 || os[0] === 2) && os.every((o, k) => o === os[k % 2]) && os[0] !== os[1] && [os[0], os[1]].every(o => o === 1 || o === 2); const ar = os.every(o => o === 1.5);
+        if (alt || ar){ vistos.add(key); cic.push(bb); } return; }
+      (adj[u] || []).forEach(([v, b]) => { if (path.includes(v) || !C.has(v)) return; path.push(v); bs.push(b); dfs(v); path.pop(); bs.pop(); }); })(s); });
+  cic.forEach(bb => bb.forEach(b => { b.o = 1.5; })); return m;
+}
+function dbPrep(m, mode){ let c = dbExpand(dbClone(m)); if (mode === `esq`) c = dbCollapseH(c); dbArom(c); return c; }
+function dbGraph(c, mode){
+  const ids = c.atoms.map(a => a.i), ix = {}; ids.forEach((id, k) => { ix[id] = k; });
+  const key = c.atoms.map(a => { const h = mode === `esq` ? dbHImp(c, a) : a.d; return `${a.el}|${a.q || 0}|${h < 0 ? `X${Math.random()}` : h}`; });
+  const adj = ids.map(() => ids.map(() => 0)); c.bonds.forEach(b => { adj[ix[b.a]][ix[b.b]] = b.o; adj[ix[b.b]][ix[b.a]] = b.o; });
+  return { n:ids.length, key, adj };
+}
+function dbIso(A, B){
+  if (A.n !== B.n) return false; const sk = g => g.key.slice().sort().join(`;`); if (sk(A) !== sk(B)) return false;
+  const deg = (g, i) => g.adj[i].reduce((s, o) => s + o, 0), da = A.key.map((_, i) => deg(A, i)), db = B.key.map((_, i) => deg(B, i));
+  const orden = []; const vis = new Set(); const q = A.key.map((_, i) => i).sort((x, y) => da[y] - da[x]);
+  q.forEach(s => { if (vis.has(s)) return; const cola = [s]; vis.add(s); while (cola.length){ const u = cola.shift(); orden.push(u); A.adj[u].forEach((o, v) => { if (o && !vis.has(v)){ vis.add(v); cola.push(v); } }); } });
+  const map = new Array(A.n).fill(-1), usado = new Array(B.n).fill(false);
+  (function bt(k){ if (k === orden.length) return true; const u = orden[k];
+    for (let v = 0; v < B.n; v++){ if (usado[v] || A.key[u] !== B.key[v] || da[u] !== db[v]) continue; let ok = true;
+      for (let j = 0; j < k; j++){ const w = orden[j]; if (A.adj[u][w] !== B.adj[v][map[w]]){ ok = false; break; } }
+      if (!ok) continue; map[u] = v; usado[v] = true; if (bt(k + 1)) return true; usado[v] = false; map[u] = -1; }
+    return false; })(0);
+  return !map.includes(-1) || A.n === 0;
+}
+/* forma abreviada y fórmula molecular (orden de Hill) */
+function dbFormula(c, mode){
+  const r = {}; c.atoms.forEach(a => { r[a.el] = (r[a.el] || 0) + 1; if (mode === `esq`){ const h = dbHImp(c, a); if (h > 0) r.H = (r.H || 0) + h; } });
+  const SEC = [`Li`, `Na`, `K`, `Be`, `Mg`, `Ca`, `Ba`, `Al`, `B`, `Si`, `C`, `Sb`, `As`, `P`, `N`, `H`, `Te`, `Se`, `S`, `At`, `I`, `Br`, `Cl`, `O`, `F`, `He`, `Ne`, `Ar`];
+  const ks = Object.keys(r).filter(k => k !== `R`); const ord = r.C ? [`C`, `H`].filter(k => r[k]).concat(ks.filter(k => k !== `C` && k !== `H`).sort()) : ks.sort((a, b) => (SEC.indexOf(a) < 0 ? 99 : SEC.indexOf(a)) - (SEC.indexOf(b) < 0 ? 99 : SEC.indexOf(b)));
+  const q = c.atoms.reduce((s, a) => s + (a.q || 0), 0);
+  const f = ord.map(k => k + (r[k] > 1 ? dbSub(r[k]) : ``)).join(``) + (q ? dbSupU(q) : ``); return f === `HO⁻` ? `OH⁻` : f;
+}
+
+/* ---------- verificación y diagnóstico ---------- */
+const dbLabEl = a => a.g || a.el;
+/* ¿la estructura es válida por sí sola? (octeto y carga formal en Lewis; valencia en esqueleto) */
+function dbValid(c, mode){
+  const msgs = [], vistos = new Set();
+  if (mode === `lewis`) c.atoms.forEach(a => { const E = DB_EL[a.el]; if (!E) return; const s = dbBS(c, a.i), tot = a.d + 2 * s, fc = E.e - a.d - s, nu = E.met && s === 0 && a.d === 0;
+    const carga = `Revisa la carga del ${a.el}: por sus electrones debería ser ${fc === 0 ? `0 (neutro)` : (fc > 0 ? `+` : `−`) + Math.abs(fc)}.`;
+    let m1 = ``; if (nu){ if (fc !== (a.q || 0)) m1 = carga; }
+    else if (tot !== dbOct(a)) m1 = `Un ${a.el} tiene ${tot} electrones a su alrededor (cada enlace cuenta 2 y cada punto 1); debe tener ${dbOct(a)}.`;
+    else if (fc !== (a.q || 0)) m1 = carga;
+    if (m1 && !vistos.has(m1)){ vistos.add(m1); msgs.push(m1); } });
+  else { const sobre = c.atoms.filter(a => dbHImp(c, a) < 0); if (sobre.length) msgs.push(`Un ${sobre[0].el} tiene demasiados enlaces: el carbono admite 4, el nitrógeno 3, el oxígeno 2 y los halógenos 1.`); }
+  return msgs;
+}
+function dbDiag(user, target, mode){
+  const u = dbPrep(user, mode), t = dbPrep(target, mode), msgs = [];
+  if (!u.atoms.length) return [`Todavía no hay nada dibujado.`];
+  const cnt = c => { const r = {}; c.atoms.forEach(a => { r[a.el] = (r[a.el] || 0) + 1; if (mode === `esq`){ /* H implícitos no se cuentan por separado */ } }); return r; };
+  const cu = cnt(u), ct = cnt(t); const els = Object.keys(Object.assign({}, cu, ct));
+  els.forEach(e => { const d = (cu[e] || 0) - (ct[e] || 0), k = Math.abs(d), un = mode === `esq` && e === `C` ? `carbono` : `átomo de ${e}`, pl = mode === `esq` && e === `C` ? `carbonos` : `átomos de ${e}`;
+    if (d < 0) msgs.push(`Te ${k === 1 ? `falta` : `faltan`} ${k} ${k === 1 ? un : pl}.`);
+    else if (d > 0) msgs.push(`Te ${k === 1 ? `sobra` : `sobran`} ${k} ${k === 1 ? un : pl}.`); });
+  dbValid(u, mode).forEach(x => msgs.push(x));
+  const qu = u.atoms.reduce((s, a) => s + (a.q || 0), 0), qt = t.atoms.reduce((s, a) => s + (a.q || 0), 0);
+  if (qu !== qt) msgs.push(`La carga total no coincide: tu dibujo tiene ${qu > 0 ? `+` : ``}${qu} y debería tener ${qt > 0 ? `+` : ``}${qt}.`);
+  const ord = c => { const r = { 1:0, 2:0, 3:0 }; c.bonds.forEach(b => { if (r[b.o] !== undefined) r[b.o]++; }); return r; }, ou = ord(u), ot = ord(t);
+  if (ou[2] !== ot[2] || ou[3] !== ot[3]) msgs.push(`Los enlaces múltiples no coinciden: en tu dibujo hay ${ou[2]} doble${ou[2] === 1 ? `` : `s`} y ${ou[3]} triple${ou[3] === 1 ? `` : `s`}; el compuesto tiene ${ot[2]} doble${ot[2] === 1 ? `` : `s`} y ${ot[3]} triple${ot[3] === 1 ? `` : `s`}.`);
+  if (mode === `lewis` && !msgs.length){ const du = u.atoms.reduce((s, a) => s + a.d, 0), dt = t.atoms.reduce((s, a) => s + a.d, 0); if (du !== dt) msgs.push(`Revisa los electrones sin compartir (pares libres): tu dibujo tiene ${du} y el compuesto ${dt}.`); }
+  if (!msgs.length) msgs.push(`Los átomos, las cargas y los enlaces coinciden en número, pero están conectados de otra manera. Revisa qué átomo va unido a cuál (átomo central, ramificaciones o posición de los sustituyentes).`);
+  return msgs.slice(0, 4);
+}
+function dbCheck(user, target, mode, alts){
+  if (!user.atoms.length) return { ok:false, msgs:[`Todavía no hay nada dibujado.`] };
+  const gu = dbGraph(dbPrep(user, mode), mode); const todos = [target].concat(alts || []);
+  if (todos.some(t => dbIso(gu, dbGraph(dbPrep(t, mode), mode)))) return { ok:true, msgs:[] };
+  return { ok:false, msgs:dbDiag(user, target, mode) };
+}
+
+/* ---------- geometría (RPECV) ---------- */
+const DB_GEO = {
+  '1,0':{ g:`lineal`, ang:`180°`, h:`sp` }, '2,0':{ g:`lineal`, ang:`180°`, h:`sp` }, '3,0':{ g:`trigonal plana`, ang:`120°`, h:`sp²` },
+  '2,1':{ g:`angular`, ang:`≈120°`, h:`sp²` }, '4,0':{ g:`tetraédrica`, ang:`109.5°`, h:`sp³` },
+  '3,1':{ g:`piramidal trigonal`, ang:`≈107°`, h:`sp³` }, '2,2':{ g:`angular`, ang:`≈104.5°`, h:`sp³` },
+  '1,1':{ g:`lineal`, ang:`180°`, h:`sp` }, '1,2':{ g:`lineal`, ang:`180°`, h:`sp` }, '1,3':{ g:`lineal`, ang:`180°`, h:`sp` }
+};
+function dbVsepr(c, i, mode){
+  const a = dbAt(c, i); if (!a) return null; let nb = dbNb(c, i).length, lp;
+  if (mode === `esq`){ const h = Math.max(0, dbHImp(c, a)); nb += h; lp = (DB_EL[a.el].e - (a.q || 0) - (dbBS(c, i) + h)) / 2; } else lp = a.d / 2;
+  lp = Math.max(0, Math.floor(lp + 1e-9)); const G = DB_GEO[`${nb},${lp}`] || null;
+  return Object.assign({ nb, lp, sn:nb + lp }, G || { g:`no cubierta en este curso`, ang:``, h:`` });
+}
+
+/* ---------- constructores con distribución automática ---------- */
+const dbRad = g => g * Math.PI / 180, dbDir = g => [Math.cos(dbRad(g)), -Math.sin(dbRad(g))];
+function dbSubst(m, from, ang, code, L = 32){
+  const p = dbAt(m, from), [ux, uy] = dbDir(ang), P = (k, a) => { const [dx, dy] = dbDir(a); return [p.x + ux * L + dx * L * k, p.y + uy * L + dy * L * k]; };
+  const C = (x, y) => dbAdd(m, `C`, x, y);
+  const simple = { Cl:`Cl`, Br:`Br`, F:`F`, I:`I`, OH:`O`, NH2:`N` }; const grupos = { NO2:`NO₂`, COOH:`COOH`, SO3H:`SO₃H`, CHO:`CHO`, CN:`CN` };
+  const x1 = p.x + ux * L, y1 = p.y + uy * L;
+  if (code === `M`){ const c = C(x1, y1); dbBond(m, from, c, 1); return c; }
+  if (simple[code]){ const c = dbAdd(m, simple[code], x1, y1); dbBond(m, from, c, 1); return c; }
+  if (grupos[code]){ const c = dbAdd(m, `R`, x1 + ux * 6, y1 + uy * 6, { g:grupos[code] }); dbBond(m, from, c, 1); return c; }
+  const a0 = C(x1, y1); dbBond(m, from, a0, 1); const q = dbAt(m, a0);
+  const paso = (id, a, o = 1) => { const t = dbAt(m, id), [dx, dy] = dbDir(a), n = C(t.x + dx * L, t.y + dy * L); dbBond(m, id, n, o); return n; };
+  if (code === `Et`){ paso(a0, ang + 60); return a0; }
+  if (code === `iPr`){ paso(a0, ang + 60); paso(a0, ang - 60); return a0; }
+  if (code === `All`){ const c2 = paso(a0, ang + 60); paso(c2, ang - 5, 2); return a0; }
+  if (code === `Oct`){ let id = a0; for (let k = 0; k < 7; k++) id = paso(id, ang + (k % 2 ? -30 : 30)); return a0; }
+  return a0;
+}
+/* cadena abierta en zigzag: spec = { n, b:[órdenes], s:{ posición: [códigos] } } */
+function dbChain(spec){
+  const m = dbNew(), n = spec.n, L = 34, P = [[50, 120]], sp = k => spec.b[k - 1] === 3 || spec.b[k] === 3; let cur = 30;
+  for (let k = 0; k < n - 1; k++){ if (k > 0 && !sp(k)) cur = -cur; const [dx, dy] = [Math.cos(dbRad(cur)), Math.sin(dbRad(cur))]; P.push([P[k][0] + L * dx, P[k][1] + L * dy]); }
+  const t3 = spec.b.indexOf(3); if (t3 >= 0){ const ang = Math.atan2(P[t3 + 1][1] - P[t3][1], P[t3 + 1][0] - P[t3][0]), co = Math.cos(-ang), si = Math.sin(-ang), [ox, oy] = P[0];
+    P.forEach((p, k) => { const dx = p[0] - ox, dy = p[1] - oy; P[k] = [ox + dx * co - dy * si, oy + dx * si + dy * co]; }); }
+  const ids = P.map(([x, y]) => dbAdd(m, `C`, x, y)); spec.b.forEach((o, k) => dbBond(m, ids[k], ids[k + 1], o));
+  Object.keys(spec.s || {}).forEach(pos => { const k = +pos - 1, subs = spec.s[pos], c = P[k];
+    const u = j => { const dx = P[j][0] - c[0], dy = P[j][1] - c[1], l = Math.hypot(dx, dy); return [dx / l, dy / l]; };
+    let vx = 0, vy = 0; [k - 1, k + 1].filter(j => j >= 0 && j < n).forEach(j => { const [a, b] = u(j); vx -= a; vy -= b; });
+    const l = Math.hypot(vx, vy) || 1; vx /= l; vy /= l; const ang = Math.atan2(-vy, vx) * 180 / Math.PI;
+    subs.forEach((code, t) => dbSubst(m, ids[k], subs.length === 1 ? ang : ang + (t ? -42 : 42), code)); });
+  return m;
+}
+/* anillo de n carbonos: spec = { r:n, b:[n órdenes], s:{ posición: [códigos] } } */
+function dbRing(spec){
+  const m = dbNew(), n = spec.r, R = n <= 4 ? 30 : 34, cx = 180, cy = 130, ids = [];
+  for (let k = 0; k < n; k++){ const a = -90 + 360 / n * k; ids.push(dbAdd(m, `C`, cx + R * Math.cos(dbRad(a)), cy + R * Math.sin(dbRad(a)))); }
+  for (let k = 0; k < n; k++) dbBond(m, ids[k], ids[(k + 1) % n], spec.b[k]);
+  Object.keys(spec.s || {}).forEach(pos => { const k = +pos - 1, a = -90 + 360 / n * k; spec.s[pos].forEach((code, t) => dbSubst(m, ids[k], -a + (spec.s[pos].length > 1 ? (t ? -35 : 35) : 0), code, code === `M` || code === `Et` || code === `iPr` || code === `All` || code === `Oct` ? 32 : 30)); });
+  return m;
+}
+const dbBenceno = subs => dbRing({ r:6, b:[1.5, 1.5, 1.5, 1.5, 1.5, 1.5], s:subs });
+
+/* ---------- fórmulas condensadas (semidesarrolladas) ---------- */
+function dbCond(spec){
+  const n = spec.n, nombre = { M:`CH₃`, Et:`CH₂CH₃`, Cl:`Cl`, Br:`Br`, F:`F`, I:`I` }, out = [];
+  for (let k = 0; k < n; k++){ const sub = (spec.s || {})[k + 1] || []; const enl = (k > 0 ? spec.b[k - 1] : 0) + (k < n - 1 ? spec.b[k] : 0) + sub.length;
+    const h = 4 - enl; let t = `C` + (h > 0 ? `H` + (h > 1 ? dbSub(h) : ``) : ``); sub.forEach(c => { t += `(${nombre[c]})`; }); out.push(t); }
+  return out.map((t, k) => t + (k < n - 1 ? ({ 1:`−`, 2:`=`, 3:`≡` })[spec.b[k]] : ``)).join(``);
+}
+/* lee una fórmula escrita por la estudiante: CH3-CH(CH3)-CH2-CH3, CH3(CH2)3CH3, CH2=CH-CH3, HC≡C-CH3 */
+function dbParse(str){
+  const s0 = String(str || ``).replace(/[₀-₉]/g, d => String(DB_SUBS.indexOf(d))).replace(/[–−—]/g, `-`).replace(/\s+/g, ``);
+  if (!s0) return { err:`Escribe la fórmula.` };
+  const m = dbNew(), decl = {};
+  function seq(txt, prev){
+    let i = 0, enl = 1, ult = prev, hay = false;
+    const err = e => ({ err:e });
+    while (i < txt.length){ const c = txt[i];
+      if (c === `-`){ enl = 1; i++; hay = `b`; continue; } if (c === `=`){ enl = 2; i++; hay = `b`; continue; } if (c === `≡` || c === `#`){ enl = 3; i++; hay = `b`; continue; }
+      if (c === `(`){ let d = 1, j = i + 1; while (j < txt.length && d){ if (txt[j] === `(`) d++; else if (txt[j] === `)`) d--; j++; } if (d) return err(`Falta cerrar un paréntesis.`);
+        const inner = txt.slice(i + 1, j - 1); let k = j, num = ``; while (k < txt.length && /\d/.test(txt[k])){ num += txt[k]; k++; }
+        if (num){ let p = ult; for (let r = 0; r < +num; r++){ const res = seq(inner, p); if (res.err) return res; p = res.ult; } ult = p; enl = 1; }
+        else { const res = seq(inner, ult); if (res.err) return res; }
+        i = k; hay = false; continue; }
+      if (c === `)`) return err(`Hay un paréntesis de cierre de más.`);
+      const mt = txt.slice(i).match(/^(Cl|Br|F|I)|^(?:H(\d*))?(C|N|O|S)(?:H(\d*))?/);
+      if (!mt) return err(`No reconozco "${txt.slice(i, i + 2)}". Usa C, H, O, N, F, Cl, Br, I, paréntesis y los enlaces - = ≡.`);
+      const el = mt[1] || mt[3], hv = x => x === undefined ? 0 : (x === `` ? 1 : +x), h = mt[1] ? null : hv(mt[2]) + hv(mt[4]);
+      const id = dbAdd(m, el, 0, 0); decl[id] = h; if (ult != null) dbBond(m, ult, id, enl); ult = id; enl = 1; hay = false; i += mt[0].length; }
+    if (hay === `b`) return err(`Después de un enlace falta un átomo.`);
+    return { ult };
+  }
+  const r = seq(s0, null); if (r.err) return r; if (!m.atoms.length) return { err:`Escribe la fórmula.` };
+  /* ¿los hidrógenos escritos coinciden con los que exige la valencia? */
+  const malos = m.atoms.filter(a => decl[a.i] !== null && decl[a.i] !== undefined && dbHImp(m, a) !== decl[a.i] && dbHImp(m, a) >= 0);
+  const sobre = m.atoms.find(a => dbHImp(m, a) < 0);
+  return { mol:m, decl, malos, sobre };
+}
+
+/* ---------- dibujo SVG ---------- */
+const dbLabel = (m, a, mode, o = {}) => {
+  if (a.g) return a.g; if (mode === `lewis`) return a.el;
+  if (a.el === `C`){ if (!o.showH) return ``; const h = dbHImp(m, a); return `C` + (h > 0 ? `H` + (h > 1 ? dbSub(h) : ``) : ``); }
+  const h = dbHImp(m, a); if (a.el === `H`) return `H`; return a.el + (h > 0 ? `H` + (h > 1 ? dbSub(h) : ``) : ``);
+};
+const dbShort = t => !t ? 0 : t.length === 1 ? 10 : 7 + 5.5 * t.length;
+function dbDots(m, a){
+  const n = Math.min(8, a.d | 0); if (n <= 0) return [];
+  const dist = (p, q) => { const d = Math.abs(p - q) % 360; return d > 180 ? 360 - d : d; };
+  const vecinos = dbNb(m, a.i).map(x => x.j).concat((m.dash || []).filter(d => d.a === a.i || d.b === a.i).map(d => d.a === a.i ? d.b : d.a));
+  const angs = vecinos.map(j => { const o = dbAt(m, j); return Math.atan2(-(o.y - a.y), o.x - a.x) * 180 / Math.PI; });
+  const R = 20, out = []; let slots;
+  if (!angs.length){ /* símbolo de Lewis: un punto por lado y después se aparean */
+    const lados = [90, 0, 270, 180], cuenta = [0, 0, 0, 0]; for (let i = 0; i < n; i++) cuenta[i % 4]++; slots = lados.map((s, k) => [s, cuenta[k]]).filter(x => x[1]);
+  } else { /* con enlaces: pares libres en la distribución que más los separa de los enlaces y entre sí */
+    const np = Math.floor(n / 2), ns = n % 2, k = np + ns, cand = [90, 0, 270, 180, 45, 135, 225, 315]; let mejor = null;
+    (function comb(ini, cur){ if (cur.length === k){ let mn = 999; cur.forEach((s, x) => { angs.forEach(b => { mn = Math.min(mn, dist(s, b)); }); cur.forEach((t, y) => { if (y > x) mn = Math.min(mn, dist(s, t)); }); });
+        const ejes = cur.filter(s => s % 90 === 0).length; if (!mejor || mn > mejor.mn + 1e-9 || (Math.abs(mn - mejor.mn) < 1e-9 && ejes > mejor.ejes)) mejor = { mn, ejes, s:cur.slice() }; return; }
+      for (let i = ini; i < cand.length; i++){ cur.push(cand[i]); comb(i + 1, cur); cur.pop(); } })(0, []);
+    slots = (mejor ? mejor.s : []).map((s, x) => [s, ns && x === k - 1 ? 1 : 2]);
+  }
+  slots.forEach(([s, cnt]) => { const [dx, dy] = dbDir(s), cx = a.x + dx * R, cy = a.y + dy * R, px = -dy, py = dx;
+    if (cnt === 1) out.push([cx, cy]); else { out.push([cx + px * 3.6, cy + py * 3.6]); out.push([cx - px * 3.6, cy - py * 3.6]); } });
+  return out;
+}
+function dbArCirc(m){
+  const adj = {}; m.bonds.filter(b => b.o === 1.5).forEach(b => { (adj[b.a] = adj[b.a] || []).push(b.b); (adj[b.b] = adj[b.b] || []).push(b.a); });
+  const vistos = new Set(), out = [];
+  Object.keys(adj).map(Number).forEach(s => { const path = [s];
+    (function dfs(u){ if (path.length === 6){ if (adj[u].includes(s)){ const k = path.slice().sort((a, b) => a - b).join(`,`); if (!vistos.has(k)){ vistos.add(k); out.push(path.slice()); } } return; }
+      adj[u].forEach(v => { if (!path.includes(v)){ path.push(v); dfs(v); path.pop(); } }); })(s); });
+  return out.map(ids => { const P = ids.map(i => dbAt(m, i)), cx = P.reduce((s, p) => s + p.x, 0) / 6, cy = P.reduce((s, p) => s + p.y, 0) / 6, r = P.reduce((s, p) => s + Math.hypot(p.x - cx, p.y - cy), 0) / 6; return [cx, cy, r * .58]; });
+}
+function dbInner(m, o = {}){
+  const mode = o.mode || `lewis`, f = v => (+v).toFixed(1); let s = ``;
+  dbArCirc(m).forEach(([cx, cy, r]) => { s += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" class="dbc"/>`; });
+  const lab = new Map(); m.atoms.forEach(a => lab.set(a.i, dbLabel(m, a, mode, o)));
+  m.bonds.forEach(b => { const a = dbAt(m, b.a), c = dbAt(m, b.b); if (!a || !c) return;
+    const dx = c.x - a.x, dy = c.y - a.y, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, sa = dbShort(lab.get(a.i)), sc = dbShort(lab.get(c.i));
+    const x1 = a.x + ux * sa, y1 = a.y + uy * sa, x2 = c.x - ux * sc, y2 = c.y - uy * sc, nx = -uy, ny = ux;
+    const ln = (off, cl = `dbs`) => `<line x1="${f(x1 + nx * off)}" y1="${f(y1 + ny * off)}" x2="${f(x2 + nx * off)}" y2="${f(y2 + ny * off)}" class="${cl}"/>`;
+    if (b.s === `w`) s += `<polygon points="${f(x1)},${f(y1)} ${f(x2 + nx * 5)},${f(y2 + ny * 5)} ${f(x2 - nx * 5)},${f(y2 - ny * 5)}" class="dbw"/>`;
+    else if (b.s === `h`){ for (let k = 1; k <= 6; k++){ const t = k / 7, w = 1 + 4.5 * t, cx = x1 + (x2 - x1) * t, cy = y1 + (y2 - y1) * t; s += `<line x1="${f(cx + nx * w)}" y1="${f(cy + ny * w)}" x2="${f(cx - nx * w)}" y2="${f(cy - ny * w)}" class="dbs thin"/>`; } }
+    else if (b.o === 2) s += ln(-3) + ln(3); else if (b.o === 3) s += ln(0) + ln(-4.2) + ln(4.2); else s += ln(0); });
+  (m.dash || []).forEach(d => { const a = dbAt(m, d.a), c = dbAt(m, d.b); if (a && c){ const dx = c.x - a.x, dy = c.y - a.y, L = Math.hypot(dx, dy) || 1; s += `<line x1="${f(a.x + dx / L * 12)}" y1="${f(a.y + dy / L * 12)}" x2="${f(c.x - dx / L * 12)}" y2="${f(c.y - dy / L * 12)}" class="dbs dsh"/>`; } });
+  m.atoms.forEach(a => { const t = lab.get(a.i);
+    if (o.edit && !t) s += `<circle cx="${f(a.x)}" cy="${f(a.y)}" r="3.6" class="dbv"/>`;
+    if (t) s += `<text x="${f(a.x)}" y="${f(a.y)}" dy=".36em" text-anchor="middle" class="dbt${a.el === `C` && !a.g ? ` c` : ``}">${t}</text>`;
+    if (a.q) s += `<text x="${f(a.x + 9 + 3 * Math.max(0, (t || ``).length - 1))}" y="${f(a.y - 8)}" class="dbch">${dbSup(a.q)}</text>`;
+    if (mode === `lewis`) dbDots(m, a).forEach(([x, y]) => { s += `<circle cx="${f(x)}" cy="${f(y)}" r="2.3" class="dbd"/>`; });
+    if (o.count && mode === `lewis`){ const E = DB_EL[a.el], sm = dbBS(m, a.i), tot = a.d + 2 * sm, ok = tot === dbOct(a) || (E && E.met && a.q > 0 && sm === 0 && a.d === 0); s += `<text x="${f(a.x + 13)}" y="${f(a.y + 24)}" class="dbn ${ok ? `ok` : `no`}">${E && E.met && a.q > 0 && sm === 0 && a.d === 0 ? `✓` : tot}</text>`; }
+    if (o.pend === a.i) s += `<circle cx="${f(a.x)}" cy="${f(a.y)}" r="15" class="dbp"/>`;
+    if (o.mark && o.mark[a.i]) s += `<circle cx="${f(a.x)}" cy="${f(a.y)}" r="16" class="dbm ${o.mark[a.i]}"/>`; });
+  (m.txt || []).forEach(t => { s += `<text x="${f(t.x)}" y="${f(t.y)}" text-anchor="${t.a || `middle`}" class="dbx${t.c ? ` ` + t.c : ``}">${t.t}</text>`; });
+  if (o.prev) s += `<line x1="${f(o.prev[0])}" y1="${f(o.prev[1])}" x2="${f(o.prev[2])}" y2="${f(o.prev[3])}" class="dbs dsh"/>`;
+  return s;
+}
+function dbBox(m, pad = 30){
+  const xs = m.atoms.map(a => a.x).concat((m.txt || []).map(t => t.x)), ys = m.atoms.map(a => a.y).concat((m.txt || []).map(t => t.y));
+  if (!xs.length) return [0, 0, 360, 260]; const x0 = Math.min(...xs) - pad, y0 = Math.min(...ys) - pad, x1 = Math.max(...xs) + pad, y1 = Math.max(...ys) + pad;
+  let w = x1 - x0, h = y1 - y0; if (w < 150){ const d = (150 - w) / 2; return [x0 - d, y0 - (h < 110 ? (110 - h) / 2 : 0), 150, Math.max(h, 110)]; }
+  return [x0, y0, w, h];
+}
+function dbSvg(m, o = {}){
+  const [x, y, w, h] = o.vb || dbBox(m, o.pad), mw = o.max || Math.round(Math.min(420, w * 1.25));
+  return `<svg viewBox="${(+x).toFixed(0)} ${(+y).toFixed(0)} ${(+w).toFixed(0)} ${(+h).toFixed(0)}" class="dbsvg" role="img" aria-label="${(o.aria || `Estructura de ${dbFormula(dbPrep(m, o.mode || `lewis`), o.mode || `lewis`)}`).replace(/"/g, `'`)}" style="max-width:${mw}px">${dbInner(m, o)}</svg>`;
+}
+
+/* ===================== DIBUJAR: BIBLIOTECA DE COMPUESTOS ===================== */
+
+/* ---------- átomos para símbolos de Lewis (electrones de valencia = e) ---------- */
+const DB_ATOMOS = [`H`,`Li`,`Be`,`B`,`C`,`N`,`O`,`F`,`Ne`,`Na`,`Mg`,`Al`,`P`,`S`,`Cl`,`K`,`Ca`,`Br`];
+const DB_ATNOM = { H:`hidrógeno`, Li:`litio`, Be:`berilio`, B:`boro`, C:`carbono`, N:`nitrógeno`, O:`oxígeno`, F:`flúor`, Ne:`neón`, Na:`sodio`, Mg:`magnesio`, Al:`aluminio`, P:`fósforo`, S:`azufre`, Cl:`cloro`, K:`potasio`, Ca:`calcio`, Br:`bromo` };
+const DB_GRUPO = { 1:`1A`, 2:`2A`, 3:`3A`, 4:`4A`, 5:`5A`, 6:`6A`, 7:`7A`, 8:`8A` };
+function dbAtomo(el, conPuntos = true){ const m = dbNew(); dbAdd(m, el, 180, 130, { d:conPuntos ? DB_EL[el].e : 0 }); return m; }
+
+/* ---------- compuestos iónicos: [elemento, carga, cantidad] ---------- */
+const DB_ION = [
+  { f:`LiF`, n:`fluoruro de litio`, c:[`Li`, 1, 1], a:[`F`, -1, 1] }, { f:`NaCl`, n:`cloruro de sodio`, c:[`Na`, 1, 1], a:[`Cl`, -1, 1] },
+  { f:`KBr`, n:`bromuro de potasio`, c:[`K`, 1, 1], a:[`Br`, -1, 1] }, { f:`MgO`, n:`óxido de magnesio`, c:[`Mg`, 2, 1], a:[`O`, -2, 1] },
+  { f:`CaO`, n:`óxido de calcio`, c:[`Ca`, 2, 1], a:[`O`, -2, 1] }, { f:`MgCl₂`, n:`cloruro de magnesio`, c:[`Mg`, 2, 1], a:[`Cl`, -1, 2] },
+  { f:`CaF₂`, n:`fluoruro de calcio`, c:[`Ca`, 2, 1], a:[`F`, -1, 2] }, { f:`Na₂O`, n:`óxido de sodio`, c:[`Na`, 1, 2], a:[`O`, -2, 1] },
+  { f:`K₂S`, n:`sulfuro de potasio`, c:[`K`, 1, 2], a:[`S`, -2, 1] }, { f:`Li₂O`, n:`óxido de litio`, c:[`Li`, 1, 2], a:[`O`, -2, 1] },
+  { f:`AlCl₃`, n:`cloruro de aluminio`, c:[`Al`, 3, 1], a:[`Cl`, -1, 3] }, { f:`CaS`, n:`sulfuro de calcio`, c:[`Ca`, 2, 1], a:[`S`, -2, 1] },
+  { f:`MgBr₂`, n:`bromuro de magnesio`, c:[`Mg`, 2, 1], a:[`Br`, -1, 2] }
+];
+function dbIones(it){
+  const m = dbNew(); const list = []; for (let k = 0; k < it.c[2]; k++) list.push(it.c); for (let k = 0; k < it.a[2]; k++) list.push(it.a);
+  list.forEach(([el, q], k) => dbAdd(m, el, 70 + 75 * k, 130, { q, d:q > 0 ? 0 : 8 })); return m;
+}
+const dbAtomosDe = it => { const m = dbNew(); const list = []; for (let k = 0; k < it.c[2]; k++) list.push(it.c[0]); for (let k = 0; k < it.a[2]; k++) list.push(it.a[0]); list.forEach((el, k) => dbAdd(m, el, 70 + 75 * k, 130, { d:DB_EL[el].e })); return m; };
+
+/* ---------- moléculas e iones poliatómicos (estructuras de Lewis) ----------
+   A: [elemento, x, y, extras] · B: [átomo, átomo, orden, estilo] · c: átomo central para la geometría · polar: true/false/null */
+const DB_MOL = [
+  { k:`H2`, f:`H₂`, n:`hidrógeno`, A:[[`H`,150,130],[`H`,210,130]], B:[[0,1,1]], polar:false },
+  { k:`Cl2`, f:`Cl₂`, n:`cloro`, A:[[`Cl`,145,130],[`Cl`,215,130]], B:[[0,1,1]], polar:false },
+  { k:`O2`, f:`O₂`, n:`oxígeno`, A:[[`O`,145,130],[`O`,215,130]], B:[[0,1,2]], polar:false },
+  { k:`N2`, f:`N₂`, n:`nitrógeno`, A:[[`N`,145,130],[`N`,215,130]], B:[[0,1,3]], polar:false },
+  { k:`HCl`, f:`HCl`, n:`cloruro de hidrógeno`, A:[[`H`,140,130],[`Cl`,210,130]], B:[[0,1,1]], polar:true },
+  { k:`HF`, f:`HF`, n:`fluoruro de hidrógeno`, A:[[`H`,145,130],[`F`,205,130]], B:[[0,1,1]], polar:true },
+  { k:`H2O`, f:`H₂O`, n:`agua`, A:[[`O`,180,100],[`H`,134,136],[`H`,226,136]], B:[[0,1,1],[0,2,1]], c:0, polar:true },
+  { k:`H2S`, f:`H₂S`, n:`sulfuro de hidrógeno`, A:[[`S`,180,100],[`H`,134,136],[`H`,226,136]], B:[[0,1,1],[0,2,1]], c:0, polar:true },
+  { k:`NH3`, f:`NH₃`, n:`amoníaco`, A:[[`N`,180,100],[`H`,130,140],[`H`,180,160],[`H`,230,140]], B:[[0,1,1],[0,2,1],[0,3,1]], c:0, polar:true },
+  { k:`CH4`, f:`CH₄`, n:`metano`, A:[[`C`,180,130],[`H`,180,80],[`H`,130,130],[`H`,180,180],[`H`,230,130]], B:[[0,1,1],[0,2,1],[0,3,1],[0,4,1]], c:0, polar:false },
+  { k:`CCl4`, f:`CCl₄`, n:`tetracloruro de carbono`, A:[[`C`,180,130],[`Cl`,180,78],[`Cl`,128,130],[`Cl`,180,182],[`Cl`,232,130]], B:[[0,1,1],[0,2,1],[0,3,1],[0,4,1]], c:0, polar:false },
+  { k:`CO2`, f:`CO₂`, n:`dióxido de carbono`, A:[[`O`,110,130],[`C`,180,130],[`O`,250,130]], B:[[0,1,2],[1,2,2]], c:1, polar:false },
+  { k:`BF3`, f:`BF₃`, n:`trifluoruro de boro`, A:[[`B`,180,122],[`F`,180,66],[`F`,132,150],[`F`,228,150]], B:[[0,1,1],[0,2,1],[0,3,1]], c:0, polar:false, sinOcteto:true },
+  { k:`HCN`, f:`HCN`, n:`cianuro de hidrógeno`, A:[[`H`,110,130],[`C`,170,130],[`N`,235,130]], B:[[0,1,1],[1,2,3]], c:1, polar:true },
+  { k:`CH2O`, f:`CH₂O`, n:`formaldehído`, A:[[`C`,180,124],[`O`,180,70],[`H`,138,154],[`H`,222,154]], B:[[0,1,2],[0,2,1],[0,3,1]], c:0, polar:true },
+  { k:`C2H2`, f:`C₂H₂`, n:`etino (acetileno)`, A:[[`H`,90,130],[`C`,150,130],[`C`,210,130],[`H`,270,130]], B:[[0,1,1],[1,2,3],[2,3,1]], c:1, polar:false, cn:`cada carbono` },
+  { k:`C2H4`, f:`C₂H₄`, n:`eteno (etileno)`, A:[[`C`,150,130],[`C`,210,130],[`H`,112,100],[`H`,112,160],[`H`,248,100],[`H`,248,160]], B:[[0,1,2],[0,2,1],[0,3,1],[1,4,1],[1,5,1]], c:0, polar:false, cn:`cada carbono` },
+  { k:`C2H6`, f:`C₂H₆`, n:`etano`, A:[[`C`,150,130],[`C`,210,130],[`H`,150,82],[`H`,102,130],[`H`,150,178],[`H`,210,82],[`H`,258,130],[`H`,210,178]], B:[[0,1,1],[0,2,1],[0,3,1],[0,4,1],[1,5,1],[1,6,1],[1,7,1]], c:0, polar:false, cn:`cada carbono` },
+  { k:`CH3OH`, f:`CH₃OH`, n:`metanol`, A:[[`C`,150,130],[`O`,215,130],[`H`,150,80],[`H`,100,130],[`H`,150,180],[`H`,215,80]], B:[[0,1,1],[0,2,1],[0,3,1],[0,4,1],[1,5,1]], polar:true },
+  { k:`CH3Cl`, f:`CH₃Cl`, n:`clorometano`, A:[[`C`,170,130],[`Cl`,235,130],[`H`,170,80],[`H`,120,130],[`H`,170,180]], B:[[0,1,1],[0,2,1],[0,3,1],[0,4,1]], c:0, polar:true },
+  { k:`NH4`, f:`NH₄⁺`, n:`ion amonio`, A:[[`N`,180,130,{ q:1 }],[`H`,180,80],[`H`,130,130],[`H`,180,180],[`H`,230,130]], B:[[0,1,1],[0,2,1],[0,3,1],[0,4,1]], c:0, polar:null },
+  { k:`H3O`, f:`H₃O⁺`, n:`ion hidronio`, A:[[`O`,180,100,{ q:1 }],[`H`,130,140],[`H`,180,160],[`H`,230,140]], B:[[0,1,1],[0,2,1],[0,3,1]], c:0, polar:null },
+  { k:`OH`, f:`OH⁻`, n:`ion hidróxido`, A:[[`O`,150,130,{ q:-1 }],[`H`,210,130]], B:[[0,1,1]], polar:null },
+  { k:`CO3`, f:`CO₃²⁻`, n:`ion carbonato`, A:[[`C`,180,124],[`O`,180,70],[`O`,134,152,{ q:-1 }],[`O`,226,152,{ q:-1 }]], B:[[0,1,2],[0,2,1],[0,3,1]], c:0, polar:null },
+  { k:`NO3`, f:`NO₃⁻`, n:`ion nitrato`, A:[[`N`,180,124,{ q:1 }],[`O`,180,70],[`O`,134,152,{ q:-1 }],[`O`,226,152,{ q:-1 }]], B:[[0,1,2],[0,2,1],[0,3,1]], c:0, polar:null }
+];
+function dbMolDe(it){
+  const m = dbNew(); const ids = it.A.map(([el, x, y, ex]) => dbAdd(m, el, x, y, Object.assign({ auto:1 }, ex || {})));
+  it.B.forEach(([a, b, o, s]) => dbBond(m, ids[a], ids[b], o, s)); dbAuto(m); m.ids = ids; return m;
+}
+const DB_MOLK = k => DB_MOL.find(x => x.k === k);
+
+/* ---------- hidrocarburos: nombre IUPAC y especificación (numeración ya IUPAC) ---------- */
+const DB_HC = [
+  /* alcanos */
+  { n:`propano`, s:{ n:3, b:[1,1] } }, { n:`butano`, s:{ n:4, b:[1,1,1] } }, { n:`pentano`, s:{ n:5, b:[1,1,1,1] } }, { n:`hexano`, s:{ n:6, b:[1,1,1,1,1] } },
+  { n:`heptano`, s:{ n:7, b:[1,1,1,1,1,1] } }, { n:`octano`, s:{ n:8, b:[1,1,1,1,1,1,1] } },
+  { n:`2-metilpropano`, s:{ n:3, b:[1,1], s:{ 2:[`M`] } } }, { n:`2-metilbutano`, s:{ n:4, b:[1,1,1], s:{ 2:[`M`] } } },
+  { n:`2,2-dimetilpropano`, s:{ n:3, b:[1,1], s:{ 2:[`M`,`M`] } } }, { n:`2-metilpentano`, s:{ n:5, b:[1,1,1,1], s:{ 2:[`M`] } } },
+  { n:`3-metilpentano`, s:{ n:5, b:[1,1,1,1], s:{ 3:[`M`] } } }, { n:`2,3-dimetilbutano`, s:{ n:4, b:[1,1,1], s:{ 2:[`M`], 3:[`M`] } } },
+  { n:`2,2-dimetilbutano`, s:{ n:4, b:[1,1,1], s:{ 2:[`M`,`M`] } } }, { n:`3-etilpentano`, s:{ n:5, b:[1,1,1,1], s:{ 3:[`Et`] } } },
+  { n:`2,3-dimetilpentano`, s:{ n:5, b:[1,1,1,1], s:{ 2:[`M`], 3:[`M`] } } }, { n:`3-metilhexano`, s:{ n:6, b:[1,1,1,1,1], s:{ 3:[`M`] } } },
+  { n:`2,2,4-trimetilpentano`, s:{ n:5, b:[1,1,1,1], s:{ 2:[`M`,`M`], 4:[`M`] } } },
+  /* alquenos */
+  { n:`eteno`, s:{ n:2, b:[2] } }, { n:`propeno`, s:{ n:3, b:[2,1] } }, { n:`1-buteno`, s:{ n:4, b:[2,1,1] } }, { n:`2-buteno`, s:{ n:4, b:[1,2,1] } },
+  { n:`1-penteno`, s:{ n:5, b:[2,1,1,1] } }, { n:`2-penteno`, s:{ n:5, b:[1,2,1,1] } }, { n:`1-hexeno`, s:{ n:6, b:[2,1,1,1,1] } },
+  { n:`2-hexeno`, s:{ n:6, b:[1,2,1,1,1] } }, { n:`3-hexeno`, s:{ n:6, b:[1,1,2,1,1] } },
+  { n:`2-metilpropeno`, s:{ n:3, b:[2,1], s:{ 2:[`M`] } } }, { n:`2-metil-1-buteno`, s:{ n:4, b:[2,1,1], s:{ 2:[`M`] } } },
+  { n:`3-metil-1-buteno`, s:{ n:4, b:[2,1,1], s:{ 3:[`M`] } } }, { n:`2-metil-2-buteno`, s:{ n:4, b:[1,2,1], s:{ 2:[`M`] } } },
+  { n:`4-metil-2-penteno`, s:{ n:5, b:[1,2,1,1], s:{ 4:[`M`] } } }, { n:`2,3-dimetil-2-buteno`, s:{ n:4, b:[1,2,1], s:{ 2:[`M`], 3:[`M`] } } },
+  /* alquinos */
+  { n:`etino`, s:{ n:2, b:[3] } }, { n:`propino`, s:{ n:3, b:[3,1] } }, { n:`1-butino`, s:{ n:4, b:[3,1,1] } }, { n:`2-butino`, s:{ n:4, b:[1,3,1] } },
+  { n:`1-pentino`, s:{ n:5, b:[3,1,1,1] } }, { n:`2-pentino`, s:{ n:5, b:[1,3,1,1] } }, { n:`1-hexino`, s:{ n:6, b:[3,1,1,1,1] } },
+  { n:`2-hexino`, s:{ n:6, b:[1,3,1,1,1] } }, { n:`3-hexino`, s:{ n:6, b:[1,1,3,1,1] } },
+  { n:`3-metil-1-butino`, s:{ n:4, b:[3,1,1], s:{ 3:[`M`] } } }, { n:`4-metil-1-pentino`, s:{ n:5, b:[3,1,1,1], s:{ 4:[`M`] } } },
+  { n:`4-metil-2-pentino`, s:{ n:5, b:[1,3,1,1], s:{ 4:[`M`] } } },
+  /* cíclicos */
+  { n:`ciclopropano`, r:{ r:3, b:[1,1,1] } }, { n:`ciclobutano`, r:{ r:4, b:[1,1,1,1] } }, { n:`ciclopentano`, r:{ r:5, b:[1,1,1,1,1] } },
+  { n:`ciclohexano`, r:{ r:6, b:[1,1,1,1,1,1] } }, { n:`ciclohexeno`, r:{ r:6, b:[2,1,1,1,1,1] } }, { n:`metilciclohexano`, r:{ r:6, b:[1,1,1,1,1,1], s:{ 1:[`M`] } } }
+];
+const dbHCMol = it => it.s ? dbChain(it.s) : dbRing(it.r);
+const dbHCFam = it => { const m = dbPrep(dbHCMol(it), `esq`); const o = { 2:0, 3:0 }; m.bonds.forEach(b => { if (o[b.o] !== undefined) o[b.o]++; }); return it.r ? (o[2] ? `cicloalqueno` : `cicloalcano`) : o[3] ? `alquino` : o[2] ? `alqueno` : `alcano`; };
+const dbHCForm = it => dbFormula(dbPrep(dbHCMol(it), `esq`), `esq`);
+
+/* ---------- aromáticos: nombre y sustituyentes por posición del anillo (1 a 6) ---------- */
+const DB_AR = [
+  { n:`fluorobenceno`, s:{ 1:[`F`] } }, { n:`clorobenceno`, s:{ 1:[`Cl`] } }, { n:`bromobenceno`, s:{ 1:[`Br`] } }, { n:`nitrobenceno`, s:{ 1:[`NO2`] } },
+  { n:`tolueno`, s:{ 1:[`M`] } }, { n:`etilbenceno`, s:{ 1:[`Et`] } }, { n:`fenol`, s:{ 1:[`OH`] } }, { n:`anilina`, s:{ 1:[`NH2`] } },
+  { n:`ácido benzoico`, s:{ 1:[`COOH`] } }, { n:`ácido bencenosulfónico`, s:{ 1:[`SO3H`] } }, { n:`alilbenceno`, s:{ 1:[`All`] } }, { n:`octilbenceno`, s:{ 1:[`Oct`] } },
+  { n:`o-xileno (1,2-dimetilbenceno)`, s:{ 1:[`M`], 2:[`M`] } }, { n:`m-xileno (1,3-dimetilbenceno)`, s:{ 1:[`M`], 3:[`M`] } }, { n:`p-xileno (1,4-dimetilbenceno)`, s:{ 1:[`M`], 4:[`M`] } },
+  { n:`1,3,5-trimetilbenceno`, s:{ 1:[`M`], 3:[`M`], 5:[`M`] } }, { n:`2,4,6-trinitrotolueno (TNT)`, s:{ 1:[`M`], 2:[`NO2`], 4:[`NO2`], 6:[`NO2`] } },
+  { n:`ácido 4-clorobenzoico`, s:{ 1:[`COOH`], 4:[`Cl`] } }, { n:`3-isopropilfenol (m-isopropilfenol)`, s:{ 1:[`OH`], 3:[`iPr`] } },
+  { n:`1-bromo-3,5-dimetilbenceno`, s:{ 1:[`Br`], 3:[`M`], 5:[`M`] } }, { n:`2-metilfenol (o-cresol)`, s:{ 1:[`OH`], 2:[`M`] } },
+  { n:`4-metilfenol (p-cresol)`, s:{ 1:[`OH`], 4:[`M`] } }, { n:`4-nitrofenol (p-nitrofenol)`, s:{ 1:[`OH`], 4:[`NO2`] } },
+  { n:`2,4-dinitrofenol`, s:{ 1:[`OH`], 2:[`NO2`], 4:[`NO2`] } }, { n:`4-cloroanilina (p-cloroanilina)`, s:{ 1:[`NH2`], 4:[`Cl`] } },
+  { n:`1-cloro-4-nitrobenceno`, s:{ 1:[`Cl`], 4:[`NO2`] } }, { n:`ácido 3-nitrobenzoico (m-nitrobenzoico)`, s:{ 1:[`COOH`], 3:[`NO2`] } },
+  { n:`1,4-diclorobenceno (p-diclorobenceno)`, s:{ 1:[`Cl`], 4:[`Cl`] } }, { n:`3-bromotolueno (m-bromotolueno)`, s:{ 1:[`M`], 3:[`Br`] } },
+  { n:`ácido 2-hidroxibenzoico (ácido salicílico)`, s:{ 1:[`COOH`], 2:[`OH`] } }
+];
+const dbARMol = it => dbBenceno(it.s);
+
+/* ===================== DIBUJAR: LECCIONES ===================== */
+const dibFig = (m, mode, cap, max) => `<figure class="dbfig">${dbSvg(m, { mode, max:max || 210 })}<figcaption>${cap}</figcaption></figure>`;
+const dibTabla = (cab, filas) => `<div class="scroll"><table class="tbl"><thead><tr>${cab.map(c => `<th>${c}</th>`).join(``)}</tr></thead><tbody>${filas.map(f => `<tr>${f.map(c => `<td>${c}</td>`).join(``)}</tr>`).join(``)}</tbody></table></div>`;
+const dibLista = (xs, ol) => `<${ol ? `ol` : `ul`} class="dblst">${xs.map(x => `<li>${x}</li>`).join(``)}</${ol ? `ol` : `ul`}>`;
+const dibRegla = t => `<p class="dbgold"><b>Regla de oro:</b> ${t}</p>`;
+const dibTrampa = xs => `<div class="dbtrap"><b>Trampas frecuentes</b>${dibLista(xs)}</div>`;
+
+/* composiciones: átomos → iones (con flecha) */
+function dibIonFig(it){
+  const m = dbNew(), nC = it.c[2], nA = it.a[2], n = nC + nA, w = 62, x0 = 40;
+  const lista = [].concat(Array(nC).fill(it.c), Array(nA).fill(it.a));
+  lista.forEach(([el], k) => dbAdd(m, el, x0 + w * k, 130, { d:DB_EL[el].e }));
+  const xf = x0 + w * (n - 1) + 52; m.txt = [{ x:xf, y:136, t:`→`, c:`dbflecha` }];
+  lista.forEach(([el, q], k) => dbAdd(m, el, xf + 58 + w * k, 130, { q, d:q > 0 ? 0 : 8 }));
+  return m;
+}
+/* tetraedro y pirámide con enlaces en cuña (hacia el frente) y punteados (hacia atrás) */
+function dibCH4_3D(){
+  const m = dbNew(), c = dbAdd(m, `C`, 180, 130, { d:0 }), h = (x, y) => dbAdd(m, `H`, x, y, { d:0 });
+  dbBond(m, c, h(180, 70), 1); dbBond(m, c, h(132, 168), 1); dbBond(m, c, h(238, 108), 1, `w`); dbBond(m, c, h(222, 176), 1, `h`); return m;
+}
+function dibNH3_3D(){
+  const m = dbNew(), n = dbAdd(m, `N`, 180, 100, { d:2 }), h = (x, y) => dbAdd(m, `H`, x, y, { d:0 });
+  dbBond(m, n, h(130, 146), 1); dbBond(m, n, h(232, 146), 1); dbBond(m, n, h(184, 164), 1, `w`); return m;
+}
+function dibHClDimero(){
+  const m = dbNew(), h1 = dbAdd(m, `H`, 60, 130, { d:0 }), c1 = dbAdd(m, `Cl`, 125, 130, { d:6 }), h2 = dbAdd(m, `H`, 235, 130, { d:0 }), c2 = dbAdd(m, `Cl`, 300, 130, { d:6 });
+  dbBond(m, h1, c1, 1); dbBond(m, h2, c2, 1); m.dash = [{ a:c1, b:h2 }];
+  m.txt = [{ x:60, y:104, t:`δ⁺`, c:`dbdel` }, { x:125, y:104, t:`δ⁻`, c:`dbdel` }, { x:235, y:104, t:`δ⁺`, c:`dbdel` }, { x:300, y:104, t:`δ⁻`, c:`dbdel` }, { x:180, y:122, t:`puente de H`, c:`dbpeq` }];
+  return m;
+}
+function dibNumAnillo(subs, nums){
+  const m = dbBenceno(subs), ring = m.atoms.slice(0, 6); m.txt = (m.txt || []).concat(ring.map((a, k) => ({ x:180 + (a.x - 180) * .62, y:130 + (a.y - 130) * .62 + 4, t:String(nums ? nums[k] : k + 1), c:`dbnum` }))); return m;
+}
+const dibMolFig = (k, cap, max) => { const it = DB_MOLK(k); return dibFig(dbMolDe(it), `lewis`, cap || `${it.f}: ${it.n}`, max); };
+const dibHCFig = (n, cap, max) => dibFig(dbHCMol(DB_HC.find(x => x.n === n)), `esq`, cap || n, max);
+const dibARFig = (n, cap, max) => dibFig(dbARMol(DB_AR.find(x => x.n === n)), `esq`, cap || n, max || 170);
+
+const DIB_LES = [
+  { id:`atomo`, n:`El símbolo de Lewis de un átomo`, cat:`atomo`, res:`Símbolo del elemento y un punto por cada electrón de valencia.`,
+    html:() => `<p>Un <b>símbolo de Lewis</b> es el símbolo del elemento rodeado de puntos. Cada punto es un <b>electrón de valencia</b>, un electrón de la última capa. Los electrones internos no se dibujan.</p>
+      ${dibLista([`Busca el <b>grupo</b> del elemento en la tabla periódica: el número del grupo (1A a 8A) es su número de electrones de valencia. El helio es la excepción: tiene 2.`, `Escribe el <b>símbolo</b> del elemento y revísalo: Mg (magnesio) no es Hg (mercurio).`, `Coloca los puntos <b>de uno en uno, un punto por lado</b>: arriba, derecha, abajo, izquierda.`, `Cuando ya hay un punto en cada lado (a partir del quinto electrón) empieza a formar <b>pares</b>.`, `Cuenta: los puntos deben ser iguales a los electrones de valencia.`], true)}
+      <div class="dbrow">${[`Li`,`Be`,`B`,`C`,`N`,`O`,`F`,`Ne`].map(e => dibFig(dbAtomo(e), `lewis`, `${e}: ${DB_EL[e].e} e⁻ (${DB_GRUPO[DB_EL[e].e]})`, 135)).join(``)}</div>
+      ${dibTrampa([`Los puntos son los electrones de <b>valencia</b>, no el número atómico.`, `No juntes los puntos en un solo lado: primero uno por lado.`])}
+      ${dibRegla(`un punto por lado y, desde el quinto, pares.`)}` },
+  { id:`ionico`, n:`Compuestos iónicos: de átomos a iones`, cat:`ionico`, res:`El metal cede, el no metal recibe; las cargas suman cero.`,
+    html:() => `<p>Un compuesto iónico se forma cuando un <b>metal cede electrones a un no metal</b>. Los electrones se <b>transfieren</b>: el metal queda con carga positiva (catión) y el no metal con carga negativa (anión). Los iones de carga opuesta se atraen.</p>
+      ${dibLista([`Dibuja el símbolo de Lewis de cada átomo (Li con 1 punto, F con 7).`, `El metal cede todos sus electrones de valencia: queda <b>sin puntos</b> y con carga positiva igual a los electrones cedidos (Li → Li⁺, Mg → Mg²⁺).`, `El no metal recibe electrones hasta tener <b>8 puntos</b> y queda con carga negativa (F → F⁻, O → O²⁻).`, `Ajusta la cantidad de iones para que las cargas <b>sumen cero</b>: MgCl₂ = 1 Mg²⁺ + 2 Cl⁻; Na₂O = 2 Na⁺ + 1 O²⁻.`, `Al disolverse en agua los iones se separan: MgCl₂ → Mg²⁺ + 2 Cl⁻.`], true)}
+      <div class="dbrow">${dibFig(dibIonFig(DB_ION[0]), `lewis`, `LiF: Li cede 1 e⁻ y F lo recibe`, 330)}${dibFig(dibIonFig(DB_ION[5]), `lewis`, `MgCl₂: Mg cede 2 e⁻, uno a cada Cl`, 400)}</div>
+      ${dibTrampa([`Cada cloruro es un ion independiente: <b>2 Cl⁻</b>, no “Cl₂⁻”.`, `El calcio cede 2 electrones: es <b>Ca²⁺</b>, no Ca⁺.`, `Un ion poliatómico como el carbonato (CO₃²⁻) es <b>covalente por dentro</b> y <b>iónico</b> con el calcio.`])}
+      <div class="dbrow">${dibMolFig(`CO3`, `CO₃²⁻: covalente por dentro (el calcio lo enlaza de forma iónica)`, 190)}</div>
+      ${dibRegla(`el metal cede y se queda sin puntos; el no metal recibe y queda con 8.`)}` },
+  { id:`lewis`, n:`Enlace covalente: estructuras de Lewis paso a paso`, cat:`lewis`, res:`Cuenta electrones, completa octetos y verifica.`,
+    html:() => `<p>En el <b>enlace covalente</b> los átomos <b>comparten</b> pares de electrones, normalmente entre no metales. Cada par compartido se dibuja como una línea (−) y los electrones que no se comparten, como puntos.</p>
+      ${dibLista([`Suma los <b>electrones de valencia</b> de todos los átomos (si es un ion, suma uno por cada carga negativa y resta uno por cada positiva).`, `Elige el <b>átomo central</b> (el menos electronegativo; nunca el H) y únelo con los demás con enlaces sencillos.`, `Completa el <b>octeto</b> de los átomos de los lados con puntos (el H solo necesita 2).`, `Coloca los electrones que sobren en el átomo central.`, `Si al central le faltan electrones, forma <b>enlaces dobles o triples</b>. Verifica: cada átomo con 8 (el H con 2).`], true)}
+      ${dibTabla([`Molécula`,`Electrones de valencia`,`Resultado`], [[`H₂O`, `6 + 2 × 1 = 8`, `dos enlaces sencillos y 2 pares libres en el O`], [`CO₂`, `4 + 2 × 6 = 16`, `dos dobles enlaces C=O`], [`N₂`, `2 × 5 = 10`, `un enlace triple N≡N`], [`NH₃`, `5 + 3 × 1 = 8`, `tres enlaces sencillos y 1 par libre en el N`], [`C₂H₄`, `2 × 4 + 4 × 1 = 12`, `un doble enlace C=C`]])}
+      <div class="dbrow">${[`H2O`,`CO2`,`N2`,`NH3`,`C2H4`].map(k => dibMolFig(k, DB_MOLK(k).f, 215)).join(``)}</div>
+      <p><b>Polaridad.</b> Si los dos átomos son distintos, el más electronegativo atrae más los electrones: el enlace es <b>covalente polar</b> (δ⁻ en el más electronegativo, δ⁺ en el otro). Entre átomos iguales es <b>no polar</b>. El <b>puente de hidrógeno</b> une el H (δ⁺) de una molécula con un átomo muy electronegativo (δ⁻) de otra, y se dibuja con una línea punteada.</p>
+      <div class="dbrow">${dibFig(dibHClDimero(), `lewis`, `HCl: enlace polar y puente de hidrógeno entre dos moléculas`, 380)}</div>
+      ${dibTrampa([`El eteno (C₂H₄) lleva el <b>doble enlace C=C</b> desde que se dibuja la formación del compuesto.`, `El hidrógeno solo comparte 1 par: nunca tiene puntos.`, `Marca siempre δ⁺ y δ⁻ cuando dibujes un puente de hidrógeno.`])}
+      ${dibRegla(`cuenta electrones, completa octetos (H con 2) y verifica el total.`)}` },
+  { id:`geo`, n:`Geometría molecular (RPECV)`, cat:`geo`, res:`Cuenta dominios: átomos enlazados + pares libres.`,
+    html:() => `<p>La forma de una molécula depende de cuántos <b>dominios de electrones</b> rodean al átomo central. Cada átomo enlazado cuenta como <b>1 dominio</b> (da igual que el enlace sea sencillo, doble o triple) y cada <b>par libre</b> cuenta como 1. Los dominios se alejan lo más posible entre sí.</p>
+      ${dibTabla([`Átomos enlazados`,`Pares libres`,`Geometría`,`Ángulo`,`Hibridación`,`Ejemplos`], [[`2`, `0`, `lineal`, `180°`, `sp`, `CO₂, C₂H₂, HCN`], [`3`, `0`, `trigonal plana`, `120°`, `sp²`, `BF₃, CH₂O, C₂H₄ (cada C)`], [`4`, `0`, `tetraédrica`, `109.5°`, `sp³`, `CH₄, CCl₄, NH₄⁺`], [`3`, `1`, `piramidal trigonal`, `≈ 107°`, `sp³`, `NH₃`], [`2`, `2`, `angular`, `≈ 104.5°`, `sp³`, `H₂O`]])}
+      <div class="dbrow">${[`CO2`,`BF3`].map(k => dibMolFig(k, DB_MOLK(k).f, 215)).join(``)}${dibFig(dibCH4_3D(), `lewis`, `CH₄: tetraédrica (cuña = hacia ti, punteado = hacia atrás)`, 190)}${dibFig(dibNH3_3D(), `lewis`, `NH₃: piramidal trigonal`, 190)}${dibMolFig(`H2O`, `H₂O: angular`, 215)}</div>
+      <p><b>Orden de repulsión:</b> par libre–par libre &gt; par libre–par enlazante &gt; enlazante–enlazante. Por eso el NH₃ (≈ 107°) y el H₂O (≈ 104.5°) tienen ángulos menores que 109.5°.</p>
+      <p><b>Polaridad.</b> Una molécula es <b>polar</b> si tiene enlaces polares y su forma no los cancela (H₂O, NH₃). Si es simétrica los cancela y es <b>no polar</b> (CO₂, CH₄, BF₃, C₂H₄).</p>
+      ${dibRegla(`primero cuenta los dominios del átomo central; la geometría, el ángulo y la hibridación salen de esa cuenta.`)}` },
+  { id:`hc`, n:`Hidrocarburos: del nombre al dibujo`, cat:`hc`, res:`Raíz → carbonos, terminación → enlaces, números → posición.`,
+    html:() => `${dibTabla([`Tipo`,`Fórmula general`,`Enlace`,`Hibridación`,`Geometría`,`Ángulo`], [[`alcano`, `CₙH₂ₙ₊₂`, `sencillo C−C`, `sp³`, `tetraédrica`, `109.5°`], [`alqueno`, `CₙH₂ₙ`, `doble C=C`, `sp²`, `trigonal plana`, `120°`], [`alquino`, `CₙH₂ₙ₋₂`, `triple C≡C`, `sp`, `lineal`, `180°`]])}
+      <p>La hibridación y la geometría se miden <b>carbono por carbono</b>: en el 1-buteno los dos carbonos del doble enlace son sp² y los otros dos son sp³.</p>
+      <p><b>Del nombre al dibujo:</b></p>
+      ${dibLista([`La <b>raíz</b> dice cuántos carbonos tiene la cadena principal: met 1, et 2, prop 3, but 4, pent 5, hex 6, hept 7, oct 8.`, `La <b>terminación</b> dice los enlaces: <b>-ano</b> todos sencillos, <b>-eno</b> un doble, <b>-ino</b> un triple. El número antes de -eno o -ino indica en qué carbono empieza.`, `Numera la cadena desde el extremo que le dé el <b>número más bajo</b> al enlace múltiple (o a las ramificaciones).`, `Coloca los sustituyentes (metil, etil) en los carbonos que indican los números.`, `Completa con hidrógenos hasta que cada carbono tenga <b>4 enlaces</b> (en la fórmula esquelética no se dibujan).`], true)}
+      <p>En la <b>fórmula esquelética</b> la cadena se dibuja en zigzag: cada vértice y cada extremo es un carbono y las ramas salen hacia arriba o hacia abajo. En la <b>fórmula semidesarrollada</b> cada carbono lleva sus hidrógenos (H = 4 − enlaces): <b>CH₃−CH₂−CH=CH₂</b>.</p>
+      <div class="dbrow">${[`propano`,`2-metilpentano`,`1-buteno`,`2-butino`,`ciclohexano`].map(n => dibHCFig(n, ({ propano:`propano`, '2-metilpentano':`2-metilpentano`, '1-buteno':`1-buteno · CH₂=CH−CH₂−CH₃`, '2-butino':`2-butino · lineal (180°)`, ciclohexano:`ciclohexano` })[n], 235)).join(``)}</div>
+      ${dibTrampa([`Los alquinos son <b>lineales</b>: C−C≡C−C va en línea recta.`, `Un carbono con un doble enlace y dos sencillos lleva <b>1 H</b>; con un triple y uno sencillo, 1 H; el CH₃ de un extremo lleva 3.`, `En el nombre, el número de la ramificación se cuenta desde el extremo que da el número más bajo al enlace múltiple.`])}
+      ${dibRegla(`raíz = carbonos, terminación = enlaces, números = posiciones; cada carbono cierra 4 enlaces.`)}` },
+  { id:`arom`, n:`Aromáticos: el benceno y sus derivados`, cat:`arom`, res:`Hexágono con círculo; sustituyentes hacia afuera; orto, meta, para.`,
+    html:() => `<p>El <b>benceno</b> (C₆H₆) es un anillo plano de 6 carbonos sp² con ángulos de 120°. Sus electrones π están <b>deslocalizados</b>: por eso se dibuja un círculo dentro del hexágono. Cada vértice es un carbono con un H, salvo donde hay un sustituyente.</p>
+      <div class="dbrow">${dibFig(dibNumAnillo({}), `esq`, `benceno C₆H₆`, 200)}${dibFig(dibNumAnillo({ 1:[`M`], 2:[`M`] }), `esq`, `orto: posiciones 1 y 2`, 215)}${dibFig(dibNumAnillo({ 1:[`M`], 3:[`M`] }), `esq`, `meta: posiciones 1 y 3`, 215)}${dibFig(dibNumAnillo({ 1:[`M`], 4:[`M`] }), `esq`, `para: posiciones 1 y 4`, 215)}</div>
+      ${dibTabla([`Grupo`,`Nombre del grupo`,`Compuesto`], [[`−OH`, `hidroxilo`, `fenol`], [`−NH₂`, `amino`, `anilina`], [`−NO₂`, `nitro`, `nitrobenceno`], [`−COOH`, `carboxilo`, `ácido benzoico`], [`−SO₃H`, `sulfónico`, `ácido bencenosulfónico`], [`−CH₃`, `metilo`, `tolueno`], [`−F, −Cl, −Br, −I`, `halógenos`, `fluoro-, cloro-, bromo-, yodo-benceno`]])}
+      <p><b>Numeración.</b> Si hay un grupo que da el nombre base (fenol, anilina, ácido benzoico, tolueno), ese grupo es el <b>carbono 1</b>. Si no, se usa el conjunto de números más bajo y los sustituyentes se nombran en <b>orden alfabético</b> (1-bromo-3,5-dimetilbenceno).</p>
+      <div class="dbrow">${[`tolueno`,`fenol`,`ácido benzoico`,`2,4,6-trinitrotolueno (TNT)`,`1-bromo-3,5-dimetilbenceno`].map(n => dibARFig(n, n.replace(` (`, `<br>(`), 205)).join(``)}</div>
+      ${dibTrampa([`<b>Orto, meta y para no son lo mismo</b>: cuenta las posiciones entre los dos sustituyentes (1,2 · 1,3 · 1,4).`, `En el TNT los tres NO₂ van en las posiciones 2, 4 y 6 respecto al CH₃.`, `Un anillo con enlaces sencillos (ciclohexano) <b>no</b> es benceno: falta el círculo.`])}
+      ${dibRegla(`primero el anillo con su círculo y después cada sustituyente en su posición.`)}` },
+  { id:`err`, n:`Errores frecuentes y cómo evitarlos`, cat:`mixto`, res:`Revisa esta lista antes de entregar un dibujo.`,
+    html:() => `<p>Estos errores se repiten mucho al dibujar estructuras. Revísalos antes de comprobar:</p>
+      ${dibTabla([`✗ Error`,`✓ Lo correcto`], [[`Escribir “Hg” en vez de Mg`, `Revisa que el símbolo sea el del elemento que te piden (Mg es magnesio).`], [`Cl₂⁻ o “un solo cloruro” en MgCl₂`, `Son <b>dos</b> iones Cl⁻ independientes, cada uno con 8 puntos.`], [`Ca⁺ o Mg⁺ en lugar de Ca²⁺, Mg²⁺`, `El metal cede <b>todos</b> sus electrones de valencia: la carga es la del número de e⁻ cedidos.`], [`Unir el calcio al carbonato con un enlace covalente`, `Ca²⁺ y CO₃²⁻ se unen de forma iónica; el covalente está dentro del carbonato.`], [`C₂H₄ sin doble enlace`, `Cada C comparte 2 pares con el otro C: C=C. Cada C queda con 8 electrones.`], [`Puntos sobre el hidrógeno`, `El H comparte su único electrón: no lleva puntos en una molécula.`], [`Alquino en zigzag`, `Los carbonos del triple enlace y sus vecinos van en línea recta (180°).`], [`Olvidar los H del CH₃ al escribir la fórmula`, `Cada carbono suma 4 enlaces: CH₃ (1 enlace), CH₂ (2), CH (3), C (4).`], [`Puente de hidrógeno sin δ⁺ y δ⁻`, `Marca el H δ⁺ y el átomo δ⁻ de la otra molécula y une con una línea punteada.`]])}
+      ${dibRegla(`antes de entregar, cuenta: átomos, electrones (octeto) y cargas.`)}` }
+];
+
+/* ===================== DIBUJAR: INTERFAZ ===================== */
+const DIB_TABS = [[`aprender`, `Aprender`], [`practicar`, `Practicar`], [`taller`, `Taller libre`]];
+const DIBX = { on:false };
+const DIB_MASA = { H:1.008, Li:6.94, Be:9.012, B:10.81, C:12.011, N:14.007, O:15.999, F:18.998, Ne:20.18, Na:22.99, Mg:24.305, Al:26.982, P:30.974, S:32.06, Cl:35.45, K:39.098, Ca:40.078, Br:79.904, I:126.904 };
+const DIB_TOOLS = {
+  atom:{ n:`Átomo`, g:`A`, h:`Elige un elemento y toca el lienzo para colocarlo. Toca un átomo ya colocado para cambiarle el elemento.` },
+  bond:{ n:`Enlace`, g:`─`, h:`Toca un átomo y luego otro para unirlos (o arrastra de uno a otro). Toca un enlace para cambiarlo a doble, triple o quitarlo.` },
+  dots:{ n:`Electrones`, g:`••`, h:`Toca un átomo para agregarle un electrón (un punto). Después del 8 vuelve a 0. Los puntos se acomodan solos.` },
+  charge:{ n:`Carga`, g:`±`, h:`Toca un átomo para cambiar su carga. Metales: +, 2+, 3+. No metales: −, 2−, + (para iones como NH₄⁺). Otro toque la quita.` },
+  ring:{ n:`Anillo`, g:`⬡`, h:`Elige el anillo y toca el lienzo para colocarlo. El benceno trae su círculo.` },
+  group:{ n:`Grupo`, g:`R`, h:`Elige un grupo (NO₂, COOH…) y toca el lienzo; luego únelo con un enlace al anillo.` },
+  move:{ n:`Mover`, g:`✥`, h:`Arrastra un átomo para acomodarlo.` },
+  erase:{ n:`Borrar`, g:`⌫`, h:`Toca un átomo o un enlace para quitarlo.` }
+};
+const DIB_ANILLOS = { ben:[`Benceno`, 6, 1.5], c3:[`Ciclopropano`, 3, 1], c4:[`Ciclobutano`, 4, 1], c5:[`Ciclopentano`, 5, 1], c6:[`Ciclohexano`, 6, 1] };
+const DIB_ELS_ALL = [`C`, `H`, `O`, `N`, `F`, `Cl`, `Br`, `I`, `S`, `P`, `B`, `Li`, `Na`, `K`, `Be`, `Mg`, `Ca`, `Al`, `Ne`];
+const dibS = () => { const x = S.x; const d = x.dib || (x.dib = {}); d.tab = d.tab || `aprender`; d.stats = d.stats || {}; d.cfg = d.cfg || { cats:[`atomo`, `ionico`, `lewis`, `geo`, `hc`, `semi`, `arom`, `nombrar`], n:5 }; return d; };
+const dibEsc = s => String(s == null ? `` : s).replace(/[&<>"]/g, c => ({ '&':`&amp;`, '<':`&lt;`, '>':`&gt;`, '"':`&quot;` }[c]));
+
+/* ======================= EDITOR DE ESTRUCTURAS ======================= */
+function dibEditor(cfg){
+  const mode = cfg.mode, tools = cfg.tools;
+  const st = { m:cfg.mol ? dbClone(cfg.mol) : dbNew(), tool:tools[0], el:(cfg.els || [`C`])[0], grp:(cfg.groups || [])[0] || null, ring:(cfg.rings || [`ben`])[0], pend:null, undo:[], dn:null, drag:null, bdrag:null, prev:null, showH:false, count:false };
+  const root = el(`div`, `dbed`), bar = el(`div`, `dbtools`), pal = el(`div`, `dbpal`), hint = el(`p`, `dbhint`), cw = el(`div`, `dbcw`), acts = el(`div`, `dbacts`), sr = el(`p`, `dbsr`);
+  bar.setAttribute(`role`, `toolbar`); bar.setAttribute(`aria-label`, `Herramientas de dibujo`); hint.setAttribute(`aria-live`, `polite`); sr.setAttribute(`aria-live`, `polite`);
+  cw.innerHTML = `<svg class="dbcv" viewBox="0 0 360 260" role="application" aria-label="Lienzo para dibujar la estructura. Solo se puede usar con el dedo o el ratón."></svg>`; const svg = cw.firstChild;
+  const snap = v => Math.round(v / 10) * 10, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  function render(){ svg.innerHTML = dbInner(st.m, { mode, edit:true, pend:st.pend, prev:st.prev, showH:st.showH, count:st.count }); sr.textContent = `Estructura con ${st.m.atoms.length} átomos y ${st.m.bonds.length} enlaces.`; }
+  const push = () => { st.undo.push(JSON.stringify(st.m)); if (st.undo.length > 60) st.undo.shift(); };
+  const changed = () => { render(); if (cfg.onchange) cfg.onchange(dbClone(st.m)); };
+  const bondOf = (a, b) => st.m.bonds.find(k => (k.a === a && k.b === b) || (k.a === b && k.b === a));
+  const api = {
+    add(e, x, y, o){ push(); const id = dbAdd(st.m, e, clamp(snap(x), 20, 340), clamp(snap(y), 20, 240), o); changed(); return id; },
+    group(g, x, y){ push(); const id = dbAdd(st.m, `R`, clamp(snap(x), 20, 340), clamp(snap(y), 20, 240), { g }); changed(); return id; },
+    bond(a, b){ if (a === b || !dbAt(st.m, a) || !dbAt(st.m, b)) return; push(); const ex = bondOf(a, b); if (!ex) dbBond(st.m, a, b, 1); else api.cycleNoPush(ex); changed(); },
+    cycleNoPush(b){ const nx = { 1:2, 2:3, 3:0, 1.5:1 }[b.o]; if (!nx) st.m.bonds.splice(st.m.bonds.indexOf(b), 1); else b.o = nx; },
+    cycle(b){ push(); api.cycleNoPush(b); changed(); },
+    dots(i, n){ const a = dbAt(st.m, i); if (!a) return; push(); a.d = n == null ? ((a.d | 0) + 1) % 9 : n; changed(); },
+    charge(i, q){ const a = dbAt(st.m, i); if (!a) return; push(); const sec = (DB_EL[a.el] || {}).met ? [0, 1, 2, 3] : [0, -1, -2, 1]; a.q = q == null ? sec[(Math.max(0, sec.indexOf(a.q || 0)) + 1) % sec.length] : q; changed(); },
+    del(i){ push(); st.m.atoms = st.m.atoms.filter(a => a.i !== i); st.m.bonds = st.m.bonds.filter(b => b.a !== i && b.b !== i); if (st.pend === i) st.pend = null; changed(); },
+    delBond(b){ push(); st.m.bonds.splice(st.m.bonds.indexOf(b), 1); changed(); },
+    ring(kind, x, y){ const [, n, o] = DIB_ANILLOS[kind]; push(); const R = n <= 4 ? 28 : 32, cx = clamp(snap(x), R + 20, 340 - R), cy = clamp(snap(y), R + 20, 240 - R), ids = [];
+      for (let k = 0; k < n; k++){ const a = dbRad(-90 + 360 / n * k); ids.push(dbAdd(st.m, `C`, cx + R * Math.cos(a), cy + R * Math.sin(a))); } for (let k = 0; k < n; k++) dbBond(st.m, ids[k], ids[(k + 1) % n], o); changed(); return ids; },
+    mol:() => dbClone(st.m), set(m){ push(); st.m = dbClone(m); st.pend = null; changed(); },
+    clear(){ if (!st.m.atoms.length) return; push(); st.m = dbNew(); st.pend = null; changed(); },
+    undo(){ const s = st.undo.pop(); if (!s) return; st.m = JSON.parse(s); st.pend = null; changed(); },
+    tool(k){ setTool(k); }, el(e){ st.el = e; ui(); }, getState:() => st
+  };
+  function pt(e){ const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; const q = p.matrixTransform(svg.getScreenCTM().inverse()); return [q.x, q.y]; }
+  function hit([x, y]){
+    let best = null, bd = 1e9; st.m.atoms.forEach(a => { const d = Math.hypot(a.x - x, a.y - y), r = (a.g ? 26 : dbLabel(st.m, a, mode, {}) ? 19 : 16); if (d <= r && d < bd){ bd = d; best = a; } });
+    if (best) return { atom:best };
+    for (const b of st.m.bonds){ const A = dbAt(st.m, b.a), B = dbAt(st.m, b.b), dx = B.x - A.x, dy = B.y - A.y, L2 = dx * dx + dy * dy || 1, t = clamp(((x - A.x) * dx + (y - A.y) * dy) / L2, 0, 1); if (Math.hypot(A.x + t * dx - x, A.y + t * dy - y) <= 9) return { bond:b }; }
+    return {};
+  }
+  function tap(d, h, p){
+    const T = st.tool;
+    if (T === `atom`){ if (h.atom){ if (h.atom.el !== st.el || h.atom.g){ push(); h.atom.el = st.el; delete h.atom.g; changed(); } } else if (!h.bond) api.add(st.el, p[0], p[1]); }
+    else if (T === `group`){ if (!h.atom && !h.bond && st.grp) api.group(st.grp, p[0], p[1]); }
+    else if (T === `ring`){ if (!h.atom && !h.bond) api.ring(st.ring, p[0], p[1]); }
+    else if (T === `bond`){
+      if (d.h.atom && h.atom && d.h.atom !== h.atom && d.moved){ api.bond(d.h.atom.i, h.atom.i); st.pend = null; render(); }
+      else if (h.atom && !d.moved){ if (st.pend == null){ st.pend = h.atom.i; render(); } else if (st.pend !== h.atom.i){ api.bond(st.pend, h.atom.i); st.pend = null; render(); } else { st.pend = null; render(); } }
+      else if (h.bond && !d.moved) api.cycle(h.bond); else { st.pend = null; render(); } }
+    else if (T === `dots`){ if (h.atom) api.dots(h.atom.i); }
+    else if (T === `charge`){ if (h.atom) api.charge(h.atom.i); }
+    else if (T === `erase`){ if (h.atom) api.del(h.atom.i); else if (h.bond) api.delBond(h.bond); }
+  }
+  svg.addEventListener(`pointerdown`, e => { e.preventDefault(); const p = pt(e), h = hit(p); st.dn = { p, h, moved:false };
+    if (st.tool === `move` && h.atom){ push(); st.drag = h.atom; } if (st.tool === `bond` && h.atom) st.bdrag = h.atom;
+    try { svg.setPointerCapture(e.pointerId); } catch(_) {} });
+  svg.addEventListener(`pointermove`, e => { if (!st.dn) return; const p = pt(e); if (Math.hypot(p[0] - st.dn.p[0], p[1] - st.dn.p[1]) > 7) st.dn.moved = true;
+    if (st.drag){ st.drag.x = clamp(p[0], 15, 345); st.drag.y = clamp(p[1], 15, 245); render(); } else if (st.bdrag && st.dn.moved){ st.prev = [st.bdrag.x, st.bdrag.y, p[0], p[1]]; render(); } });
+  const fin = e => { if (!st.dn) return; const p = pt(e), d = st.dn, h = hit(p); st.dn = null; st.prev = null; st.bdrag = null;
+    if (st.drag){ st.drag.x = snap(st.drag.x); st.drag.y = snap(st.drag.y); st.drag = null; changed(); return; } tap(d, h, p); };
+  svg.addEventListener(`pointerup`, fin); svg.addEventListener(`pointercancel`, () => { st.dn = null; st.prev = null; st.bdrag = null; st.drag = null; render(); });
+  /* barra de herramientas, paleta y ayudas */
+  const bt = {}; tools.forEach(k => { const T = DIB_TOOLS[k], b = btn(`<span class="dbg" aria-hidden="true">${T.g}</span><span>${T.n}</span>`, `dbtool`, () => setTool(k)); b.dataset.tool = k; bt[k] = b; bar.append(b); });
+  function setTool(k){ st.tool = k; st.pend = null; ui(); render(); }
+  function ui(){
+    tools.forEach(k => { bt[k].setAttribute(`aria-pressed`, st.tool === k); bt[k].classList.toggle(`on`, st.tool === k); });
+    hint.textContent = DIB_TOOLS[st.tool].h; pal.innerHTML = ``;
+    const chips = (lista, cur, set, fmt) => lista.forEach(x => { const b = btn(fmt ? fmt(x) : x, `dbchip${cur === x ? ` on` : ``}`, () => { set(x); ui(); }); b.setAttribute(`aria-pressed`, cur === x); pal.append(b); });
+    if (st.tool === `atom`) chips(cfg.els || [`C`], st.el, x => { st.el = x; }); else if (st.tool === `group`) chips(cfg.groups || [], st.grp, x => { st.grp = x; });
+    else if (st.tool === `ring`) chips(cfg.rings || [`ben`], st.ring, x => { st.ring = x; }, x => DIB_ANILLOS[x][0]);
+    pal.style.visibility = pal.children.length ? `visible` : `hidden`;
+  }
+  acts.append(btn(`↶ Deshacer`, `btn ghost sm`, () => api.undo()), btn(`Limpiar`, `btn ghost sm`, () => api.clear()));
+  if (mode === `lewis`){ const c = btn(`Contar electrones`, `btn ghost sm`, () => { st.count = !st.count; c.setAttribute(`aria-pressed`, st.count); c.classList.toggle(`on`, st.count); render(); }); c.setAttribute(`aria-pressed`, `false`); c.title = `Muestra cuántos electrones tiene cada átomo a su alrededor (cada enlace cuenta 2)`; acts.append(c); }
+  else { const c = btn(`Mostrar H`, `btn ghost sm`, () => { st.showH = !st.showH; c.setAttribute(`aria-pressed`, st.showH); c.classList.toggle(`on`, st.showH); render(); }); c.setAttribute(`aria-pressed`, `false`); c.title = `Muestra los hidrógenos implícitos de cada carbono`; acts.append(c); }
+  root.append(cw, pal, bar, hint, acts, sr); ui(); render();
+  const ed = { root, api, get:() => dbClone(st.m), set:api.set, clear:api.clear, st };
+  root.__ed = ed; return ed;
+}
+
+/* ======================= ANÁLISIS (Taller libre) ======================= */
+function dibAnalisis(m, mode){
+  if (!m.atoms.length) return `<p class="muted">Dibuja una estructura y aquí verás su fórmula, si cumple las reglas y su geometría.</p>`;
+  const c = dbPrep(m, mode), issues = dbValid(c, mode), q = c.atoms.reduce((s, a) => s + (a.q || 0), 0);
+  const conocido = c.atoms.every(a => DIB_MASA[a.el]); const masa = c.atoms.reduce((s, a) => s + (DIB_MASA[a.el] || 0) + (mode === `esq` ? Math.max(0, dbHImp(c, a)) * DIB_MASA.H : 0), 0);
+  const noH = c.atoms.filter(a => a.el !== `H`); let k = 0; const filas = [];
+  noH.forEach((a, i) => { const g = dbVsepr(c, a.i, mode); if (g && g.nb >= 2) filas.push(`<tr><td>${a.el}<sub>${i + 1}</sub></td><td>${g.nb} átomos + ${g.lp} par${g.lp === 1 ? `` : `es`} libre${g.lp === 1 ? `` : `s`} = ${g.sn}</td><td>${g.g}</td><td>${g.ang}</td><td>${g.h}</td></tr>`); });
+  const ok = !issues.length;
+  return `<div class="dbfa"><div><span>Fórmula</span><b>${dbFormula(c, mode)}</b></div><div><span>Carga neta</span><b>${q === 0 ? `0` : (q > 0 ? `+` : `−`) + Math.abs(q)}</b></div>${conocido ? `<div><span>Masa molar</span><b>${masa.toFixed(2)} g/mol</b></div>` : ``}<div><span>Átomos · enlaces</span><b>${c.atoms.length} · ${c.bonds.length}</b></div></div>
+    <p class="${ok ? `dbok` : `dbno`}">${ok ? (mode === `lewis` ? `✔ Todos los átomos tienen su octeto (el H, 2) y su carga es coherente con sus electrones.` : `✔ Las valencias son correctas.`) : `✖ ${issues.map(dibEsc).join(`<br>✖ `)}`}</p>
+    ${filas.length ? `<div class="scroll"><table class="tbl"><thead><tr><th>Átomo</th><th>Dominios</th><th>Geometría</th><th>Ángulo</th><th>Hibridación</th></tr></thead><tbody>${filas.join(``)}</tbody></table></div>` : `<p class="muted">Cuando un átomo tenga 2 o más vecinos verás aquí su geometría.</p>`}`;
+}
+
+/* ======================= EJERCICIOS ======================= */
+const dibNomSub = c => ({ M:`metilo (CH₃)`, Et:`etilo (CH₂CH₃)`, iPr:`isopropilo (CH(CH₃)₂)`, All:`alilo (CH₂−CH=CH₂)`, Oct:`cadena de 8 carbonos (octilo)`, F:`flúor`, Cl:`cloro`, Br:`bromo`, I:`yodo`, OH:`hidroxilo (OH)`, NH2:`amino (NH₂)`, NO2:`nitro (NO₂)`, COOH:`carboxilo (COOH)`, SO3H:`sulfónico (SO₃H)` }[c] || c);
+function dibHintHC(it){
+  if (it.r){ let t = `Es un anillo de ${it.r.r} carbonos.`; if (it.r.b.includes(2)) t += ` Hay un enlace doble entre dos carbonos del anillo.`; if (it.r.s) t += ` Lleva un metilo.`; return t; }
+  const s = it.s; let t = `La cadena principal tiene ${s.n} carbonos.`; s.b.forEach((o, k) => { if (o > 1) t += ` Hay un enlace ${o === 2 ? `doble` : `triple`} entre C${k + 1} y C${k + 2}.`; });
+  Object.keys(s.s || {}).forEach(p => s.s[p].forEach(c => { t += ` Hay un ${c === `M` ? `metilo` : `etilo`} en C${p}.`; })); return t;
+}
+function dibHintAr(it){
+  const ks = Object.keys(it.s).map(Number).sort((a, b) => a - b); let t = `Dibuja el anillo de benceno (hexágono con círculo). `;
+  t += ks.map(k => `En la posición ${k}: ${it.s[k].map(dibNomSub).join(` y `)}`).join(`; `) + `.`;
+  if (ks.length === 2){ const d = Math.abs(ks[1] - ks[0]), dd = Math.min(d, 6 - d); t += ` (${dd === 1 ? `orto` : dd === 2 ? `meta` : `para`})`; } return t;
+}
+const dibPick = (lista, used, keyf) => { const libres = lista.filter(x => !used.has(keyf(x))); return pick(libres.length ? libres : lista); };
+const DIB_GEOCOMBO = [[`lineal`, `180°`, `sp`], [`trigonal plana`, `120°`, `sp²`], [`tetraédrica`, `109.5°`, `sp³`], [`piramidal trigonal`, `≈107°`, `sp³`], [`angular`, `≈104.5°`, `sp³`]];
+const DIB_CATS = [
+  { k:`atomo`, n:`Símbolos de Lewis`, d:`Dibuja el átomo con sus electrones de valencia.`, make(used){
+      const el = dibPick(DB_ATOMOS, used, e => `atomo:${e}`), e = DB_EL[el].e;
+      return { id:`atomo:${el}`, cat:`atomo`, tipo:`dibujo`, mode:`lewis`, tools:[`atom`, `dots`, `erase`], els:DB_ATOMOS, target:dbAtomo(el),
+        q:`Dibuja el símbolo de Lewis del ${DB_ATNOM[el]} (${el}).`, hint:`${el} está en el grupo ${DB_GRUPO[e]}: tiene ${e} electrón${e === 1 ? `` : `es`} de valencia. Coloca un punto por lado (arriba, derecha, abajo, izquierda) y desde el quinto forma pares.`,
+        expl:`${DB_ATNOM[el][0].toUpperCase() + DB_ATNOM[el].slice(1)}: grupo ${DB_GRUPO[e]} → ${e} electrón${e === 1 ? `` : `es`} de valencia, un punto por lado y después pares.` }; } },
+  { k:`ionico`, n:`Compuestos iónicos`, d:`Dibuja los iones con su carga y sus electrones.`, make(used){
+      const it = dibPick(DB_ION, used, x => `ionico:${x.f}`), [ec, qc, nc] = it.c, [ea, qa, na] = it.a;
+      return { id:`ionico:${it.f}`, cat:`ionico`, tipo:`dibujo`, mode:`lewis`, tools:[`atom`, `dots`, `charge`, `move`, `erase`], els:[ec, ea].concat(DB_ATOMOS.filter(x => x !== ec && x !== ea).slice(0, 6)), target:dbIones(it),
+        q:`Dibuja los iones que forman el ${it.n} (${it.f}) después de la transferencia de electrones. Escribe la carga de cada ion y sus electrones (sin enlaces entre ellos).`,
+        hint:`El metal (${ec}) cede sus electrones de valencia: queda sin puntos y con carga ${dbSupU(qc)}. El no metal (${ea}) recibe electrones hasta tener 8 puntos: carga ${dbSupU(qa)}. Las cargas deben sumar cero: ${nc} × (+${qc}) + ${na} × (−${Math.abs(qa)}) = 0.`,
+        expl:`${ec}${dbSupU(qc)}${nc > 1 ? ` (×${nc})` : ``} y ${ea}${dbSupU(qa)}${na > 1 ? ` (×${na})` : ``}: el metal cede, el no metal recibe y las cargas suman cero. En agua: ${it.f} → ${nc > 1 ? nc : ``}${ec}${dbSupU(qc)} + ${na > 1 ? na : ``}${ea}${dbSupU(qa)}.` }; } },
+  { k:`lewis`, n:`Estructuras de Lewis`, d:`Dibuja moléculas e iones poliatómicos.`, make(used){
+      const it = dibPick(DB_MOL, used, x => `lewis:${x.k}`), m = dbMolDe(it), ev = m.atoms.reduce((s, a) => s + DB_EL[a.el].e, 0) - m.atoms.reduce((s, a) => s + (a.q || 0), 0);
+      const els = [...new Set(it.A.map(a => a[0]))].concat([`H`, `C`, `N`, `O`, `F`, `Cl`, `S`, `B`]).filter((x, i, ar) => ar.indexOf(x) === i);
+      return { id:`lewis:${it.k}`, cat:`lewis`, tipo:`dibujo`, mode:`lewis`, tools:[`atom`, `bond`, `dots`, `charge`, `move`, `erase`], els, target:m,
+        q:`Dibuja la estructura de Lewis de ${it.n} (${it.f}).`,
+        hint:`Total de electrones de valencia: ${ev}. Une los átomos con enlaces sencillos (el central es el menos electronegativo, nunca el H), completa los octetos con puntos y, si falta, forma enlaces dobles o triples. Usa “Contar electrones” para verificar.`,
+        expl:`${it.f}: ${ev} electrones de valencia en total. Cada átomo completa su octeto (el H, 2) compartiendo pares con enlaces sencillos, dobles o triples y dejando el resto como pares libres.` }; } },
+  { k:`geo`, n:`Geometría molecular`, d:`Reconoce geometría, ángulo, hibridación y polaridad.`, make(used){
+      const it = dibPick(DB_MOL.filter(x => x.c != null), used, x => `geo:${x.k}`), m = dbMolDe(it), g = dbVsepr(m, m.ids[it.c], `lewis`), pol = it.polar;
+      const txt = (gg, p) => `${gg[0]} · ${gg[1]} · ${gg[2]}${p == null ? `` : p ? ` · polar` : ` · no polar`}`; const gc = [g.g, g.ang, g.h], ok = txt(gc, pol);
+      const otros = shuf(DIB_GEOCOMBO.filter(x => !(x[0] === g.g && x[1] === g.ang))).slice(0, 3).map(x => txt(x, pol == null ? null : Math.random() < .5)).filter(x => x !== ok);
+      const opts = shuf([ok].concat(otros).slice(0, 4));
+      return { id:`geo:${it.k}`, cat:`geo`, tipo:`opcion`, fig:dbSvg(m, { mode:`lewis`, max:230 }), q:`¿Cuál es la geometría${it.cn ? ` alrededor de ${it.cn}` : ` del átomo central`} en ${it.n} (${it.f})? Elige geometría, ángulo, hibridación${pol == null ? `` : ` y polaridad de la molécula`}.`,
+        opts, correct:opts.indexOf(ok), hint:`Cuenta los dominios del átomo central: átomos enlazados + pares libres. 2 → lineal, 3 → trigonal plana, 4 → tetraédrica (con 1 par libre, piramidal; con 2, angular).`,
+        expl:`${it.f}: el átomo ${it.cn ? `(${it.cn})` : `central`} tiene ${g.nb} átomos enlazados y ${g.lp} par${g.lp === 1 ? `` : `es`} libre${g.lp === 1 ? `` : `s`} → ${g.sn} dominios → ${g.g}, ${g.ang}, hibridación ${g.h}.${pol == null ? `` : pol ? ` Es polar: sus enlaces son polares y la forma no los cancela.` : ` Es no polar: sus enlaces se cancelan por la simetría (o no hay diferencia de electronegatividad).`}` }; } },
+  { k:`hc`, n:`Hidrocarburos: del nombre al dibujo`, d:`Dibuja la fórmula esquelética de alcanos, alquenos y alquinos.`, make(used){
+      const it = dibPick(DB_HC, used, x => `hc:${x.n}`);
+      return { id:`hc:${it.n}`, cat:`hc`, tipo:`dibujo`, mode:`esq`, tools:[`atom`, `bond`, `move`, `erase`], els:[`C`], target:dbHCMol(it),
+        q:`Dibuja la fórmula esquelética de ${it.n}. Cada vértice o extremo es un carbono; los hidrógenos no se dibujan.`, hint:dibHintHC(it),
+        expl:`${it.n}${it.s ? `: ${dbCond(it.s)}` : ``}. Cada carbono completa 4 enlaces con hidrógenos implícitos.` }; } },
+  { k:`semi`, n:`Fórmula semidesarrollada`, d:`Escribe la fórmula con los hidrógenos de cada carbono.`, make(used){
+      const it = dibPick(DB_HC.filter(x => x.s), used, x => `semi:${x.n}`);
+      return { id:`semi:${it.n}`, cat:`semi`, tipo:`texto`, mode:`esq`, target:dbHCMol(it), q:`Escribe la fórmula semidesarrollada de ${it.n}.`, ph:`CH3-CH2-CH3`,
+        hint:`${dibHintHC(it)} Cada carbono lleva 4 − (sus enlaces) hidrógenos: CH₃ (1 enlace), CH₂ (2), CH (3), C (4). Usa − = ≡ para los enlaces y (…) para las ramificaciones.`,
+        expl:`Fórmula semidesarrollada: <b>${dbCond(it.s)}</b>` }; } },
+  { k:`arom`, n:`Aromáticos: del nombre al dibujo`, d:`Dibuja benceno con sus sustituyentes en la posición correcta.`, make(used){
+      const it = dibPick(DB_AR, used, x => `arom:${x.n}`);
+      return { id:`arom:${it.n}`, cat:`arom`, tipo:`dibujo`, mode:`esq`, tools:[`ring`, `group`, `atom`, `bond`, `move`, `erase`], els:[`C`, `O`, `N`, `F`, `Cl`, `Br`, `I`, `S`], groups:[`NO₂`, `COOH`, `SO₃H`, `CHO`, `CN`], rings:[`ben`, `c6`], target:dbARMol(it),
+        q:`Dibuja la estructura de ${it.n}.`, hint:dibHintAr(it),
+        expl:`${it.n}: anillo de benceno con ${Object.keys(it.s).map(k => `${it.s[k].map(dibNomSub).join(` y `)} en la posición ${k}`).join(`; `)}.` }; } },
+  { k:`nombrar`, n:`Del dibujo al nombre`, d:`Reconoce el nombre de la estructura.`, make(used){
+      const arom = Math.random() < .4, lista = arom ? DB_AR : DB_HC, it = dibPick(lista, used, x => `nombrar:${x.n}`);
+      const m = arom ? dbARMol(it) : dbHCMol(it), f = x => dbFormula(dbPrep(arom ? dbARMol(x) : dbHCMol(x), `esq`), `esq`), fm = f(it);
+      let dis = shuf(lista.filter(x => x !== it && f(x) === fm)); if (dis.length < 3) dis = dis.concat(shuf(lista.filter(x => x !== it && !dis.includes(x) && (arom ? true : dbHCFam(x) === dbHCFam(it)))));
+      const opts = shuf([it.n].concat(dis.slice(0, 3).map(x => x.n)));
+      return { id:`nombrar:${it.n}`, cat:`nombrar`, tipo:`opcion`, fig:dbSvg(m, { mode:`esq`, max:230 }), q:`¿Cómo se llama este compuesto? (fórmula molecular ${fm})`, opts, correct:opts.indexOf(it.n),
+        hint:arom ? `Cuenta los sustituyentes y sus posiciones (orto 1,2 · meta 1,3 · para 1,4).` : `Cuenta los carbonos de la cadena principal, ubica el enlace múltiple y las ramificaciones, y numera desde el extremo que da el número más bajo.`,
+        expl:`Se llama <b>${dibEsc(it.n)}</b>.${!arom && it.s ? ` Fórmula semidesarrollada: ${dbCond(it.s)}.` : ``}` }; } }
+];
+const dibCat = k => DIB_CATS.find(c => c.k === k);
+
+function dibStart(cats, n){
+  const used = new Set(), items = []; let g = 0;
+  while (items.length < n && g++ < n * 40){ const C = dibCat(cats[items.length % cats.length]), it = C.make(used); if (it && !used.has(it.id)){ used.add(it.id); items.push(it); } }
+  Object.assign(DIBX, { on:true, done:false, cats, items:shuf(items), i:0, res:items.map(() => null) }); const s = dibS(); s.tab = `practicar`; save(); renderView(); topScroll();
+}
+function dibCuenta(it, ok){ if (it.contado) return; it.contado = true; const s = dibS(), c = s.stats[it.cat] || (s.stats[it.cat] = { n:0, ok:0 }); c.n++; if (ok) c.ok++; save(); }
+
+/* ---------- vista de un ejercicio ---------- */
+function dibEjercicio(v){
+  const X = DIBX, it = X.items[X.i], n = X.items.length, c = el(`section`, `rfcard dbex`), C = dibCat(it.cat);
+  c.append(el(`div`, `dbtop`, `<div><b>Ejercicio ${X.i + 1} de ${n}</b><span>${C.n}</span></div><div class="dbprog" aria-hidden="true">${X.items.map((_, k) => `<i class="${X.res[k] ? (X.res[k].first ? `ok` : `no`) : k === X.i ? `cur` : ``}"></i>`).join(``)}</div>`));
+  c.append(el(`p`, `q dbq`, dibEsc(it.q)));
+  const fb = el(`div`, `dbfb`), nxt = el(`div`, `btnrow dbnext`); fb.setAttribute(`aria-live`, `polite`); nxt.hidden = true;
+  let tries = 0;
+  const mostrarSig = () => { nxt.hidden = false; nxt.innerHTML = ``; nxt.append(btn(X.i < n - 1 ? `Siguiente ejercicio →` : `Ver resultados`, `btn`, () => { if (X.i < n - 1){ X.i++; } else X.done = true; renderView(); topScroll(); })); };
+  const acierto = () => { if (!X.res[X.i]){ X.res[X.i] = { first:tries === 1 && !it.vioSol, tries }; dibCuenta(it, X.res[X.i].first); } };
+  const solucion = (parent) => { const m = it.target; const s = el(`div`, `dbsol`); s.append(el(`div`, `dbsolf`, dbSvg(m, { mode:it.mode, max:260 }))); s.append(el(`p`, ``, it.expl)); parent.append(s); };
+  const hintBox = el(`div`, `dbhintbox`); hintBox.hidden = true; hintBox.append(el(`p`, ``, `<b>Pista:</b> ${dibEsc(it.hint)}`));
+  const verPista = () => { hintBox.hidden = false; };
+  const acciones = el(`div`, `btnrow dbacc`);
+  if (it.tipo === `opcion`){
+    if (it.fig) c.append(el(`div`, `dbstem`, it.fig));
+    const box = el(`div`, `opts`); it.opts.forEach((t, i) => { const b = el(`button`, `opt`, `<span class="k">${LET[i]}</span><span>${dibEsc(t)}</span>`); b.type = `button`;
+      b.onclick = () => { if (X.res[X.i]) return; const ok = i === it.correct; [...box.children].forEach((y, j) => { y.disabled = true; if (j === it.correct) y.classList.add(`right`); else if (y !== b) y.classList.add(`dim`); }); if (!ok) b.classList.add(`wrong`);
+        X.res[X.i] = { first:ok, tries:1 }; dibCuenta(it, ok); fb.innerHTML = ``; fb.append(el(`div`, `fb ${ok ? `ok` : `no`}`, `<strong>${ok ? `¡Correcto!` : `Todavía no.`}</strong> ${it.expl}`)); mostrarSig(); }; box.append(b); }); c.append(box);
+    acciones.append(btn(`Pista`, `btn ghost`, verPista)); c.append(acciones, hintBox, fb, nxt); v.append(c); return;
+  }
+  if (it.tipo === `texto`){
+    const w = el(`div`, `dbtxt`); w.innerHTML = `<label for="dbsemi">Tu fórmula</label><input id="dbsemi" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${it.ph}" inputmode="text"><p class="muted">Usa C, H, O, N, F, Cl, Br, I · enlaces <b>-</b> <b>=</b> <b>≡</b> · ramificaciones entre paréntesis, por ejemplo CH3-CH(CH3)-CH3 · repeticiones como CH3(CH2)3CH3.</p>`; c.append(w); const inp = $(`#dbsemi`, w);
+    const comprobar = () => { tries++; const pr = dbParse(inp.value); fb.innerHTML = ``; let ok = false, msgs = [];
+      if (pr.err) msgs.push(pr.err);
+      else { if (pr.sobre) msgs.push(`Un átomo tiene más enlaces de los que admite: el carbono admite 4, el nitrógeno 3, el oxígeno 2 y los halógenos 1.`);
+        pr.malos.forEach(a => { const idx = pr.mol.atoms.indexOf(a) + 1; msgs.push(`El átomo ${idx} (${a.el}) lleva ${pr.decl[a.i]} H, pero por sus enlaces debería llevar ${dbHImp(pr.mol, a)}: cada carbono forma 4 enlaces en total.`); });
+        if (!msgs.length){ const r2 = dbCheck(pr.mol, it.target, `esq`); if (r2.ok) ok = true; else msgs = r2.msgs; } }
+      if (ok){ acierto(); fb.append(el(`div`, `fb ok`, `<strong>¡Correcto!</strong>${tries > 1 ? ` (al intento ${tries})` : ``} ${it.expl}`)); mostrarSig(); acciones.hidden = true; }
+      else { fb.append(el(`div`, `fb no`, `<strong>Todavía no.</strong><ul class="dblst">${msgs.map(m => `<li>${dibEsc(m)}</li>`).join(``)}</ul>`)); if (tries >= 2) verPista(); } };
+    inp.addEventListener(`keydown`, e => { if (e.key === `Enter`) comprobar(); });
+    acciones.append(btn(`Comprobar`, `btn`, comprobar), btn(`Pista`, `btn ghost`, verPista), btn(`Ver solución`, `btn ghost`, () => { if (!X.res[X.i]) X.res[X.i] = { first:false, tries }; dibCuenta(it, false); solucion(fb); mostrarSig(); }));
+    c.append(acciones, hintBox, fb, nxt); v.append(c); return;
+  }
+  /* dibujo */
+  const ed = dibEditor({ mode:it.mode, tools:it.tools, els:it.els, groups:it.groups, rings:it.rings }); X.ed = ed; c.append(ed.root);
+  const comprobar = () => { tries++; const u = ed.get(), r2 = dbCheck(u, it.target, it.mode, it.alts); fb.innerHTML = ``;
+    if (r2.ok){ acierto(); fb.append(el(`div`, `fb ok`, `<strong>¡Correcto!</strong>${tries > 1 ? ` (al intento ${tries})` : ``} ${it.expl}`)); mostrarSig(); }
+    else { fb.append(el(`div`, `fb no`, `<strong>Todavía no.</strong><ul class="dblst">${r2.msgs.map(m => `<li>${dibEsc(m)}</li>`).join(``)}</ul>`)); if (tries >= 2) verPista(); } };
+  acciones.append(btn(`Comprobar`, `btn`, comprobar), btn(`Pista`, `btn ghost`, verPista), btn(`Ver solución`, `btn ghost`, () => { it.vioSol = true; if (!X.res[X.i]) X.res[X.i] = { first:false, tries }; dibCuenta(it, false); fb.innerHTML = ``; solucion(fb); mostrarSig(); }));
+  c.append(acciones, hintBox, fb, nxt); v.append(c);
+}
+function dibResumen(v){
+  const X = DIBX, tot = X.items.length, ok = X.res.filter(r => r && r.first).length, c = el(`section`, `rfcard dbres`);
+  c.append(el(`h2`, ``, `Resultado de la sesión`));
+  c.append(el(`div`, `rfscore`, `<p class="score ${ok / tot >= .6 ? `rfok` : `rfno`}">${ok}<small> de ${tot}</small></p><p>correctos al primer intento</p>`));
+  c.append(el(`p`, `muted`, ok === tot ? `¡Sesión perfecta! Pasa a otra categoría o súbele la dificultad con más ejercicios.` : `Repasa las lecciones de los que fallaste y vuelve a intentarlos: dibujar bien se logra repitiendo.`));
+  X.items.forEach((it, i) => { const r = X.res[i], d = el(`details`, `rfdet`); d.append(el(`summary`, ``, `<span class="rfce" style="background:${r && r.first ? `var(--ok)` : `var(--bad)`}">${r && r.first ? `✓` : `✕`}</span><b>${dibEsc(dibCat(it.cat).n)}</b><span class="rfcn">${dibEsc(it.q.length > 54 ? it.q.slice(0, 52) + `…` : it.q)}</span>`));
+    const b = el(`div`, `rfdb`); b.append(el(`p`, ``, dibEsc(it.q))); if (it.tipo === `opcion`){ b.append(el(`div`, `dbsolf`, it.fig)); b.append(el(`p`, `dbok`, `Respuesta: ${dibEsc(it.opts[it.correct])}`)); } else b.append(el(`div`, `dbsolf`, dbSvg(it.target, { mode:it.mode, max:240 })));
+    b.append(el(`p`, ``, it.expl)); d.append(b); c.append(d); });
+  const row = el(`div`, `btnrow`); row.append(btn(`Otra sesión`, `btn`, () => { DIBX.on = false; renderView(); topScroll(); }), btn(`Ir a las lecciones`, `btn ghost`, () => { DIBX.on = false; dibS().tab = `aprender`; save(); renderView(); topScroll(); })); c.append(row); v.append(c);
+}
+
+/* ======================= PESTAÑAS ======================= */
+function dibAprender(v){
+  const s = dibS(), c = rfSec(`Aprende a dibujar paso a paso`, `Siete lecciones cortas con ejemplos. Después de cada una puedes practicar lo mismo. Todas las figuras se dibujan con el mismo motor que verifica tus ejercicios.`);
+  v.append(c);
+  DIB_LES.forEach((l, i) => { const d = el(`details`, `rfdet dbles`); if (s.les === l.id) d.open = true;
+    d.append(el(`summary`, ``, `<span class="rfpi">${i + 1}</span><b>${l.n}</b><span class="rfcn">${dibEsc(l.res)}</span>`)); const b = el(`div`, `rfdb dbleb`); let hecho = false;
+    const armar = () => { if (hecho) return; hecho = true; b.innerHTML = l.html(); const r = el(`div`, `btnrow`); r.append(btn(l.cat === `mixto` ? `Practicar todo` : `Practicar esto`, `btn`, () => dibStart(l.cat === `mixto` ? DIB_CATS.map(x => x.k) : [l.cat], 5))); b.append(r); };
+    d.addEventListener(`toggle`, () => { if (d.open){ armar(); s.les = l.id; save(); } }); d.append(b); if (d.open) armar(); v.append(d); });
+}
+function dibPracticar(v){
+  if (DIBX.on){ if (DIBX.done) dibResumen(v); else dibEjercicio(v); return; }
+  const s = dibS(), cfg = s.cfg, c = rfSec(`Practica dibujando`, `Elige qué practicar. Dibujas en el lienzo (con el dedo o el ratón) y la app compara tu estructura con la respuesta y te explica en qué te equivocaste.`);
+  const ch = el(`div`, `rfchips`);
+  DIB_CATS.forEach(C => { const on = cfg.cats.includes(C.k), st = s.stats[C.k]; const b = btn(`${on ? `✓ ` : ``}${C.n}<small>${C.d}${st ? ` · ${st.ok} de ${st.n} al primer intento` : ``}</small>`, `rfchipb`, () => { const i = cfg.cats.indexOf(C.k); if (i >= 0){ if (cfg.cats.length > 1) cfg.cats.splice(i, 1); } else cfg.cats.push(C.k); save(); renderView(); }); b.setAttribute(`aria-pressed`, on); ch.append(b); });
+  c.append(ch);
+  const nrow = el(`div`, `btnrow dbn`); nrow.append(el(`span`, `muted`, `Ejercicios:`)); [5, 10].forEach(n => { const b = btn(String(n), `btn ghost sm${cfg.n === n ? ` on` : ``}`, () => { cfg.n = n; save(); renderView(); }); b.setAttribute(`aria-pressed`, cfg.n === n); nrow.append(b); }); c.append(nrow);
+  const acc = el(`div`, `btnrow`); acc.append(btn(`Empezar práctica`, `btn`, () => dibStart(cfg.cats.slice(), cfg.n))); c.append(acc); v.append(c);
+}
+function dibTaller(v){
+  const s = dibS(), T = s.tall || (s.tall = { mode:`lewis` }); const c = rfSec(`Taller libre`, `Dibuja lo que quieras y la app te dice su fórmula, su masa molar, si cumple las reglas y la geometría de cada átomo. También puedes cargar un ejemplo y modificarlo.`);
+  const modos = el(`div`, `rfmodos dbmodos`); [[`lewis`, `Lewis`, `Átomos con todos sus electrones (puntos) y todos los H.`], [`esq`, `Esqueleto`, `Carbonos en los vértices e H implícitos (hidrocarburos y aromáticos).`]].forEach(([k, n, d]) => { const b = btn(`<b>${n}</b><span>${d}</span>`, `rfmodo`, () => { T.mode = k; DIBX.tallMol = null; save(); renderView(); }); b.setAttribute(`aria-pressed`, T.mode === k); modos.append(b); }); c.append(modos);
+  const ej = el(`label`, `rfsel inl`); ej.append(el(`span`, ``, `Cargar un ejemplo`)); const sel = el(`select`); sel.setAttribute(`aria-label`, `Cargar un ejemplo`);
+  const op = (v2, t) => { const o = el(`option`, ``, t); o.value = v2; return o; }; sel.append(op(``, `— elige —`));
+  if (T.mode === `lewis`){ const g = el(`optgroup`); g.label = `Moléculas e iones`; DB_MOL.forEach(it => g.append(op(`m:${it.k}`, `${it.f} · ${it.n}`))); sel.append(g); const g2 = el(`optgroup`); g2.label = `Átomos`; DB_ATOMOS.forEach(e => g2.append(op(`a:${e}`, `${e} · ${DB_ATNOM[e]}`))); sel.append(g2); }
+  else { const g = el(`optgroup`); g.label = `Hidrocarburos`; DB_HC.forEach(it => g.append(op(`h:${it.n}`, it.n))); sel.append(g); const g2 = el(`optgroup`); g2.label = `Aromáticos`; DB_AR.forEach(it => g2.append(op(`r:${it.n}`, it.n))); sel.append(g2); }
+  ej.append(sel); c.append(ej); v.append(c);
+  const card = el(`section`, `rfcard dbtall`), an = el(`div`, `dbana`); an.setAttribute(`aria-live`, `polite`);
+  const refresca = m => { DIBX.tallMol = m; an.innerHTML = dibAnalisis(m, T.mode); };
+  const lewis = T.mode === `lewis`; const ed = dibEditor({ mode:T.mode, tools:lewis ? [`atom`, `bond`, `dots`, `charge`, `move`, `erase`] : [`atom`, `bond`, `ring`, `group`, `move`, `erase`], els:DIB_ELS_ALL, groups:[`NO₂`, `COOH`, `SO₃H`, `CHO`, `CN`], rings:[`ben`, `c3`, `c4`, `c5`, `c6`], mol:DIBX.tallMol || null, onchange:refresca });
+  card.append(ed.root, el(`h3`, `rfh3`, `Análisis de tu estructura`), an); v.append(card); refresca(ed.get());
+  sel.onchange = () => { const [t, k] = [sel.value.slice(0, 1), sel.value.slice(2)]; if (!sel.value) return; let m;
+    if (t === `m`) m = dbMolDe(DB_MOLK(k)); else if (t === `a`) m = dbAtomo(k); else if (t === `h`) m = dbHCMol(DB_HC.find(x => x.n === k)); else m = dbARMol(DB_AR.find(x => x.n === k));
+    ed.set(m); sel.value = ``; };
+}
+function vDibujo(v){
+  const s = dibS(), bar = el(`div`, `rftabs`); bar.setAttribute(`role`, `tablist`);
+  DIB_TABS.forEach(([k, n]) => { const b = btn(n, `rft`, () => { s.tab = k; save(); renderView(); topScroll(); }); b.setAttribute(`role`, `tab`); b.setAttribute(`aria-selected`, s.tab === k); bar.append(b); }); v.append(bar);
+  ({ aprender:dibAprender, practicar:dibPracticar, taller:dibTaller })[s.tab](v);
 }
 
 /* ======================= MIS NOTAS (gestión de módulos por ciclo) =======================
@@ -5480,6 +6265,10 @@ function dockMenu(anchor, dock){
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-13a`, d:`2026-11-13`, t:`Nueva sección: Dibujar`, l:[
+    `Aprende y practica a dibujar compuestos: símbolos de Lewis, compuestos iónicos, estructuras de Lewis, geometría molecular, hidrocarburos y aromáticos.`,
+    `Tiene 3 pestañas: Aprender (7 lecciones paso a paso), Practicar (8 tipos de ejercicio donde dibujas con el dedo y la app te explica en qué te equivocaste) y Taller libre (dibuja lo que quieras y ve su fórmula, masa molar, octeto y geometría).`,
+    `Puedes escribir también la fórmula semidesarrollada: la app revisa los hidrógenos de cada carbono.`] },
   { id:`2026-11-12a`, d:`2026-11-12`, t:`Nueva sección: Retroalimentación`, l:[
     `Está debajo de Preguntar. Analiza tus evaluaciones anteriores: dónde fallas, por qué y cómo corregirlo. Tu historial se carga desde un archivo y queda solo en tu navegador y en tu cuenta, no en el sitio público.`,
     `Tiene 4 pestañas: Diagnóstico (tus patrones), Mis fallos (se repasan en 1, 3, 7 y 14 días), Cómo evalúan (estructura y trampas del docente) y Simulacro (parciales y cortos con su estructura y dificultad).`,

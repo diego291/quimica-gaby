@@ -2,6 +2,10 @@
    Lo nuevo de la página, explicado para Gaby. Para agregar una novedad: poner la entrada ARRIBA
    con un id nuevo (el punto del botón 🎁 aparece hasta que ella la lee).                         */
 const NOVEDADES = [
+  { id:`2026-11-13a`, d:`2026-11-13`, t:`Nueva sección: Dibujar`, l:[
+    `Aprende y practica a dibujar compuestos: símbolos de Lewis, compuestos iónicos, estructuras de Lewis, geometría molecular, hidrocarburos y aromáticos.`,
+    `Tiene 3 pestañas: Aprender (7 lecciones paso a paso), Practicar (8 tipos de ejercicio donde dibujas con el dedo y la app te explica en qué te equivocaste) y Taller libre (dibuja lo que quieras y ve su fórmula, masa molar, octeto y geometría).`,
+    `Puedes escribir también la fórmula semidesarrollada: la app revisa los hidrógenos de cada carbono.`] },
   { id:`2026-11-12a`, d:`2026-11-12`, t:`Nueva sección: Retroalimentación`, l:[
     `Está debajo de Preguntar. Analiza tus evaluaciones anteriores: dónde fallas, por qué y cómo corregirlo. Tu historial se carga desde un archivo y queda solo en tu navegador y en tu cuenta, no en el sitio público.`,
     `Tiene 4 pestañas: Diagnóstico (tus patrones), Mis fallos (se repasan en 1, 3, 7 y 14 días), Cómo evalúan (estructura y trampas del docente) y Simulacro (parciales y cortos con su estructura y dificultad).`,
