@@ -13,6 +13,7 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 - Correcciones del material (errata) con aviso por ficha.
 - Retroalimentación: diagnóstico, Mis fallos con repaso espaciado, Cómo evalúan, Simulacro.
 - Dibujar: 7 lecciones, 8 ejercicios con editor táctil, Taller libre; núcleo con 738 pruebas.
+- Dibujar rediseñado (propuestas A+C): ejercicios por pasos (Átomos → Enlaces → Electrones) con solo las herramientas del paso; Con/Sin ayuda (contador de electrones, cuentas por átomo y, en Lewis, esqueleto ya colocado); lienzo 360×300, zonas táctiles mayores y barra Comprobar/Pista fija abajo. Taller libre sin cambios de flujo.
 ## Decisiones tomadas
 - Publicar directo a main, sin ramas ni PR: lo pidió Diego (ver CLAUDE.md).
 - Historial de Gaby fuera del repo, cargado desde `historial-gaby.json`: el repo es público.
@@ -22,9 +23,9 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 2. Decidir si se borra el commit a85cb03 (tiene datos de Gaby; exige force push).
 3. Cargar unidades 1–3 (átomo y enlace) y el Tema 29, si existe: faltan los PDF.
 4. Pasar `historial-gaby.json` a Gaby para que lo cargue en cada dispositivo.
-5. Probar Dibujar en una pantalla táctil física (solo se probó con emulador).
+5. Probar Dibujar (rediseño con pasos y ayuda) en una pantalla táctil física: solo se probó con emulador a 390 px.
 ## Restricciones
 - Cero datos privados (tokens, notas, respuestas, fotos, apellido de Gaby) en el repo.
 - Sin force push ni reescribir historial sin permiso explícito de Diego.
 ## Última versión/commit publicado
-App 2026.11.13-1036 · commit 06b6d0c (módulo Dibujar).
+App 2026.11.13-2221 · commit b7582c7 (Dibujar: pasos y ayuda).
