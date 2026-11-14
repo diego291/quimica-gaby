@@ -1568,11 +1568,11 @@ mark.hl[data-ic]::before{content:attr(data-ic);font-size:.8em;margin-right:3px;f
 .dbtool .dbg{font-weight:700;min-width:1.2em;text-align:center}
 .dbtool.on,.dbtool[aria-pressed="true"]{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc) inset;background:var(--sunk);font-weight:700}
 .dbpal{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 2px;scrollbar-width:thin;min-height:54px;align-items:center}
-.dbchip{flex:none;min-width:44px;min-height:40px;padding:4px 12px;border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:999px;font:inherit;font-weight:700;cursor:pointer}
+.dbchip{flex:none;min-width:44px;min-height:44px;padding:4px 12px;border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:999px;font:inherit;font-weight:700;cursor:pointer}
 .dbchip.on{background:var(--acc);color:var(--onAcc);border-color:var(--acc)}
-.dbhint{margin:2px 0 6px;font-size:.86rem;color:var(--muted);min-height:3.6em}
+.dbhint{margin:2px 0 6px;font-size:.86rem;color:var(--muted);min-height:2.6em}
 .dbcw{position:relative}
-.dbcv{width:100%;max-width:600px;display:block;margin:0 auto;aspect-ratio:360/260;background:var(--sunk);border:1px solid var(--line2);border-radius:12px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:crosshair}
+.dbcv{width:100%;max-width:600px;display:block;margin:0 auto;aspect-ratio:360/300;background:var(--sunk);border:1px solid var(--line2);border-radius:12px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:crosshair}
 .dbacts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .btn.sm{padding:6px 12px;font-size:.85rem}
 .btn.on,.btn[aria-pressed="true"].sm{outline:2px solid var(--acc)}
@@ -1602,3 +1602,25 @@ mark.hl[data-ic]::before{content:attr(data-ic);font-size:.8em;margin-right:3px;f
 .dbfa span{display:block;font-size:.76rem;color:var(--muted)}.dbfa b{font-size:1.1rem;font-variant-numeric:tabular-nums}
 .dbana p{margin:.5em 0}
 @media (max-width:700px){.dbtool{flex:1 1 calc(33% - 6px);justify-content:center;padding:6px 8px;font-size:.84rem}.dbles > summary .rfcn{display:none}.dbfig{flex-basis:120px}}
+
+/* ===== editor guiado: pasos, ayuda y contador ===== */
+.dbstp{display:flex;align-items:center;margin:0}
+.dbstep{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0;border:0;background:transparent;font:inherit;font-size:.85rem;color:var(--muted);cursor:pointer}
+.dbstep .dbsn{width:28px;height:28px;border-radius:50%;border:2px solid var(--line2);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--muted)}
+.dbstep.on{color:var(--acc);font-weight:700}.dbstep.on .dbsn{background:var(--acc);border-color:var(--acc);color:var(--onAcc)}
+.dbstep.hecho{color:var(--ok)}.dbstep.hecho .dbsn{background:var(--ok);border-color:var(--ok);color:var(--onAcc)}
+.dbsl{flex:1;height:2px;background:var(--line);margin:0 4px;min-width:6px}.dbsl.hecho{background:var(--ok)}
+.dbins{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:2px 12px 8px;margin:8px 0 10px;box-shadow:var(--shadow)}
+.dbinst{font-size:.78rem;font-weight:700;letter-spacing:.04em;color:var(--acc);text-transform:uppercase}
+.dbins .dbhint{margin:0;font-size:1rem;color:var(--ink);min-height:0}
+.dbnav .btn{flex:1;min-height:48px}
+.dbcnt{display:flex;gap:8px;margin:10px 0 0}
+.dbcnt[hidden]{display:none}
+.dbcnt div{flex:1;background:var(--sunk);border-radius:10px;padding:6px 4px;text-align:center;font-size:.8rem;color:var(--muted);line-height:1.2}
+.dbcnt b{display:block;font-family:"Zilla Slab",Georgia,serif;font-size:1.6rem;line-height:1.1;color:var(--ink)}
+.dbcnt .falta{background:var(--mark);color:var(--ink)}.dbcnt .listo{background:var(--okbg);color:var(--ok)}.dbcnt .listo b{color:var(--ok)}
+.dbayu{display:flex;background:var(--sunk);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px;margin:8px 0 2px}
+.dbayb{flex:1;min-height:44px;border:0;border-radius:9px;background:transparent;color:var(--ink);font:inherit}
+.dbayb[aria-pressed="true"]{background:var(--acc);color:var(--onAcc);font-weight:700}
+.dbayun{margin:4px 0 0;font-size:.85rem;color:var(--muted)}
+.dbex .dbacc{position:sticky;bottom:0;z-index:5;background:var(--surface);margin:10px -2px 0;padding:10px 2px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}

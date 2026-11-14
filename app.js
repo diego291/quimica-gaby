@@ -3571,6 +3571,10 @@ const DIB_TOOLS = {
   move:{ n:`Mover`, g:`✥`, h:`Arrastra un átomo para acomodarlo.` },
   erase:{ n:`Borrar`, g:`⌫`, h:`Toca un átomo o un enlace para quitarlo.` }
 };
+Object.entries({ atom:`Elige un elemento abajo y toca el lienzo.`, bond:`Toca un átomo y luego otro. Toca un enlace para hacerlo doble o triple.`, dots:`Toca un átomo para sumarle un electrón (un punto).`, charge:`Toca un átomo para cambiarle la carga.`, ring:`Elige el anillo y toca el lienzo.`, group:`Elige un grupo y toca el lienzo; luego únelo con un enlace.`, move:`Arrastra un átomo para acomodarlo.`, erase:`Toca un átomo o un enlace para quitarlo.` }).forEach(([k, s]) => { DIB_TOOLS[k].s = s; });
+const DIB_PASOS = [{ k:`atomos`, n:`Átomos`, p:[`atom`, `ring`, `group`], t:[`atom`, `ring`, `group`, `move`, `erase`] }, { k:`enlaces`, n:`Enlaces`, p:[`bond`], t:[`bond`, `move`, `erase`] }, { k:`electrones`, n:`Electrones`, p:[`dots`, `charge`], t:[`dots`, `charge`, `erase`] }];
+/* esqueleto de ayuda: átomos y enlaces sencillos del objetivo, sin electrones ni cargas */
+const dibEsqueleto = t => { const m = dbClone(t); delete m.txt; delete m.dash; m.atoms.forEach(a => { a.d = 0; a.q = 0; }); m.bonds.forEach(b => { b.o = 1; delete b.s; }); return m; };
 const DIB_ANILLOS = { ben:[`Benceno`, 6, 1.5], c3:[`Ciclopropano`, 3, 1], c4:[`Ciclobutano`, 4, 1], c5:[`Ciclopentano`, 5, 1], c6:[`Ciclohexano`, 6, 1] };
 const DIB_ELS_ALL = [`C`, `H`, `O`, `N`, `F`, `Cl`, `Br`, `I`, `S`, `P`, `B`, `Li`, `Na`, `K`, `Be`, `Mg`, `Ca`, `Al`, `Ne`];
 const dibS = () => { const x = S.x; const d = x.dib || (x.dib = {}); d.tab = d.tab || `aprender`; d.stats = d.stats || {}; d.cfg = d.cfg || { cats:[`atomo`, `ionico`, `lewis`, `geo`, `hc`, `semi`, `arom`, `nombrar`], n:5 }; return d; };
@@ -3579,18 +3583,24 @@ const dibEsc = s => String(s == null ? `` : s).replace(/[&<>"]/g, c => ({ '&':`&
 /* ======================= EDITOR DE ESTRUCTURAS ======================= */
 function dibEditor(cfg){
   const mode = cfg.mode, tools = cfg.tools;
-  const st = { m:cfg.mol ? dbClone(cfg.mol) : dbNew(), tool:tools[0], el:(cfg.els || [`C`])[0], grp:(cfg.groups || [])[0] || null, ring:(cfg.rings || [`ben`])[0], pend:null, undo:[], dn:null, drag:null, bdrag:null, prev:null, showH:false, count:false };
+  const st = { m:cfg.mol ? dbClone(cfg.mol) : dbNew(), tool:tools[0], el:(cfg.els || [`C`])[0], grp:(cfg.groups || [])[0] || null, ring:(cfg.rings || [`ben`])[0], pend:null, undo:[], dn:null, drag:null, bdrag:null, prev:null, showH:false, count:false, ayuda:!!cfg.ayuda, paso:0 };
+  const pasos0 = cfg.pasos ? DIB_PASOS.map(p => ({ k:p.k, n:p.n, ok:p.p.some(k => tools.includes(k)), t:tools.filter(k => p.t.includes(k)) })).filter(p => p.ok) : [], pasos = pasos0.length > 1 ? pasos0 : null;
+  const stp = pasos ? el(`nav`, `dbstp`) : null, ins = pasos ? el(`div`, `dbins`) : null, inst = pasos ? el(`div`, `dbsr`) : null, nav = pasos ? el(`div`, `btnrow dbnav`) : null, cnt = cfg.need != null && mode === `lewis` ? el(`div`, `dbcnt`) : null; let prevB = null, nextB = null, cbtn = null;
   const root = el(`div`, `dbed`), bar = el(`div`, `dbtools`), pal = el(`div`, `dbpal`), hint = el(`p`, `dbhint`), cw = el(`div`, `dbcw`), acts = el(`div`, `dbacts`), sr = el(`p`, `dbsr`);
   bar.setAttribute(`role`, `toolbar`); bar.setAttribute(`aria-label`, `Herramientas de dibujo`); hint.setAttribute(`aria-live`, `polite`); sr.setAttribute(`aria-live`, `polite`);
-  cw.innerHTML = `<svg class="dbcv" viewBox="0 0 360 260" role="application" aria-label="Lienzo para dibujar la estructura. Solo se puede usar con el dedo o el ratón."></svg>`; const svg = cw.firstChild;
+  if (pasos){ stp.setAttribute(`aria-label`, `Pasos del ejercicio`); ins.append(stp, inst, hint); } if (cnt){ cnt.setAttribute(`aria-live`, `polite`); cnt.hidden = true; }
+  cw.innerHTML = `<svg class="dbcv" viewBox="0 0 360 300" role="application" aria-label="Lienzo para dibujar la estructura. Solo se puede usar con el dedo o el ratón."></svg>`; const svg = cw.firstChild;
   const snap = v => Math.round(v / 10) * 10, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  function render(){ svg.innerHTML = dbInner(st.m, { mode, edit:true, pend:st.pend, prev:st.prev, showH:st.showH, count:st.count }); sr.textContent = `Estructura con ${st.m.atoms.length} átomos y ${st.m.bonds.length} enlaces.`; }
+  function render(){ svg.innerHTML = dbInner(st.m, { mode, edit:true, pend:st.pend, prev:st.prev, showH:st.showH, count:st.count }); sr.textContent = `Estructura con ${st.m.atoms.length} átomos y ${st.m.bonds.length} enlaces.`; cntUpdate(); }
+  function cntUpdate(){
+    if (!cnt) return; cnt.hidden = !st.ayuda; if (!st.ayuda) return; let have = 0; st.m.atoms.forEach(a => { have += a.d | 0; }); st.m.bonds.forEach(b => { have += 2 * (b.o || 0); }); const f = cfg.need - have, par = f > 0 && f % 2 === 0 ? ` (${f / 2} par${f === 2 ? `` : `es`})` : ``;
+    cnt.innerHTML = `<div><b>${cfg.need}</b>electrones en total</div><div><b>${have}</b>colocados</div><div class="${f === 0 ? `listo` : `falta`}"><b>${f === 0 ? `✓` : Math.abs(f)}</b>${f === 0 ? `completo` : f > 0 ? `faltan${par}` : `sobran`}</div>`; }
   const push = () => { st.undo.push(JSON.stringify(st.m)); if (st.undo.length > 60) st.undo.shift(); };
   const changed = () => { render(); if (cfg.onchange) cfg.onchange(dbClone(st.m)); };
   const bondOf = (a, b) => st.m.bonds.find(k => (k.a === a && k.b === b) || (k.a === b && k.b === a));
   const api = {
-    add(e, x, y, o){ push(); const id = dbAdd(st.m, e, clamp(snap(x), 20, 340), clamp(snap(y), 20, 240), o); changed(); return id; },
-    group(g, x, y){ push(); const id = dbAdd(st.m, `R`, clamp(snap(x), 20, 340), clamp(snap(y), 20, 240), { g }); changed(); return id; },
+    add(e, x, y, o){ push(); const id = dbAdd(st.m, e, clamp(snap(x), 20, 340), clamp(snap(y), 20, 280), o); changed(); return id; },
+    group(g, x, y){ push(); const id = dbAdd(st.m, `R`, clamp(snap(x), 20, 340), clamp(snap(y), 20, 280), { g }); changed(); return id; },
     bond(a, b){ if (a === b || !dbAt(st.m, a) || !dbAt(st.m, b)) return; push(); const ex = bondOf(a, b); if (!ex) dbBond(st.m, a, b, 1); else api.cycleNoPush(ex); changed(); },
     cycleNoPush(b){ const nx = { 1:2, 2:3, 3:0, 1.5:1 }[b.o]; if (!nx) st.m.bonds.splice(st.m.bonds.indexOf(b), 1); else b.o = nx; },
     cycle(b){ push(); api.cycleNoPush(b); changed(); },
@@ -3598,7 +3608,7 @@ function dibEditor(cfg){
     charge(i, q){ const a = dbAt(st.m, i); if (!a) return; push(); const sec = (DB_EL[a.el] || {}).met ? [0, 1, 2, 3] : [0, -1, -2, 1]; a.q = q == null ? sec[(Math.max(0, sec.indexOf(a.q || 0)) + 1) % sec.length] : q; changed(); },
     del(i){ push(); st.m.atoms = st.m.atoms.filter(a => a.i !== i); st.m.bonds = st.m.bonds.filter(b => b.a !== i && b.b !== i); if (st.pend === i) st.pend = null; changed(); },
     delBond(b){ push(); st.m.bonds.splice(st.m.bonds.indexOf(b), 1); changed(); },
-    ring(kind, x, y){ const [, n, o] = DIB_ANILLOS[kind]; push(); const R = n <= 4 ? 28 : 32, cx = clamp(snap(x), R + 20, 340 - R), cy = clamp(snap(y), R + 20, 240 - R), ids = [];
+    ring(kind, x, y){ const [, n, o] = DIB_ANILLOS[kind]; push(); const R = n <= 4 ? 28 : 32, cx = clamp(snap(x), R + 20, 340 - R), cy = clamp(snap(y), R + 20, 280 - R), ids = [];
       for (let k = 0; k < n; k++){ const a = dbRad(-90 + 360 / n * k); ids.push(dbAdd(st.m, `C`, cx + R * Math.cos(a), cy + R * Math.sin(a))); } for (let k = 0; k < n; k++) dbBond(st.m, ids[k], ids[(k + 1) % n], o); changed(); return ids; },
     mol:() => dbClone(st.m), set(m){ push(); st.m = dbClone(m); st.pend = null; changed(); },
     clear(){ if (!st.m.atoms.length) return; push(); st.m = dbNew(); st.pend = null; changed(); },
@@ -3607,9 +3617,9 @@ function dibEditor(cfg){
   };
   function pt(e){ const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; const q = p.matrixTransform(svg.getScreenCTM().inverse()); return [q.x, q.y]; }
   function hit([x, y]){
-    let best = null, bd = 1e9; st.m.atoms.forEach(a => { const d = Math.hypot(a.x - x, a.y - y), r = (a.g ? 26 : dbLabel(st.m, a, mode, {}) ? 19 : 16); if (d <= r && d < bd){ bd = d; best = a; } });
+    let best = null, bd = 1e9; st.m.atoms.forEach(a => { const d = Math.hypot(a.x - x, a.y - y), r = (a.g ? 28 : dbLabel(st.m, a, mode, {}) ? 22 : 20); if (d <= r && d < bd){ bd = d; best = a; } });
     if (best) return { atom:best };
-    for (const b of st.m.bonds){ const A = dbAt(st.m, b.a), B = dbAt(st.m, b.b), dx = B.x - A.x, dy = B.y - A.y, L2 = dx * dx + dy * dy || 1, t = clamp(((x - A.x) * dx + (y - A.y) * dy) / L2, 0, 1); if (Math.hypot(A.x + t * dx - x, A.y + t * dy - y) <= 9) return { bond:b }; }
+    for (const b of st.m.bonds){ const A = dbAt(st.m, b.a), B = dbAt(st.m, b.b), dx = B.x - A.x, dy = B.y - A.y, L2 = dx * dx + dy * dy || 1, t = clamp(((x - A.x) * dx + (y - A.y) * dy) / L2, 0, 1); if (Math.hypot(A.x + t * dx - x, A.y + t * dy - y) <= 11) return { bond:b }; }
     return {};
   }
   function tap(d, h, p){
@@ -3629,7 +3639,7 @@ function dibEditor(cfg){
     if (st.tool === `move` && h.atom){ push(); st.drag = h.atom; } if (st.tool === `bond` && h.atom) st.bdrag = h.atom;
     try { svg.setPointerCapture(e.pointerId); } catch(_) {} });
   svg.addEventListener(`pointermove`, e => { if (!st.dn) return; const p = pt(e); if (Math.hypot(p[0] - st.dn.p[0], p[1] - st.dn.p[1]) > 7) st.dn.moved = true;
-    if (st.drag){ st.drag.x = clamp(p[0], 15, 345); st.drag.y = clamp(p[1], 15, 245); render(); } else if (st.bdrag && st.dn.moved){ st.prev = [st.bdrag.x, st.bdrag.y, p[0], p[1]]; render(); } });
+    if (st.drag){ st.drag.x = clamp(p[0], 15, 345); st.drag.y = clamp(p[1], 15, 285); render(); } else if (st.bdrag && st.dn.moved){ st.prev = [st.bdrag.x, st.bdrag.y, p[0], p[1]]; render(); } });
   const fin = e => { if (!st.dn) return; const p = pt(e), d = st.dn, h = hit(p); st.dn = null; st.prev = null; st.bdrag = null;
     if (st.drag){ st.drag.x = snap(st.drag.x); st.drag.y = snap(st.drag.y); st.drag = null; changed(); return; } tap(d, h, p); };
   svg.addEventListener(`pointerup`, fin); svg.addEventListener(`pointercancel`, () => { st.dn = null; st.prev = null; st.bdrag = null; st.drag = null; render(); });
@@ -3638,17 +3648,28 @@ function dibEditor(cfg){
   function setTool(k){ st.tool = k; st.pend = null; ui(); render(); }
   function ui(){
     tools.forEach(k => { bt[k].setAttribute(`aria-pressed`, st.tool === k); bt[k].classList.toggle(`on`, st.tool === k); });
-    hint.textContent = DIB_TOOLS[st.tool].h; pal.innerHTML = ``;
+    hint.textContent = pasos ? DIB_TOOLS[st.tool].s : DIB_TOOLS[st.tool].h; pal.innerHTML = ``;
     const chips = (lista, cur, set, fmt) => lista.forEach(x => { const b = btn(fmt ? fmt(x) : x, `dbchip${cur === x ? ` on` : ``}`, () => { set(x); ui(); }); b.setAttribute(`aria-pressed`, cur === x); pal.append(b); });
     if (st.tool === `atom`) chips(cfg.els || [`C`], st.el, x => { st.el = x; }); else if (st.tool === `group`) chips(cfg.groups || [], st.grp, x => { st.grp = x; });
     else if (st.tool === `ring`) chips(cfg.rings || [`ben`], st.ring, x => { st.ring = x; }, x => DIB_ANILLOS[x][0]);
     pal.style.visibility = pal.children.length ? `visible` : `hidden`;
   }
   acts.append(btn(`↶ Deshacer`, `btn ghost sm`, () => api.undo()), btn(`Limpiar`, `btn ghost sm`, () => api.clear()));
-  if (mode === `lewis`){ const c = btn(`Contar electrones`, `btn ghost sm`, () => { st.count = !st.count; c.setAttribute(`aria-pressed`, st.count); c.classList.toggle(`on`, st.count); render(); }); c.setAttribute(`aria-pressed`, `false`); c.title = `Muestra cuántos electrones tiene cada átomo a su alrededor (cada enlace cuenta 2)`; acts.append(c); }
+  if (mode === `lewis`){ const c = btn(`Contar electrones`, `btn ghost sm`, () => { st.count = !st.count; c.setAttribute(`aria-pressed`, st.count); c.classList.toggle(`on`, st.count); render(); }); c.setAttribute(`aria-pressed`, `false`); c.title = `Muestra cuántos electrones tiene cada átomo a su alrededor (cada enlace cuenta 2)`; cbtn = c; acts.append(c); }
   else { const c = btn(`Mostrar H`, `btn ghost sm`, () => { st.showH = !st.showH; c.setAttribute(`aria-pressed`, st.showH); c.classList.toggle(`on`, st.showH); render(); }); c.setAttribute(`aria-pressed`, `false`); c.title = `Muestra los hidrógenos implícitos de cada carbono`; acts.append(c); }
-  root.append(cw, pal, bar, hint, acts, sr); ui(); render();
-  const ed = { root, api, get:() => dbClone(st.m), set:api.set, clear:api.clear, st };
+  /* pasos guiados: solo se ven las herramientas del paso actual */
+  function barBuild(){ bar.innerHTML = ``; (pasos ? pasos[st.paso].t : tools).forEach(k => bar.append(bt[k])); }
+  function stepUI(){
+    stp.innerHTML = ``; pasos.forEach((p, i) => { if (i) stp.append(el(`span`, `dbsl${i <= st.paso ? ` hecho` : ``}`)); const b = btn(`<span class="dbsn" aria-hidden="true">${i < st.paso ? `✓` : i + 1}</span><span>${p.n}</span>`, `dbstep${i === st.paso ? ` on` : i < st.paso ? ` hecho` : ``}`, () => setPaso(i)); if (i === st.paso) b.setAttribute(`aria-current`, `step`); stp.append(b); });
+    inst.textContent = `Paso ${st.paso + 1} de ${pasos.length} · ${pasos[st.paso].n}`; prevB.disabled = st.paso === 0; nextB.hidden = st.paso === pasos.length - 1; barBuild(); }
+  function setPaso(i){ st.paso = clamp(i, 0, pasos.length - 1); const p = pasos[st.paso]; if (!p.t.includes(st.tool)) st.tool = p.t[0]; st.pend = null; stepUI(); ui(); render(); }
+  /* ayuda: contador de electrones, cuentas por átomo y esqueleto (si hay) */
+  api.ayuda = on => { st.ayuda = !!on; st.count = st.ayuda; if (cbtn){ cbtn.setAttribute(`aria-pressed`, st.count); cbtn.classList.toggle(`on`, st.count); }
+    if (st.ayuda && cfg.esqueleto && !st.m.atoms.length){ st.m = dbClone(cfg.esqueleto); st.pend = null; const k = pasos ? pasos.findIndex(p => p.k === `electrones`) : -1; if (k >= 0){ setPaso(k); return; } }
+    render(); };
+  if (pasos){ prevB = btn(`← Atrás`, `btn ghost`, () => setPaso(st.paso - 1)); nextB = btn(`Siguiente paso →`, `btn`, () => setPaso(st.paso + 1)); nav.append(prevB, nextB); }
+  root.append(...(pasos ? [ins, cw, pal, bar, cnt, acts, nav, sr] : [cw, pal, bar, hint, acts, sr]).filter(Boolean)); if (pasos) stepUI(); ui(); render(); if (st.ayuda) api.ayuda(true);
+  const ed = { root, api, get:() => dbClone(st.m), set:api.set, clear:api.clear, st, ayuda:api.ayuda };
   root.__ed = ed; return ed;
 }
 
@@ -3773,12 +3794,18 @@ function dibEjercicio(v){
     c.append(acciones, hintBox, fb, nxt); v.append(c); return;
   }
   /* dibujo */
-  const ed = dibEditor({ mode:it.mode, tools:it.tools, els:it.els, groups:it.groups, rings:it.rings }); X.ed = ed; c.append(ed.root);
+  const sA = dibS(); if (sA.ayuda == null) sA.ayuda = true;
+  const lew = it.mode === `lewis`, need = lew ? it.target.atoms.reduce((s, a) => s + ((DB_EL[a.el] || {}).e || 0) - (a.q || 0), 0) : null, esq = it.cat === `lewis` ? dibEsqueleto(it.target) : null;
+  const ed = dibEditor({ mode:it.mode, tools:it.tools, els:it.els, groups:it.groups, rings:it.rings, pasos:true, need, esqueleto:esq, ayuda:lew && sA.ayuda }); X.ed = ed;
+  if (lew){ const ay = el(`div`, `dbayu`), nota = el(`p`, `dbayun`); ay.setAttribute(`role`, `group`); ay.setAttribute(`aria-label`, `Nivel de ayuda`);
+    const bs = [[true, `Con ayuda`], [false, `Sin ayuda`]].map(([on, t]) => [on, btn(t, `dbayb`, () => { sA.ayuda = on; save(); marca(); ed.ayuda(on); })]);
+    const marca = () => { bs.forEach(([on, b]) => b.setAttribute(`aria-pressed`, sA.ayuda === on)); nota.textContent = sA.ayuda ? (esq ? `Con ayuda: ya están los átomos y los enlaces, y ves cuántos electrones faltan.` : `Con ayuda: ves cuántos electrones faltan.`) : `Sin ayuda: dibuja todo tú.`; };
+    bs.forEach(([, b]) => ay.append(b)); marca(); c.append(ed.root, ay, nota); } else c.append(ed.root);
   const comprobar = () => { tries++; const u = ed.get(), r2 = dbCheck(u, it.target, it.mode, it.alts); fb.innerHTML = ``;
     if (r2.ok){ acierto(); fb.append(el(`div`, `fb ok`, `<strong>¡Correcto!</strong>${tries > 1 ? ` (al intento ${tries})` : ``} ${it.expl}`)); mostrarSig(); }
     else { fb.append(el(`div`, `fb no`, `<strong>Todavía no.</strong><ul class="dblst">${r2.msgs.map(m => `<li>${dibEsc(m)}</li>`).join(``)}</ul>`)); if (tries >= 2) verPista(); } };
   acciones.append(btn(`Comprobar`, `btn`, comprobar), btn(`Pista`, `btn ghost`, verPista), btn(`Ver solución`, `btn ghost`, () => { it.vioSol = true; if (!X.res[X.i]) X.res[X.i] = { first:false, tries }; dibCuenta(it, false); fb.innerHTML = ``; solucion(fb); mostrarSig(); }));
-  c.append(acciones, hintBox, fb, nxt); v.append(c);
+  c.append(hintBox, fb, nxt, acciones); v.append(c);
 }
 function dibResumen(v){
   const X = DIBX, tot = X.items.length, ok = X.res.filter(r => r && r.first).length, c = el(`section`, `rfcard dbres`);
