@@ -13,6 +13,8 @@ const DIB_TOOLS = {
   erase:{ n:`Borrar`, g:`⌫`, h:`Toca un átomo o un enlace para quitarlo.` }
 };
 Object.entries({ atom:`Elige un elemento abajo y toca el lienzo.`, bond:`Toca un átomo y luego otro. Toca un enlace para hacerlo doble o triple.`, dots:`Toca un átomo para sumarle un electrón (un punto).`, charge:`Toca un átomo para cambiarle la carga.`, ring:`Elige el anillo y toca el lienzo.`, group:`Elige un grupo y toca el lienzo; luego únelo con un enlace.`, move:`Arrastra un átomo para acomodarlo.`, erase:`Toca un átomo o un enlace para quitarlo.` }).forEach(([k, s]) => { DIB_TOOLS[k].s = s; });
+/* papel punteado: un punto en cada posición donde se acomodan los átomos (cada 10) y uno mayor cada 40 */
+const DIB_GRID = `<defs><pattern id="dbgrid" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="0" cy="0" r="1.1" style="fill:var(--muted);fill-opacity:.4"/></pattern><pattern id="dbgrid4" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="0" cy="0" r="2" style="fill:var(--muted);fill-opacity:.6"/></pattern></defs><rect width="360" height="300" fill="url(#dbgrid)" pointer-events="none"/><rect width="360" height="300" fill="url(#dbgrid4)" pointer-events="none"/>`;
 const DIB_PASOS = [{ k:`atomos`, n:`Átomos`, p:[`atom`, `ring`, `group`], t:[`atom`, `ring`, `group`, `move`, `erase`] }, { k:`enlaces`, n:`Enlaces`, p:[`bond`], t:[`bond`, `move`, `erase`] }, { k:`electrones`, n:`Electrones`, p:[`dots`, `charge`], t:[`dots`, `charge`, `erase`] }];
 /* esqueleto de ayuda: átomos y enlaces sencillos del objetivo, sin electrones ni cargas */
 const dibEsqueleto = t => { const m = dbClone(t); delete m.txt; delete m.dash; m.atoms.forEach(a => { a.d = 0; a.q = 0; }); m.bonds.forEach(b => { b.o = 1; delete b.s; }); return m; };
@@ -32,7 +34,7 @@ function dibEditor(cfg){
   if (pasos){ stp.setAttribute(`aria-label`, `Pasos del ejercicio`); ins.append(stp, inst, hint); } if (cnt){ cnt.setAttribute(`aria-live`, `polite`); cnt.hidden = true; }
   cw.innerHTML = `<svg class="dbcv" viewBox="0 0 360 300" role="application" aria-label="Lienzo para dibujar la estructura. Solo se puede usar con el dedo o el ratón."></svg>`; const svg = cw.firstChild;
   const snap = v => Math.round(v / 10) * 10, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  function render(){ svg.innerHTML = dbInner(st.m, { mode, edit:true, pend:st.pend, prev:st.prev, showH:st.showH, count:st.count }); sr.textContent = `Estructura con ${st.m.atoms.length} átomos y ${st.m.bonds.length} enlaces.`; cntUpdate(); }
+  function render(){ svg.innerHTML = DIB_GRID + dbInner(st.m, { mode, edit:true, pend:st.pend, prev:st.prev, showH:st.showH, count:st.count }); sr.textContent = `Estructura con ${st.m.atoms.length} átomos y ${st.m.bonds.length} enlaces.`; cntUpdate(); }
   function cntUpdate(){
     if (!cnt) return; cnt.hidden = !st.ayuda; if (!st.ayuda) return; let have = 0; st.m.atoms.forEach(a => { have += a.d | 0; }); st.m.bonds.forEach(b => { have += 2 * (b.o || 0); }); const f = cfg.need - have, par = f > 0 && f % 2 === 0 ? ` (${f / 2} par${f === 2 ? `` : `es`})` : ``;
     cnt.innerHTML = `<div><b>${cfg.need}</b>electrones en total</div><div><b>${have}</b>colocados</div><div class="${f === 0 ? `listo` : `falta`}"><b>${f === 0 ? `✓` : Math.abs(f)}</b>${f === 0 ? `completo` : f > 0 ? `faltan${par}` : `sobran`}</div>`; }
