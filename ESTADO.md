@@ -13,7 +13,7 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 - Correcciones del material (errata) con aviso por ficha.
 - Retroalimentación: diagnóstico, Mis fallos con repaso espaciado, Cómo evalúan, Simulacro.
 - Dibujar: 7 lecciones, 8 ejercicios con editor táctil, Taller libre; núcleo con 738 pruebas.
-- Dibujar rediseñado (propuestas A+C): ejercicios por pasos (Átomos → Enlaces → Electrones) con solo las herramientas del paso; Con/Sin ayuda (contador de electrones, cuentas por átomo y, en Lewis, esqueleto ya colocado); lienzo 360×300, zonas táctiles mayores y barra Comprobar/Pista fija abajo. Taller libre sin cambios de flujo.
+- Dibujar rediseñado (propuestas A+C): ejercicios por pasos (Átomos → Enlaces → Electrones) con solo las herramientas del paso; Con/Sin ayuda (contador de electrones, cuentas por átomo y, en Lewis, esqueleto ya colocado); lienzo 360×300 con papel punteado (un punto por posición de ajuste), zonas táctiles mayores y barra Comprobar/Pista fija abajo. Taller libre sin cambios de flujo.
 ## Decisiones tomadas
 - Publicar directo a main, sin ramas ni PR: lo pidió Diego (ver CLAUDE.md).
 - Historial de Gaby fuera del repo, cargado desde `historial-gaby.json`: el repo es público.
@@ -28,4 +28,4 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 - Cero datos privados (tokens, notas, respuestas, fotos, apellido de Gaby) en el repo.
 - Sin force push ni reescribir historial sin permiso explícito de Diego.
 ## Última versión/commit publicado
-App 2026.11.13-2221 · commit b7582c7 (Dibujar: pasos y ayuda).
+App 2026.11.13-2232 · commit 8aa162c (Dibujar: papel punteado).
