@@ -1,4 +1,8 @@
 /* ===== Explícalo de otra forma ===== */
+.btn.otrabtn.on{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.otrabanner{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 12px;border-radius:12px;background:color-mix(in srgb,var(--acc) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--acc) 40%,var(--line));font-size:13.5px;line-height:1.4}
+.otrabanner .btn{font-size:13px;padding:5px 10px}
+.otrafin{margin:4px 0 0;text-align:center}
 .btn.otrabtn{color:var(--acc);border-color:color-mix(in srgb,var(--acc) 45%,var(--line));background:color-mix(in srgb,var(--acc) 10%,var(--surface))}
 .otra{display:flex;flex-direction:column;gap:12px;margin:8px 0 14px}
 .otranota{margin:0;padding:8px 12px;border-radius:10px;background:var(--sunk);color:var(--muted);font-size:13px;line-height:1.45}

@@ -111,18 +111,17 @@ const OTRA = {
 function otraHtml(o){
   const li = a => a.map(x => `<li>${x}</li>`).join(``);
   const det = (q, a) => `<details class="otraq"><summary>${q}</summary><p>${a}</p></details>`;
-  return `<p class="otranota">Explicación complementaria: no está en las diapositivas. Para el examen cuenta lo que dice la ficha; esto es para entenderla.</p>
+  return `<div class="otra"><div class="otrabanner"><span>Estás viendo la <b>explicación de otra forma</b>. Se mantiene en las siguientes fichas.</span><button type="button" class="btn ghost" data-otra-volver>Ver la ficha original</button></div>
+  <p class="otranota">Explicación complementaria: no está en las diapositivas. Para el examen cuenta lo que dice la ficha; esto es para entenderla.</p>
   <section class="otrab pre"><h4>1 · Antes de leer, piensa</h4>${det(o.pre[0], o.pre[1])}</section>
   <section class="otrab idea"><h4>2 · La idea</h4><p>${o.idea}</p></section>
   <section class="otrab por"><h4>3 · Por qué es así</h4><ul>${li(o.por)}</ul></section>
   ${o.ojo ? `<section class="otrab ojo"><h4>4 · Ojo</h4><p>${o.ojo}</p></section>` : ``}
-  <section class="otrab prueba"><h4>5 · Pruébate</h4>${o.prueba.map(p => det(p[0], p[1])).join(``)}</section>`;
+  <section class="otrab prueba"><h4>5 · Pruébate</h4>${o.prueba.map(p => det(p[0], p[1])).join(``)}</section>
+  <p class="otrafin"><button type="button" class="btn ghost" data-otra-volver>Ver la ficha original</button></p></div>`;
 }
-function otraOpen(it){
-  const o = OTRA[it.title]; if (!o) return;
-  openSheet(`Explicado de otra forma`, b => {
-    b.append(el(`p`, `rsub`, `${TOPICS[it.t].n} · ${it.title}`));
-    const w = el(`div`, `otra`); w.innerHTML = otraHtml(o); b.append(w);
-    const r = el(`div`, `btnrow`); r.append(btn(`Volver a la ficha`, `btn acc`, closeSheet)); b.append(r);
-  });
+/* Modo «otra forma»: reemplaza el texto de la pestaña Leer (el dibujo se queda) y se mantiene al cambiar de ficha hasta volver a la ficha original. */
+const otraOn = it => !!(S.x.otra && OTRA[it.title]);
+function otraBind(root){
+  root.querySelectorAll(`[data-otra-volver]`).forEach(b => b.onclick = () => { S.x.otra = false; save(); renderView(); renderPanel(); });
 }

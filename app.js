@@ -1592,20 +1592,19 @@ const OTRA = {
 function otraHtml(o){
   const li = a => a.map(x => `<li>${x}</li>`).join(``);
   const det = (q, a) => `<details class="otraq"><summary>${q}</summary><p>${a}</p></details>`;
-  return `<p class="otranota">Explicación complementaria: no está en las diapositivas. Para el examen cuenta lo que dice la ficha; esto es para entenderla.</p>
+  return `<div class="otra"><div class="otrabanner"><span>Estás viendo la <b>explicación de otra forma</b>. Se mantiene en las siguientes fichas.</span><button type="button" class="btn ghost" data-otra-volver>Ver la ficha original</button></div>
+  <p class="otranota">Explicación complementaria: no está en las diapositivas. Para el examen cuenta lo que dice la ficha; esto es para entenderla.</p>
   <section class="otrab pre"><h4>1 · Antes de leer, piensa</h4>${det(o.pre[0], o.pre[1])}</section>
   <section class="otrab idea"><h4>2 · La idea</h4><p>${o.idea}</p></section>
   <section class="otrab por"><h4>3 · Por qué es así</h4><ul>${li(o.por)}</ul></section>
   ${o.ojo ? `<section class="otrab ojo"><h4>4 · Ojo</h4><p>${o.ojo}</p></section>` : ``}
-  <section class="otrab prueba"><h4>5 · Pruébate</h4>${o.prueba.map(p => det(p[0], p[1])).join(``)}</section>`;
+  <section class="otrab prueba"><h4>5 · Pruébate</h4>${o.prueba.map(p => det(p[0], p[1])).join(``)}</section>
+  <p class="otrafin"><button type="button" class="btn ghost" data-otra-volver>Ver la ficha original</button></p></div>`;
 }
-function otraOpen(it){
-  const o = OTRA[it.title]; if (!o) return;
-  openSheet(`Explicado de otra forma`, b => {
-    b.append(el(`p`, `rsub`, `${TOPICS[it.t].n} · ${it.title}`));
-    const w = el(`div`, `otra`); w.innerHTML = otraHtml(o); b.append(w);
-    const r = el(`div`, `btnrow`); r.append(btn(`Volver a la ficha`, `btn acc`, closeSheet)); b.append(r);
-  });
+/* Modo «otra forma»: reemplaza el texto de la pestaña Leer (el dibujo se queda) y se mantiene al cambiar de ficha hasta volver a la ficha original. */
+const otraOn = it => !!(S.x.otra && OTRA[it.title]);
+function otraBind(root){
+  root.querySelectorAll(`[data-otra-volver]`).forEach(b => b.onclick = () => { S.x.otra = false; save(); renderView(); renderPanel(); });
 }
 
 /* ======================= INTERFAZ NUEVA: NAVEGACIÓN, INICIO, POMODORO, AGENDA ======================= */
@@ -2333,13 +2332,13 @@ function checkBox(it){
   return sec;
 }
 /* ---------- Leer con el dibujo a la vista: al lado, fijo arriba o en ventana flotante que se mueve ---------- */
-function leerConDibujo(it, fig, rehacer){
+function leerConDibujo(it, fig, rehacer, cuerpo){
   const z = +S.x.zoom || 1, libre = (innerWidth - 92 - (S.x.panelOff ? 58 : 330)) / z;
   const libro = !!S.x.lect && bp() !== `phone` && innerWidth / z >= 820;   // pantalla completa en PC: libro abierto
   const phone = !libro && (bp() === `phone` || libre < 820), mode = libro ? `lado` : (S.x.figMode || `lado`), min = !!S.x.figMin && mode !== `lado`;
   document.querySelectorAll(`body > .rfig.flt`).forEach(x => x.remove());
   const w = el(`div`, `rlc m-${mode}` + (phone ? ` ph` : ``) + (libro ? ` libro` : ``));
-  const txt = el(`div`, `reptext rleer`, it.body);
+  const txt = el(`div`, `reptext rleer`, cuerpo != null ? cuerpo : it.body);
   const box = el(`div`, `rfig` + (min ? ` min` : ``)); box.setAttribute(`role`, `region`); box.setAttribute(`aria-label`, `Dibujo de la ficha`);
   const bar = el(`div`, `rfigbar`);
   const lab = el(`span`, `rfigl`, mode === `flota` ? `⠿ Dibujo` : `Dibujo`); if (mode === `flota`) lab.title = `Arrastra desde aquí para moverlo`;
@@ -2417,7 +2416,7 @@ function vRepaso(v){
   if (bp() !== `wide`){ const ix = btn(``, `btn ghost`, () => openSheet(`Índice del repaso`, tocInto)); ix.innerHTML = icon(`list`) + ` Índice`; tools.append(ix); }
   const nErr = errCount(it.t); if (nErr){ const eb = btn(`⚠ Correcciones · ${nErr}`, `btn ghost errbtn`, () => errPanel(it.t, it.title)); eb.title = `Errores del material del ${TOPICS[it.t].n} y cómo se corrigieron`; tools.prepend(eb); }
   errJump = x => { const j = all.indexOf(x); if (j >= 0) jump(j); };
-  if (typeof OTRA !== `undefined` && OTRA[it.title]){ const ob = btn(`Explícalo de otra forma`, `btn ghost otrabtn`, () => otraOpen(it)); ob.title = `Explicación distinta de esta ficha: primero piensas, luego entiendes el porqué`; tools.append(ob); }
+  if (typeof OTRA !== `undefined` && OTRA[it.title]){ const on = otraOn(it); const ob = btn(on ? `Ver ficha original` : `Explícalo de otra forma`, `btn ghost otrabtn` + (on ? ` on` : ``), () => { S.x.otra = !S.x.otra; S.x.rtab = `leer`; save(); renderView(); renderPanel(); }); ob.setAttribute(`aria-pressed`, on); ob.title = on ? `Volver al texto de la ficha tal como viene en el material` : `Explica esta ficha de otra forma, en este mismo espacio; se mantiene al cambiar de ficha`; tools.append(ob); }
   tools.append(btn(`Ver todas`, `btn ghost`, () => { S.x.rall = true; save(); renderView(); renderPanel(); }));
   top.append(lb, tools); v.append(top);
   const sq = el(`nav`, `rsq`); sq.setAttribute(`aria-label`, `Fichas del ${TOPICS[it.t].n}`); sq.style.setProperty(`--c`, `var(--${it.t})`);
@@ -2446,7 +2445,9 @@ function vRepaso(v){
     TABS.forEach(([k, n]) => { const b = btn(n, k === `comp` ? `k` : ``, () => { S.x.rtab = k; save(); pinta(); if (tabs.getBoundingClientRect().top < 0) tabs.scrollIntoView({ block:`start`, behavior:`smooth` }); });
       b.setAttribute(`role`, `tab`); b.setAttribute(`aria-selected`, t === k); tabs.append(b); });
     if (t === `leer`){
-      panel.append(fig ? leerConDibujo(it, fig, pinta) : el(`div`, `reptext rleer`, it.body));
+      const cuerpo = otraOn(it) ? otraHtml(OTRA[it.title]) : it.body;
+      panel.append(fig ? leerConDibujo(it, fig, pinta, cuerpo) : el(`div`, `reptext rleer`, cuerpo));
+      if (otraOn(it)) otraBind(panel);
       const más = el(`div`, `rmas`);
       if (it.memo) más.append(btn(`Memorizar →`, `linkbtn`, () => { S.x.rtab = `memo`; pinta(); }));
       if (más.children.length) panel.append(más);
