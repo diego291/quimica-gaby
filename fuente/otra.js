@@ -137,7 +137,7 @@ const OTRA = {
     (o.br || []).forEach(b => { s += ln(X(b.i), y + 13, X(b.i), y + 33) + T(X(b.i), y + 54, b.l, { c:`tk`, fs:17 }); });
     return s; },
     /* plantillas: flujo de cajas, comparación en dos columnas y escala */
-    flow:(steps, o = {}) => { const n = steps.length, gap = 26, w = (540 - gap * (n - 1)) / n, h = o.h || 74, y = 30; let s = o.title ? T(280, 18, o.title, { c:`tm` }) : ``;
+    flow:(steps, o = {}) => { const n = steps.length, gap = 26, w = (540 - gap * (n - 1)) / n, h = o.h || (Math.max(...steps.map(st => String(st[0]).split(`|`).length + String(st[1] || ``).split(`|`).length)) > 3 ? 94 : 74), y = 30; let s = o.title ? T(280, 18, o.title, { c:`tm` }) : ``;
       steps.forEach((st, i) => { const x = 10 + i * (w + gap); s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" class="bx"${st[2] ? ` style="stroke:${st[2]};stroke-width:2"` : ``}/>`;
         String(st[0]).split(`|`).forEach((l, k) => s += T(x + w / 2, y + 24 + k * 18, l, { c:`tb`, fs:13 }));
         String(st[1] || ``).split(`|`).forEach((l, k) => s += T(x + w / 2, y + h - 12 - (String(st[1]).split(`|`).length - 1 - k) * 16, l, { c:`tm`, fs:11.5 }));
