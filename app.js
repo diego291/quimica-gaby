@@ -561,7 +561,7 @@ function examUnit(ts){ const u = UNITS.find(u => ts.every(t => u.ts.includes(t))
 function maskOf(set){ return TORDER.reduce((m, t, i) => set.has(t) ? m + 2 ** i : m, 0); }
 function makeCode(nm, ne, nd){ const seed = Math.floor(Math.random()*1679616); return `M4-${maskOf(S.sel).toString(16).toUpperCase().padStart(2,`0`)}-${nm}-${ne}-${nd}-${seed.toString(36).toUpperCase().padStart(4,`0`)}`; }
 function buildExam(code){
-  const m = String(code).trim().toUpperCase().match(/^M4-([0-9A-F]{2,8})-(\d{1,2})-(\d{1,2})-(\d{1,2})-([0-9A-Z]{1,4})$/);
+  const m = String(code).trim().toUpperCase().match(/^M4-([0-9A-F]{2,8})-(\d{1,3})-(\d{1,2})-(\d{1,2})-([0-9A-Z]{1,4})$/);
   if (!m) return null;
   const mask = parseInt(m[1], 16), topics = TORDER.filter((t, i) => Math.floor(mask / 2 ** i) % 2 === 1); if (!topics.length) return null;
   const rng = mulberry(parseInt(m[5], 36) + 977);
@@ -576,10 +576,14 @@ function examBuilder(pool){
   box.innerHTML = `<h2>Parcial impreso</h2><p>Genera un parcial con opción múltiple, ejercicios y preguntas de desarrollo. Se descarga en <b>dos PDF separados</b>: el examen (con hoja para marcar respuestas) y la hoja de respuestas con la solución paso a paso. Así puedes imprimir el examen y abrir las respuestas solo cuando termines.</p>`;
   const nE = filt(ALL.EJ).length, nD = filt(ALL.ABIERTAS).length;
   const g = el(`div`,`exgrid`);
-  g.innerHTML = `<label>Opción múltiple<select id="exm">${[10,15,20,25,30].filter(n => n <= pool.length).map(n => `<option ${n===20?`selected`:``}>${n}</option>`).join(``)}</select></label>
-    <label>Ejercicios<select id="exe">${[0,2,3,4,5,6].filter(n => n <= nE).map(n => `<option ${n===4?`selected`:``}>${n}</option>`).join(``)}</select></label>
-    <label>Desarrollo<select id="exd">${[0,1,2,3,4].filter(n => n <= nD).map(n => `<option ${n===2?`selected`:``}>${n}</option>`).join(``)}</select></label>`;
+  /* opciones hasta el total disponible: de 5 en 5 hasta 50, de 10 en 10 hasta 100, de 50 en 50 después, y «Todas» */
+  const steps = (max, base) => { const o = base.filter(n => n <= max); for (let n = 60; n < max; n += n < 100 ? 10 : 50) if (n > (o[o.length - 1] || 0)) o.push(n); if (max > 0 && !o.includes(max)) o.push(max); return o; };
+  const sel = (id, max, base, def) => `<select id="${id}">${steps(max, base).map(n => `<option value="${n}"${n === Math.min(def, max) ? ` selected` : ``}>${n === max && !base.includes(n) ? `Todas (${n})` : n}</option>`).join(``)}</select>`;
+  g.innerHTML = `<label>Opción múltiple${sel(`exm`, Math.min(pool.length, 999), [10,15,20,25,30,35,40,45,50], 20)}</label>
+    <label>Ejercicios${sel(`exe`, Math.min(nE, 99), [0,2,3,4,5,6,8,10], 4)}</label>
+    <label>Desarrollo${sel(`exd`, Math.min(nD, 99), [0,1,2,3,4,5,6,8,10], 2)}</label>`;
   box.append(g);
+  box.append(el(`p`,`muted`, `Hay ${pool.length} de opción múltiple, ${nE} ejercicios y ${nD} de desarrollo en los temas elegidos. «Todas» usa el total disponible. Con más de 100 preguntas, el PDF tarda alrededor de un minuto en generarse.`));
   const codeRow = el(`div`,`coderow`);
   const show = () => {
     codeRow.innerHTML = ``;
