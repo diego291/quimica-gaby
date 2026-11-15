@@ -136,6 +136,23 @@ const OTRA = {
     bonds.forEach((b, i) => { s += bond(X(i) + hw(labs[i]), X(i + 1) - hw(labs[i + 1]), y, b, b > 1 ? col : null); });
     (o.br || []).forEach(b => { s += ln(X(b.i), y + 13, X(b.i), y + 33) + T(X(b.i), y + 54, b.l, { c:`tk`, fs:17 }); });
     return s; },
+    /* plantillas: flujo de cajas, comparación en dos columnas y escala */
+    flow:(steps, o = {}) => { const n = steps.length, gap = 26, w = (540 - gap * (n - 1)) / n, h = o.h || 74, y = 30; let s = o.title ? T(280, 18, o.title, { c:`tm` }) : ``;
+      steps.forEach((st, i) => { const x = 10 + i * (w + gap); s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" class="bx"${st[2] ? ` style="stroke:${st[2]};stroke-width:2"` : ``}/>`;
+        String(st[0]).split(`|`).forEach((l, k) => s += T(x + w / 2, y + 24 + k * 18, l, { c:`tb`, fs:13 }));
+        String(st[1] || ``).split(`|`).forEach((l, k) => s += T(x + w / 2, y + h - 12 - (String(st[1]).split(`|`).length - 1 - k) * 16, l, { c:`tm`, fs:11.5 }));
+        if (i < n - 1) s += arr(x + w + 3, y + h / 2, x + w + gap - 3, y + h / 2); });
+      if (o.foot) s += T(280, y + h + 26, o.foot, { c:`tb`, col:o.footCol });
+      return svg(560, y + h + (o.foot ? 38 : 12), s, o.label || `Pasos`); },
+    cmp:(L, Rr, o = {}) => { const lines = Math.max(L.length, Rr.length) - 1; let s = sep(280, 10, 50 + lines * 22);
+      [[140, L, o.cl], [420, Rr, o.cr]].forEach(([x, a, c]) => { s += T(x, 28, a[0], { c:`tb`, fs:15, col:c }); a.slice(1).forEach((l, k) => s += T(x, 56 + k * 22, l, { c:`tm`, fs:12.5 })); });
+      if (o.foot) s += T(280, 70 + lines * 22, o.foot, { c:`tb` });
+      return svg(560, 64 + lines * 22 + (o.foot ? 20 : 0), s, o.label || `Comparación`); },
+    scale:(segs, o = {}) => { const tot = segs.reduce((a, x) => a + x[1], 0); let x = 20, s = o.title ? T(280, 18, o.title, { c:`tm` }) : ``;
+      segs.forEach(([lab, wd, col, sub]) => { const w = 520 * wd / tot; s += `<rect x="${x}" y="30" width="${w}" height="36" style="fill:${col};opacity:.3"/>` + T(x + w / 2, 53, lab, { c:`tb`, fs:13 }) + (sub ? T(x + w / 2, 86, sub, { c:`tm`, fs:11.5 }) : ``); x += w; });
+      (o.ticks || []).forEach(([p, l]) => { const tx = 20 + 520 * p; s += ln(tx, 26, tx, 70) + T(tx, 104, l, { c:`tk`, fs:13 }); });
+      if (o.foot) s += T(280, 128, o.foot, { c:`tm` });
+      return svg(560, o.foot ? 138 : 112, s, o.label || `Escala`); },
     C:(x, y, col = `var(--t24)`) => `<circle cx="${x}" cy="${y}" r="13" style="fill:${col}"/>` + T(x, y + 5, `C`, { c:`tw` }) };
 
   /* 1 · Generalidades */
