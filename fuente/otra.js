@@ -141,7 +141,7 @@ const OTRA = {
       steps.forEach((st, i) => { const x = 10 + i * (w + gap); s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" class="bx"${st[2] ? ` style="stroke:${st[2]};stroke-width:2"` : ``}/>`;
         String(st[0]).split(`|`).forEach((l, k) => s += T(x + w / 2, y + 24 + k * 18, l, { c:`tb`, fs:13 }));
         String(st[1] || ``).split(`|`).forEach((l, k) => s += T(x + w / 2, y + h - 12 - (String(st[1]).split(`|`).length - 1 - k) * 16, l, { c:`tm`, fs:11.5 }));
-        if (i < n - 1) s += arr(x + w + 3, y + h / 2, x + w + gap - 3, y + h / 2); });
+        if (i < n - 1 && !o.noArr) s += arr(x + w + 3, y + h / 2, x + w + gap - 3, y + h / 2); });
       if (o.foot) s += T(280, y + h + 26, o.foot, { c:`tb`, col:o.footCol });
       return svg(560, y + h + (o.foot ? 38 : 12), s, o.label || `Pasos`); },
     cmp:(L, Rr, o = {}) => { const lines = Math.max(L.length, Rr.length) - 1; let s = sep(280, 10, 50 + lines * 22);
