@@ -31,4 +31,4 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 - Cero datos privados (tokens, notas, respuestas, fotos, apellido de Gaby) en el repo.
 - Sin force push ni reescribir historial sin permiso explícito de Diego.
 ## Última versión/commit publicado
-App 2026.11.14-2327 · pestaña Candidato a examen.
+App 2026.11.14-2329 · commit 193093b (pestaña Candidato a examen).
