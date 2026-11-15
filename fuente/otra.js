@@ -131,6 +131,12 @@ const OTRA = {
   const fig = (svgStr, cap) => ({ svg:svgStr, cap });
   const G = `var(--t18)`, R = `var(--t15)`, A = `var(--t24)`;
   const set = (t, figs) => { OTRA[t].figs = figs; };
+  window.OTRAH = { T, svg, ln, arr, hl, dot, lobe, sep, bond, hw, fig, G, R, set, chain:(labs, bonds, x0, dx, y, o = {}) => { let s = ``; const X = i => x0 + i * dx; const col = o.col || `var(--t24)`;
+    labs.forEach((l, i) => { s += T(X(i), y + 7, l, { c:`tk`, fs:o.fs || 19 }); if (o.nums && o.nums[i] != null) s += T(X(i), y - 22, o.nums[i], { c:`tm`, fs:13 }); });
+    bonds.forEach((b, i) => { s += bond(X(i) + hw(labs[i]), X(i + 1) - hw(labs[i + 1]), y, b, b > 1 ? col : null); });
+    (o.br || []).forEach(b => { s += ln(X(b.i), y + 13, X(b.i), y + 33) + T(X(b.i), y + 54, b.l, { c:`tk`, fs:17 }); });
+    return s; },
+    C:(x, y, col = `var(--t24)`) => `<circle cx="${x}" cy="${y}" r="13" style="fill:${col}"/>` + T(x, y + 5, `C`, { c:`tw` }) };
 
   /* 1 · Generalidades */
   set(`Generalidades de los alquenos`, [

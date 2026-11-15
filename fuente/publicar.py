@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Actualiza la versión publicada (raíz del repositorio) desde fuente/ sin reconstruir todo:
    app.js, app.css, checks.js, packs.js (desde fuente/material/), versión en index.html, sw.js, core.js y README.md."""
-import os, re, sys, time
+import os, re, sys, time, glob
 R = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/'
 F = R + 'fuente/'
 V = sys.argv[1] if len(sys.argv) > 1 else time.strftime('%Y.%m.%d-%H%M')
 rd = lambda p: open(p, encoding='utf-8').read()
 wr = lambda p, s: open(p, 'w', encoding='utf-8').write(s)
 files = 'app.js org_app.js arom_app.js alc_app.js eter_app.js ask.js errata.js otra.js ui.js retro_data.js retro_gens.js retro.js dib_core.js dib_data.js dib_lec.js dib.js notas.js clock.js frases.js motiva.js estudio.js agenda.js organizar.js cuaderno.js marcar.js memo.js novedades.js lupa.js lectura.js audio.js push.js sync.js init.js'.split()
+k = files.index('otra.js'); files[k + 1:k + 1] = sorted(os.path.basename(x) for x in glob.glob(F + 'otra_t*.js'))
 wr(R + 'app.js', '\n'.join(rd(F + f) for f in files))
 css = rd(R + 'app.css'); i = css.find(rd(F + 'base.css')[:200])
 wr(R + 'app.css', css[:i] + '\n'.join(rd(F + f) for f in ['base.css', 'new.css', 'ui.css', 'agenda.css', 'errata.css', 'otra.css', 'retro.css', 'dib.css']))
