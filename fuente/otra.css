@@ -18,3 +18,5 @@
 .otraq summary{cursor:pointer;font-weight:600;line-height:1.45}
 .otraq[open]{background:var(--sunk)}
 .otraq p{margin-top:8px}
+.otrafig{margin:0;border:1px solid var(--line)}
+.otrafig svg{max-width:520px}
