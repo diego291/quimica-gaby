@@ -807,6 +807,7 @@ function vRepaso(v){
   if (bp() !== `wide`){ const ix = btn(``, `btn ghost`, () => openSheet(`Índice del repaso`, tocInto)); ix.innerHTML = icon(`list`) + ` Índice`; tools.append(ix); }
   const nErr = errCount(it.t); if (nErr){ const eb = btn(`⚠ Correcciones · ${nErr}`, `btn ghost errbtn`, () => errPanel(it.t, it.title)); eb.title = `Errores del material del ${TOPICS[it.t].n} y cómo se corrigieron`; tools.prepend(eb); }
   errJump = x => { const j = all.indexOf(x); if (j >= 0) jump(j); };
+  if (typeof OTRA !== `undefined` && OTRA[it.title]){ const ob = btn(`Explícalo de otra forma`, `btn ghost otrabtn`, () => otraOpen(it)); ob.title = `Explicación distinta de esta ficha: primero piensas, luego entiendes el porqué`; tools.append(ob); }
   tools.append(btn(`Ver todas`, `btn ghost`, () => { S.x.rall = true; save(); renderView(); renderPanel(); }));
   top.append(lb, tools); v.append(top);
   const sq = el(`nav`, `rsq`); sq.setAttribute(`aria-label`, `Fichas del ${TOPICS[it.t].n}`); sq.style.setProperty(`--c`, `var(--${it.t})`);

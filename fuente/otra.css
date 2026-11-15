@@ -1,0 +1,16 @@
+/* ===== Explícalo de otra forma ===== */
+.btn.otrabtn{color:var(--acc);border-color:color-mix(in srgb,var(--acc) 45%,var(--line));background:color-mix(in srgb,var(--acc) 10%,var(--surface))}
+.otra{display:flex;flex-direction:column;gap:12px;margin:8px 0 14px}
+.otranota{margin:0;padding:8px 12px;border-radius:10px;background:var(--sunk);color:var(--muted);font-size:13px;line-height:1.45}
+.otrab{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.otrab h4{margin:0 0 6px;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--acc)}
+.otrab p{margin:0;line-height:1.55}
+.otrab ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;line-height:1.5}
+.otrab.idea{border-color:color-mix(in srgb,var(--acc) 40%,var(--line));background:color-mix(in srgb,var(--acc) 8%,var(--surface))}
+.otrab.ojo{border-color:var(--erLn,#E3A64A);background:var(--erBg,#FFF4E0)}
+.otrab.ojo h4{color:var(--erA,#9A5B00)}
+.otrab.ojo p{color:var(--erA,#9A5B00)}
+.otraq{margin:6px 0 0;border:1px dashed var(--line);border-radius:10px;padding:8px 12px}
+.otraq summary{cursor:pointer;font-weight:600;line-height:1.45}
+.otraq[open]{background:var(--sunk)}
+.otraq p{margin-top:8px}

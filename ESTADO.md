@@ -14,6 +14,7 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 - Retroalimentación: diagnóstico, Mis fallos con repaso espaciado, Cómo evalúan, Simulacro.
 - Dibujar: 7 lecciones, 8 ejercicios con editor táctil, Taller libre; núcleo con 738 pruebas.
 - Dibujar rediseñado (propuestas A+C): ejercicios por pasos (Átomos → Enlaces → Electrones) con solo las herramientas del paso; Con/Sin ayuda (contador de electrones, cuentas por átomo y, en Lewis, esqueleto ya colocado); lienzo 360×300 con papel punteado (un punto por posición de ajuste), zonas táctiles mayores y barra Comprobar/Pista fija abajo. Taller libre sin cambios de flujo.
+- Botón «Explícalo de otra forma» en cada ficha del Repaso (junto a «Ver todas»): hoja con pregunta previa, idea, por qué, ojo y pruébate. Contenido en `fuente/otra.js` (objeto `OTRA` por título de ficha); hoy solo el Tema 24 (11 fichas). Es explicación complementaria, no del PDF. Una ficha sin entrada en `OTRA` no muestra el botón.
 ## Decisiones tomadas
 - Publicar directo a main, sin ramas ni PR: lo pidió Diego (ver CLAUDE.md).
 - Historial de Gaby fuera del repo, cargado desde `historial-gaby.json`: el repo es público.
@@ -28,4 +29,4 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 - Cero datos privados (tokens, notas, respuestas, fotos, apellido de Gaby) en el repo.
 - Sin force push ni reescribir historial sin permiso explícito de Diego.
 ## Última versión/commit publicado
-App 2026.11.13-2232 · commit 8aa162c (Dibujar: papel punteado).
+App 2026.11.14-2252 · «Explícalo de otra forma» (Tema 24).
