@@ -29,4 +29,4 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 - Cero datos privados (tokens, notas, respuestas, fotos, apellido de Gaby) en el repo.
 - Sin force push ni reescribir historial sin permiso explícito de Diego.
 ## Última versión/commit publicado
-App 2026.11.14-2313 · «Explícalo de otra forma» (Tema 24).
+App 2026.11.14-2312 · «Explícalo de otra forma» (Tema 24).
