@@ -21,7 +21,7 @@ const ICONS = {
 const icon = (n, cls = `ic`) => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ``}</svg>`;
 const SECS = [
   { k:`inicio`, n:`Inicio`, ic:`home`, modes:[[`inicio`,`Hoy`],[`guia`,`Cómo estudiar`],[`progreso`,`Mi progreso`]] },
-  { k:`estudiar`, n:`Estudiar`, ic:`book`, modes:[[`repaso`,`Repaso`],[`escuchar`,`Escuchar`],[`fichas`,`Fichas`],[`videos`,`Videos`],[`formulario`,`Formulario`]] },
+  { k:`estudiar`, n:`Estudiar`, ic:`book`, modes:[[`repaso`,`Repaso`],[`escuchar`,`Escuchar`],[`fichas`,`Fichas`],[`videos`,`Videos`],[`formulario`,`Formulario`],[`candidato`,`Candidato`]] },
   { k:`practicar`, n:`Practicar`, ic:`pencil`, modes:[[`hoy`,`Para hoy`],[`preguntas`,`Preguntas`],[`ejercicios`,`Ejercicios`],[`practica`,`Práctica`],[`formula`,`¿Qué fórmula?`],[`lab`,`Laboratorio`]] },
   { k:`dibujo`, n:`Dibujar`, ic:`hex`, modes:[[`dibujo`,`Dibujar`]] },
   { k:`examen`, n:`Examen`, ic:`clip`, modes:[[`simulacro`,`Simulacro`],[`impreso`,`Parcial impreso`]] },

@@ -15,6 +15,7 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 - Dibujar: 7 lecciones, 8 ejercicios con editor táctil, Taller libre; núcleo con 738 pruebas.
 - Dibujar rediseñado (propuestas A+C): ejercicios por pasos (Átomos → Enlaces → Electrones) con solo las herramientas del paso; Con/Sin ayuda (contador de electrones, cuentas por átomo y, en Lewis, esqueleto ya colocado); lienzo 360×300 con papel punteado (un punto por posición de ajuste), zonas táctiles mayores y barra Comprobar/Pista fija abajo. Taller libre sin cambios de flujo.
 - Botón «Explícalo de otra forma» (junto a «Ver todas»): alterna un modo que reemplaza el texto de la pestaña Leer por la explicación de otra forma (el dibujo se queda), se mantiene al cambiar de ficha y vuelve con «Ver ficha original». Contenido en `fuente/otra.js` (objeto `OTRA` por título de ficha); hoy Temas 24 y 25; un archivo por tema en `fuente/otra_tNN.js` (orden acordado: 25–32 y luego 15–23). Incluye un dibujo propio por ficha (SVG en `otra.js`). Es complementario, no del PDF. Una ficha sin entrada en `OTRA` no muestra el botón.
+- Candidato a examen (Estudiar → Candidato): 25 puntos ordenados por un puntaje de 12 (guía del Lic. +4, formato ya usado +3, con desarrollo +2, une temas +2, objetiva recurrente +1), con filtro Hidrocarburos/Oxigenadas y pasos Comprender–Analizar–Trabajar con enlace a Repaso y Práctica. Datos en `fuente/candidato.js`. Basado en parciales 1 y 2, 3 cortos, la Discusión 1 y las 2 guías de la Unidad VI (solo estructura del examen, sin datos de Gaby).
 ## Decisiones tomadas
 - Publicar directo a main, sin ramas ni PR: lo pidió Diego (ver CLAUDE.md).
 - Historial de Gaby fuera del repo, cargado desde `historial-gaby.json`: el repo es público.
@@ -25,8 +26,9 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 3. Cargar unidades 1–3 (átomo y enlace) y el Tema 29, si existe: faltan los PDF.
 4. Pasar `historial-gaby.json` a Gaby para que lo cargue en cada dispositivo.
 5. Probar Dibujar (rediseño con pasos y ayuda) en una pantalla táctil física: solo se probó con emulador a 390 px.
+6. Actualizar el orden de Candidato cuando el Lic. entregue la guía de la Unidad VII o confirme qué temas entran al parcial 3.
 ## Restricciones
 - Cero datos privados (tokens, notas, respuestas, fotos, apellido de Gaby) en el repo.
 - Sin force push ni reescribir historial sin permiso explícito de Diego.
 ## Última versión/commit publicado
-App 2026.11.14-2312 · «Explícalo de otra forma» (Tema 24).
+App 2026.11.14-2327 · pestaña Candidato a examen.
