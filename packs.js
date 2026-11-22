@@ -1269,3 +1269,772 @@ registerPack({
         return svg(560, 226, s, `Reactividad e hidrólisis`); })() };
   }
 });
+
+/* ======================= TEMA 33: AMINAS ======================= */
+registerPack({
+  id:`t33`, version:1,
+  topic:{ t:`t33`, n:`Tema 33`, name:`Aminas`, unit:`Unidad VIII · Compuestos orgánicos nitrogenados`, color:[`#7A4FA3`,`#C9AEE6`] },
+
+  REPASO:[
+{src:`Tema 33, pág. 3`,title:`Compuestos nitrogenados y el nitrógeno`,fig:`aminaClase`,
+ body:`<p>Los <b>compuestos orgánicos nitrogenados</b> son sustancias de carbono e hidrógeno que tienen <b>al menos un átomo de nitrógeno (N) unido directamente a un carbono</b>; a veces también llevan oxígeno (por ejemplo, las amidas).</p>
+ <p>El <b>nitrógeno</b> forma <b>tres enlaces covalentes</b> y conserva <b>un par de electrones libres</b>. Ese par le da a estas moléculas sus propiedades más características: el <b>carácter básico</b> y la capacidad de formar <b>puentes de hidrógeno</b>.</p>`,
+ memo:`Orgánico nitrogenado = N unido a un C. El N hace 3 enlaces y tiene 1 par libre: de ahí su carácter básico y los puentes de H.`},
+{src:`Tema 33, pág. 4`,title:`Estructura de las aminas: geometría del nitrógeno`,fig:`aminaGeom`,
+ body:`<p>Las <b>aminas</b> derivan del <b>amoníaco (NH₃)</b>: uno, dos o los tres H se sustituyen por cadenas carbonadas (grupos <b>alquilo R</b> o <b>arilo Ar</b>).</p>
+ <ul><li><b>Hibridación:</b> el N de todas las aminas es <b>sp³</b>.</li>
+ <li><b>Geometría piramidal trigonal:</b> los tres enlaces apuntan a los vértices de la base de una pirámide triangular.</li>
+ <li><b>Par libre:</b> ocupa el cuarto orbital sp³, en la cúspide de la pirámide. Es el responsable de que las aminas actúen como <b>bases de Lewis</b> y <b>nucleófilos</b>.</li>
+ <li><b>Ángulos:</b> el par libre repele más que los enlaces, así que los ángulos se cierran un poco respecto al tetraédrico (109.5°) y quedan cerca de <b>107°</b> (algo más abiertos si los grupos son voluminosos).</li></ul>`,
+ memo:`Amina = NH₃ con H cambiados por R o Ar. N sp³, pirámide trigonal, par libre arriba. Par libre → base de Lewis y nucleófilo. Ángulo ≈ 107° (< 109.5°).`},
+{src:`Tema 33, pág. 5`,title:`Aminas primarias, secundarias y terciarias`,fig:`aminaClase`,
+ body:`<p>El tipo de amina depende de <b>cuántas cadenas carbonadas</b> hay unidas al nitrógeno:</p>
+ <ul><li><b>Primaria (R−NH₂):</b> <b>1 grupo carbonado</b> y <b>2 H</b>. Ej.: metilamina.</li>
+ <li><b>Secundaria (R₂NH):</b> <b>2 grupos carbonados</b> (iguales o distintos) y <b>1 H</b>. Ej.: dimetilamina.</li>
+ <li><b>Terciaria (R₃N):</b> <b>3 grupos carbonados</b> y <b>ningún H</b> directo. Ej.: trietilamina.</li></ul>
+ <p class="note">Truco: cuenta las cadenas unidas al <b>N</b>. 1 = primaria, 2 = secundaria, 3 = terciaria. Es distinto de los alcoholes, donde se cuentan los C unidos al carbono del −OH.</p>`,
+ memo:`1 cadena en el N y 2 H = primaria; 2 cadenas y 1 H = secundaria; 3 cadenas y 0 H = terciaria. Se cuentan las cadenas en el N.`},
+{src:`Tema 33, pág. 6`,title:`Inversión piramidal y puentes de hidrógeno`,fig:`aminaClase`,
+ body:`<p><b>Inversión piramidal:</b> en una amina terciaria con tres grupos distintos (R₁R₂R₃N), el N sería teóricamente un <b>centro quiral</b>. Pero a temperatura ambiente el par libre <b>oscila</b> de un lado al otro del plano (como un paraguas que se voltea con el viento) e <b>interconvierte los dos enantiómeros</b> constantemente, así que <b>no se pueden aislar por separado</b>.</p>
+ <p><b>Puentes de hidrógeno:</b></p>
+ <ul><li>Las aminas <b>primarias y secundarias</b> tienen enlaces <b>N−H</b> polares: forman puentes de H entre sí y eso <b>eleva su punto de ebullición</b>.</li>
+ <li>Las <b>terciarias</b> no tienen H unido al N: <b>no forman puentes de H consigo mismas</b> (aunque sí con el agua).</li></ul>`,
+ memo:`Terciaria con 3 grupos distintos: el N oscila (inversión piramidal) y no se aíslan enantiómeros. Puentes de H entre sí: 1ª y 2ª sí (N−H); 3ª no, pero sí con el agua.`},
+{src:`Tema 33, pág. 7`,title:`Otras clasificaciones de las aminas`,fig:null,
+ body:`<p><b>Por la naturaleza de los grupos unidos al N:</b></p>
+ <ul><li><b>Alifáticas:</b> los C unidos al N son de cadenas abiertas o ciclos saturados. Ej.: etilamina.</li>
+ <li><b>Aromáticas:</b> el N está unido directamente a un anillo aromático. Ej.: anilina (C₆H₅NH₂).</li>
+ <li><b>Mixtas (aril-alquilaminas):</b> tienen grupos alifáticos y aromáticos. Ej.: N-metilanilina.</li></ul>
+ <p><b>Por la igualdad de los sustituyentes</b> (solo aminas 2ª y 3ª): <b>simétricas</b> (todos iguales; dietilamina) o <b>asimétricas</b> (distintos; etilmetilamina).</p>
+ <p><b>Por el número de grupos amino:</b> <b>monoaminas</b> (uno) y <b>poliaminas</b> (dos o más). Ej.: putrescina (1,4-butanodiamina) y cadaverina.</p>`,
+ memo:`Naturaleza: alifática (etilamina), aromática (anilina), mixta (N-metilanilina). Sustituyentes: simétrica (dietilamina) o asimétrica (etilmetilamina). Grupos amino: mono o poli (putrescina).`},
+{src:`Tema 33, pág. 8`,title:`Nomenclatura IUPAC de aminas primarias`,fig:`nomAmina`,
+ body:`<p>Se toma la <b>cadena más larga que contenga el grupo amino</b>, se cambia la terminación <b>-o</b> del alcano por <b>-amina</b> y se indican los demás sustituyentes con el localizador <b>N</b>.</p>
+ <p><b>Numeración:</b> el carbono unido al N debe recibir el <b>localizador más bajo posible</b>.</p>
+ <ul><li>CH₃−NH₂: <b>metanamina</b> (nombre común: metilamina)</li>
+ <li>CH₃−CH₂−CH₂−NH₂: <b>propan-1-amina</b> (o 1-propanamina)</li>
+ <li>CH₃−CH(NH₂)−CH₂−CH₃: <b>butan-2-amina</b></li></ul>
+ <p class="note">Hay dos métodos aceptados: el <b>sustitutivo</b>, preferido hoy (propan-1-amina), y el <b>radicofuncional</b>, que nombra el alquilo seguido de «amina» (propilamina).</p>`,
+ memo:`Alcano −o + amina. Cadena más larga con el N; el C del N con el localizador más bajo. Metanamina, propan-1-amina, butan-2-amina. Radicofuncional: propilamina.`},
+{src:`Tema 33, pág. 9`,title:`Nomenclatura de aminas secundarias y terciarias`,fig:`nomAmina`,
+ body:`<p>Cuando el N tiene <b>dos o tres cadenas</b>:</p>
+ <ul><li><b>Base:</b> se elige la cadena <b>más larga o más compleja</b> como estructura principal (termina en <b>-amina</b>).</li>
+ <li><b>Prefijo N-:</b> las demás cadenas del N se nombran como alquilos, en <b>orden alfabético</b>, con el prefijo <b>N-</b> (en cursiva) para indicar que están en el N y no en un carbono.</li></ul>
+ <p><b>Ejemplos:</b></p>
+ <ul><li>CH₃−NH−CH₂−CH₃: <b>N-metiletanamina</b></li>
+ <li>CH₃−N(CH₃)−CH₂−CH₂−CH₃: <b>N,N-dimetilpropan-1-amina</b></li>
+ <li>CH₃−CH₂−N(CH₃)−CH₂−CH₂−CH₃: <b>N-etil-N-metilpropan-1-amina</b></li></ul>
+ <p class="note">Dos grupos iguales en el N: <b>N,N-di…</b>. Si son distintos, cada uno lleva su N- y van en orden alfabético (etil antes que metil).</p>`,
+ memo:`Cadena más larga = base (-amina). Las otras cadenas del N: N-alquilo, en orden alfabético. Iguales: N,N-di. N-metiletanamina; N,N-dimetilpropan-1-amina; N-etil-N-metilpropan-1-amina.`},
+{src:`Tema 33, pág. 10`,title:`Aminas aromáticas`,fig:null,
+ body:`<p>Cuando el grupo amino está unido directamente a un anillo de benceno, la IUPAC acepta <b>anilina</b> como nombre base (también <b>bencenamina</b>).</p>
+ <ul><li><b>Sustituyentes en el anillo:</b> se numeran desde el carbono unido al N (<b>posición 1</b>).</li>
+ <li><b>Sustituyentes en el nitrógeno:</b> llevan el prefijo <b>N-</b>.</li></ul>
+ <p><b>Ejemplos:</b></p>
+ <ul><li>C₆H₅−NH₂: <b>anilina</b> (o bencenamina)</li>
+ <li>C₆H₅−NH−CH₃: <b>N-metilanilina</b></li>
+ <li>4-Cl−C₆H₄−NH₂: <b>4-cloroanilina</b></li></ul>`,
+ memo:`Anilina = bencenamina. El C del anillo con el N es el 1. Sustituyentes del anillo: números; del N: N-. N-metilanilina; 4-cloroanilina.`},
+{src:`Tema 33, pág. 11`,title:`Poliaminas`,fig:null,
+ body:`<p>Si hay <b>más de un grupo −NH₂</b> en la cadena principal, <b>se conserva la «o» final del alcano</b> y se usan los prefijos multiplicadores (<b>-diamina</b>, <b>-triamina</b>…) con sus localizadores.</p>
+ <p><b>Ejemplo:</b> H₂N−CH₂−CH₂−NH₂ → <b>etano-1,2-diamina</b>.</p>
+ <p class="note">Diferencia con una monoamina: en la monoamina la «o» se pierde (etanamina); en la diamina se conserva (etano-1,2-diamina) porque el sufijo empieza con consonante.</p>`,
+ memo:`Poliamina: se conserva la «o» + di/tri-amina con localizadores. H₂N−CH₂−CH₂−NH₂ = etano-1,2-diamina.`},
+{src:`Tema 33, pág. 12`,title:`Aminas importantes en salud`,fig:null,
+ body:`<ul><li><b>Aminas biógenas:</b> las <b>catecolaminas</b> adrenalina y noradrenalina, y la <b>dopamina</b>, <b>serotonina</b>, <b>histamina</b> y <b>melatonina</b>.</li>
+ <li><b>Fármacos:</b> salbutamol, loratadina, lidocaína, sertralina, metformina, etc.</li>
+ <li><b>En nutrición:</b> los <b>aminoácidos</b> y las <b>vitaminas del complejo B</b>.</li></ul>
+ <p class="note">Complementario (no está en las diapositivas): las aminas pequeñas son <b>bases débiles</b> (R−NH₂ + H₂O ⇌ R−NH₃⁺ + OH⁻) y, con masa parecida, hierven más alto las primarias que las secundarias y estas más que las terciarias; hierven más bajo que los alcoholes equivalentes porque el N es menos electronegativo que el O.</p>`,
+ memo:`Biógenas: adrenalina, noradrenalina, dopamina, serotonina, histamina, melatonina. Fármacos: salbutamol, loratadina, lidocaína, sertralina, metformina. Nutrición: aminoácidos y vitaminas B.`}
+  ],
+
+  ERRATA:{
+    [`Nomenclatura de aminas secundarias y terciarias`]:[
+      { tipo:`aviso`, pg:`pág. 9`, que:`Fórmula del tercer ejemplo`, dice:`CH₃−CH₂−N(CH₃)−CH₂−CH₂−CH₃\\)`, ok:`CH₃−CH₂−N(CH₃)−CH₂−CH₂−CH₃`, por:`Sobra un símbolo «\\)» al final de la fórmula; el nombre N-etil-N-metilpropan-1-amina es correcto.` }],
+    [`Aminas aromáticas`]:[
+      { tipo:`aviso`, pg:`pág. 10`, que:`Ejemplo «N-metilanilina» en las aminas mixtas`, dice:`Se clasifica como «mixta» en la pág. 7 y como aromática en la pág. 10`, ok:`Es las dos cosas: aromática porque el N está en un anillo, y mixta porque también lleva un metilo`, por:`Son clasificaciones distintas (por naturaleza de los grupos); no se contradicen.` }]
+  },
+
+  MCQ:[
+{src:`Tema 33, pág. 3`,q:`Un compuesto orgánico nitrogenado tiene, como mínimo:`,o:[`Un átomo de N unido directamente a un carbono`,`Un átomo de O unido a un carbono`,`Un anillo aromático`,`Un grupo carbonilo`],e:`Es la definición del material.`},
+{src:`Tema 33, pág. 3`,q:`El nitrógeno forma en las aminas:`,o:[`Tres enlaces covalentes y un par de electrones libres`,`Cuatro enlaces covalentes y ningún par libre`,`Dos enlaces covalentes y dos pares libres`,`Un enlace covalente y tres pares libres`],e:`El par libre explica su carácter básico.`},
+{src:`Tema 33, pág. 4`,q:`Las aminas se pueden ver como derivadas de:`,o:[`El amoníaco (NH₃)`,`El agua`,`El metano`,`El ácido carbónico`],e:`Se sustituyen uno, dos o tres H por grupos R o Ar.`},
+{src:`Tema 33, pág. 4`,q:`La hibridación del nitrógeno en todas las aminas es:`,o:[`sp³`,`sp²`,`sp`,`s`],e:`Define su forma piramidal.`},
+{src:`Tema 33, pág. 4`,q:`La geometría alrededor del N de una amina es:`,o:[`Piramidal trigonal`,`Trigonal plana`,`Lineal`,`Tetraédrica regular con cuatro enlaces`],e:`Tres enlaces en la base y el par libre en la cúspide.`},
+{src:`Tema 33, pág. 4`,q:`Los ángulos de enlace en una amina son cercanos a 107° y no a 109.5° porque:`,o:[`El par libre repele más que los enlaces`,`El N es un átomo muy grande`,`Los enlaces C−N son dobles`,`Los H se repelen entre sí`],e:`El par libre comprime los ángulos.`},
+{src:`Tema 33, pág. 4`,q:`El par de electrones libres del N hace que las aminas actúen como:`,o:[`Bases de Lewis y nucleófilos`,`Ácidos de Lewis y electrófilos`,`Agentes oxidantes fuertes`,`Compuestos neutros sin reactividad`],e:`Pueden ceder el par.`},
+{src:`Tema 33, pág. 5`,q:`Una amina primaria tiene el nitrógeno unido a:`,o:[`Un grupo carbonado y dos H`,`Dos grupos carbonados y un H`,`Tres grupos carbonados`,`Cuatro H`],e:`R−NH₂.`},
+{src:`Tema 33, pág. 5`,q:`La dimetilamina, (CH₃)₂NH, es una amina:`,o:[`Secundaria`,`Primaria`,`Terciaria`,`Cuaternaria`],e:`Dos cadenas en el N y un H.`},
+{src:`Tema 33, pág. 5`,q:`La trietilamina es una amina:`,o:[`Terciaria`,`Primaria`,`Secundaria`,`Aromática`],e:`Tres grupos etilo en el N, sin H.`},
+{src:`Tema 33, pág. 6`,q:`¿Por qué no se pueden aislar los dos enantiómeros de una amina terciaria con tres grupos distintos?`,o:[`Porque el N oscila (inversión piramidal) e interconvierte los enantiómeros`,`Porque el N no tiene par libre`,`Porque no tiene carbono`,`Porque es un compuesto iónico`],e:`El par libre pasa de un lado al otro del plano.`},
+{src:`Tema 33, pág. 6`,q:`¿Qué aminas forman puentes de hidrógeno entre sus propias moléculas?`,o:[`Las primarias y las secundarias`,`Solo las terciarias`,`Solo las primarias`,`Ninguna`],e:`Necesitan enlaces N−H.`},
+{src:`Tema 33, pág. 6`,q:`Una amina terciaria no forma puentes de H consigo misma porque:`,o:[`No tiene H unido al nitrógeno`,`No tiene nitrógeno`,`Es apolar`,`Es un ácido`],e:`Sí puede formarlos con el agua.`},
+{src:`Tema 33, pág. 7`,q:`La anilina (C₆H₅NH₂) es una amina:`,o:[`Aromática`,`Alifática`,`Mixta`,`Terciaria`],e:`El N está unido a un anillo de benceno.`},
+{src:`Tema 33, pág. 7`,q:`La N-metilanilina es una amina:`,o:[`Mixta (aril-alquilamina)`,`Alifática`,`Primaria`,`Simétrica`],e:`Tiene un grupo aromático y uno alifático en el N.`},
+{src:`Tema 33, pág. 7`,q:`La dietilamina es un ejemplo de amina:`,o:[`Simétrica`,`Asimétrica`,`Primaria`,`Aromática`],e:`Los dos grupos del N son iguales.`},
+{src:`Tema 33, pág. 7`,q:`La putrescina (1,4-butanodiamina) es una:`,o:[`Poliamina (diamina)`,`Monoamina`,`Amina terciaria`,`Amina aromática`],e:`Tiene dos grupos amino.`},
+{src:`Tema 33, pág. 8`,q:`En el nombre IUPAC de una amina primaria, la terminación del alcano cambia de:`,o:[`-o a -amina`,`-ano a -ol`,`-o a -oico`,`-o a -ona`],e:`Metano → metanamina.`},
+{src:`Tema 33, pág. 8`,q:`El nombre IUPAC de CH₃−CH₂−CH₂−NH₂ es:`,o:[`Propan-1-amina`,`Propan-2-amina`,`Etanamina`,`Butan-1-amina`],e:`Tres carbonos, el N en el C1.`},
+{src:`Tema 33, pág. 8`,q:`El nombre IUPAC de CH₃−CH(NH₂)−CH₂−CH₃ es:`,o:[`Butan-2-amina`,`Butan-1-amina`,`Propan-2-amina`,`Pentan-2-amina`],e:`Cuatro carbonos; el N en el C2.`},
+{src:`Tema 33, pág. 8`,q:`Al numerar la cadena de una amina primaria, el carbono unido al N debe tener:`,o:[`El localizador más bajo posible`,`El localizador más alto posible`,`Siempre el número 1`,`Ningún localizador`],e:`Regla de numeración.`},
+{src:`Tema 33, pág. 9`,q:`En CH₃−NH−CH₂−CH₃, el nombre es:`,o:[`N-metiletanamina`,`Dimetilamina`,`N-etilmetanamina`,`Propan-1-amina`],e:`Base etanamina (cadena más larga) y N-metil.`},
+{src:`Tema 33, pág. 9`,q:`El prefijo «N-» en el nombre de una amina indica que el grupo está unido:`,o:[`Al átomo de nitrógeno`,`Al primer carbono`,`Al anillo aromático`,`A un oxígeno`],e:`Lo distingue de un localizador de carbono.`},
+{src:`Tema 33, pág. 9`,q:`El nombre de CH₃−N(CH₃)−CH₂−CH₂−CH₃ es:`,o:[`N,N-dimetilpropan-1-amina`,`N-metilpropan-1-amina`,`N,N-dimetilbutan-1-amina`,`Trimetilpropanamina`],e:`Dos metilos en el N y cadena base de tres carbonos.`},
+{src:`Tema 33, pág. 9`,q:`En N-etil-N-metilpropan-1-amina, los sustituyentes del N se ordenan:`,o:[`Alfabéticamente (etil antes que metil)`,`Por tamaño, de menor a mayor`,`De mayor a menor`,`Al azar`],e:`Regla de orden alfabético.`},
+{src:`Tema 33, pág. 10`,q:`En la 4-cloroanilina, el número 1 del anillo es el carbono:`,o:[`Unido al nitrógeno`,`Unido al cloro`,`Opuesto al nitrógeno`,`Elegido al azar`],e:`Se numera desde el C que lleva el N.`},
+{src:`Tema 33, pág. 10`,q:`Otro nombre IUPAC aceptado para la anilina es:`,o:[`Bencenamina`,`Fenol`,`Benzaldehído`,`Ciclohexanamina`],e:`C₆H₅−NH₂.`},
+{src:`Tema 33, pág. 11`,q:`El nombre de H₂N−CH₂−CH₂−NH₂ es:`,o:[`Etano-1,2-diamina`,`Etanamina`,`Etanodiol`,`Etan-1,2-amina`],e:`Se conserva la «o» y se usa -diamina.`},
+{src:`Tema 33, pág. 12`,q:`¿Cuál de estas es una amina biógena?`,o:[`Dopamina`,`Glucosa`,`Colesterol`,`Urea`],e:`Las biógenas incluyen adrenalina, noradrenalina, dopamina, serotonina, histamina y melatonina.`},
+{src:`Tema 33, pág. 12`,q:`Las catecolaminas del material son:`,o:[`Adrenalina y noradrenalina (con la dopamina)`,`Serotonina y melatonina`,`Histamina y glicina`,`Metformina y lidocaína`],e:`Pág. 12.`},
+{src:`Tema 33, pág. 12`,q:`¿Cuál de estos fármacos aparece en el material como amina de interés en salud?`,o:[`Lidocaína`,`Aspirina`,`Paracetamol`,`Glucosa`],e:`También salbutamol, loratadina, sertralina y metformina.`}
+  ],
+
+  ABIERTAS:[
+{src:`Tema 33, pág. 3–6`,q:`Describa la estructura de una amina: hibridación y geometría del nitrógeno, par libre, ángulos y consecuencias para su comportamiento.`,a:`Las aminas derivan del NH₃ al cambiar uno, dos o tres H por grupos alquilo o arilo. El N es sp³ con geometría piramidal trigonal: tres enlaces en la base y el par libre en el cuarto orbital sp³, en la cúspide. El par libre repele más que los enlaces, por lo que los ángulos se cierran a unos 107° (menos de 109.5°). Ese par hace de las aminas bases de Lewis y nucleófilos. En las terciarias con tres grupos distintos el N sería quiral, pero la inversión piramidal interconvierte los enantiómeros y no se pueden aislar.`},
+{src:`Tema 33, pág. 5–6`,q:`Clasifique las aminas por el número de grupos carbonados en el N y explique cómo afecta a los puentes de hidrógeno y al punto de ebullición.`,a:`Primaria R−NH₂ (1 grupo carbonado, 2 H), secundaria R₂NH (2 grupos, 1 H) y terciaria R₃N (3 grupos, sin H directo). Las primarias y las secundarias tienen enlaces N−H polares y forman puentes de hidrógeno entre sí, lo que eleva su punto de ebullición. Las terciarias no tienen H en el N y no forman puentes consigo mismas, aunque sí con el agua.`},
+{src:`Tema 33, pág. 8–11`,q:`Explique las reglas IUPAC para nombrar aminas primarias, secundarias, terciarias, aromáticas y poliaminas, con un ejemplo de cada una.`,a:`Primarias: cadena más larga con el N, -o → -amina, localizador más bajo para el C del N (propan-1-amina, butan-2-amina). Secundarias y terciarias: la cadena más larga o más compleja es la base y las otras cadenas del N se nombran como alquilos con prefijo N- en orden alfabético (N-metiletanamina, N,N-dimetilpropan-1-amina, N-etil-N-metilpropan-1-amina). Aromáticas: anilina (bencenamina), anillo numerado desde el C del N y sustituyentes del N con N- (N-metilanilina, 4-cloroanilina). Poliaminas: se conserva la «o» y se usa -diamina/-triamina con localizadores (etano-1,2-diamina).`},
+{src:`Tema 33, pág. 12`,q:`Mencione aminas de importancia en salud y su categoría (biógenas, fármacos o nutrición).`,a:`Biógenas: catecolaminas (adrenalina, noradrenalina), dopamina, serotonina, histamina y melatonina. Fármacos: salbutamol, loratadina, lidocaína, sertralina y metformina. En nutrición: los aminoácidos y las vitaminas del complejo B.`}
+  ],
+
+  EJ:[
+{src:`Tema 33, pág. 5`,q:`Clasifique como primaria, secundaria o terciaria: a) CH₃−CH₂−NH₂; b) CH₃−NH−CH₂−CH₃; c) (CH₃)₃N; d) C₆H₅−NH₂.`,
+ pide:`Contar los grupos carbonados unidos al N.`,datos:[`1 grupo = primaria`,`2 = secundaria`,`3 = terciaria`],f:`Se cuentan las cadenas unidas al nitrógeno`,
+ pasos:[`a) El N tiene un etilo y dos H → primaria.`,`b) El N tiene un metilo y un etilo y un H → secundaria.`,`c) El N tiene tres metilos y ningún H → terciaria.`,`d) El N tiene un fenilo y dos H → primaria (y aromática).`],r:`a) primaria; b) secundaria; c) terciaria; d) primaria aromática`},
+{src:`Tema 33, pág. 8`,q:`Nombre según IUPAC: a) CH₃−NH₂; b) CH₃−CH₂−CH₂−NH₂; c) CH₃−CH(NH₂)−CH₂−CH₃; d) CH₃−CH(NH₂)−CH₃.`,
+ pide:`Cadena más larga con el N, terminación -amina y localizador más bajo.`,datos:[`alcano −o + amina`,`C del N con el número más bajo`],f:`[alcano sin -o] + [localizador] + amina`,
+ pasos:[`a) 1 C: metano → metanamina.`,`b) 3 C, N en el C1: propan-1-amina.`,`c) 4 C; el N queda en el C2 (numerando desde cualquier extremo): butan-2-amina.`,`d) 3 C, N en el C2: propan-2-amina.`],r:`metanamina; propan-1-amina; butan-2-amina; propan-2-amina`},
+{src:`Tema 33, pág. 9`,q:`Nombre: a) CH₃−NH−CH₂−CH₃; b) CH₃−N(CH₃)−CH₂−CH₂−CH₃; c) CH₃−CH₂−N(CH₃)−CH₂−CH₂−CH₃.`,
+ pide:`Elegir la cadena base y nombrar los grupos del N con N-, en orden alfabético.`,datos:[`base = cadena más larga`,`N-alquilo en orden alfabético`,`dos iguales: N,N-di`],f:`N-[alquilos] + [base]-amina`,
+ pasos:[`a) Base de 2 C (etanamina) y un metilo en el N: N-metiletanamina.`,`b) Base de 3 C con el N en el C1 (propan-1-amina) y dos metilos en el N: N,N-dimetilpropan-1-amina.`,`c) Base de 3 C; en el N hay un etilo y un metilo; orden alfabético: N-etil-N-metilpropan-1-amina.`],r:`N-metiletanamina; N,N-dimetilpropan-1-amina; N-etil-N-metilpropan-1-amina`},
+{src:`Tema 33, pág. 10–11`,q:`Nombre: a) C₆H₅−NH−CH₃; b) 4-Cl−C₆H₄−NH₂; c) H₂N−CH₂−CH₂−NH₂. Escriba la fórmula de la N-metilanilina.`,
+ pide:`Aplicar anilina como base (numerar desde el C del N) y la regla de poliaminas.`,datos:[`anilina = bencenamina`,`N- para el N, números para el anillo`,`poliamina: se conserva la «o»`],f:`sustituyentes + anilina / alcano + diamina`,
+ pasos:[`a) Anilina con un metilo en el N: N-metilanilina.`,`b) Cloro en el C4 del anillo (el C1 lleva el N): 4-cloroanilina.`,`c) Dos grupos amino en una cadena de 2 C: etano-1,2-diamina.`,`Fórmula de la N-metilanilina: C₆H₅−NH−CH₃.`],r:`N-metilanilina; 4-cloroanilina; etano-1,2-diamina; C₆H₅−NH−CH₃`},
+{src:`Tema 33, pág. 6`,q:`¿Cuál tendrá mayor punto de ebullición: la propan-1-amina o la N,N-dimetiletanamina (misma masa molecular)? Justifique.`,
+ pide:`Relacionar el tipo de amina con los puentes de hidrógeno.`,datos:[`primaria: N−H, puentes de H`,`terciaria: sin N−H`],f:`Más puentes de H entre moléculas → mayor punto de ebullición`,
+ pasos:[`La propan-1-amina es primaria: tiene N−H y forma puentes de H entre sus moléculas.`,`La N,N-dimetiletanamina es terciaria: no tiene H en el N, no forma puentes de H consigo misma.`,`Con la misma masa, la que forma puentes de H hierve a mayor temperatura.`],r:`La propan-1-amina (primaria) hierve más alto`}
+  ],
+
+  FORM:[
+{src:`Tema 33, pág. 3–12`,title:`Aminas`,rows:[
+ [`Definición`,`NH₃ con 1, 2 o 3 H cambiados por R (alquilo) o Ar (arilo) · N unido a C`],
+ [`Nitrógeno`,`3 enlaces + 1 par libre · sp³ · pirámide trigonal · ángulo ≈ 107° (&lt; 109.5°)`],
+ [`Par libre`,`Base de Lewis y nucleófilo`],
+ [`Clasificación`,`1ª R−NH₂ (1 cadena, 2 H) · 2ª R₂NH (2 cadenas, 1 H) · 3ª R₃N (3 cadenas, 0 H)`],
+ [`Otras`,`Alifática / aromática / mixta · simétrica / asimétrica · mono / poliamina`],
+ [`Puentes de H`,`1ª y 2ª sí (N−H) · 3ª no entre sí (sí con agua) · elevan el punto de ebullición`],
+ [`Inversión piramidal`,`3ª con 3 grupos distintos: el N oscila, no se aíslan enantiómeros`],
+ [`Nombre 1ª`,`alcano −o + amina · localizador más bajo · propan-1-amina · butan-2-amina · (radicofuncional: propilamina)`],
+ [`Nombre 2ª y 3ª`,`base = cadena más larga · N-alquilo en orden alfabético · N,N-di… · N-etil-N-metil…`],
+ [`Aromáticas`,`Anilina (bencenamina) · C1 = C del N · N-metilanilina · 4-cloroanilina`],
+ [`Poliaminas`,`Se conserva la «o» · etano-1,2-diamina · putrescina (1,4-butanodiamina)`],
+ [`Salud`,`Biógenas: adrenalina, noradrenalina, dopamina, serotonina, histamina, melatonina · fármacos: salbutamol, loratadina, lidocaína, sertralina, metformina`]
+]}
+  ],
+
+  FICHAS:[
+{src:`Tema 33, pág. 3`,fig:`aminaGeom`,f:`¿Qué tiene el N de una amina que le da carácter básico?`,b:`Un par de electrones libres (el N hace 3 enlaces y conserva 1 par).`},
+{src:`Tema 33, pág. 4`,fig:`aminaGeom`,f:`Hibridación y geometría del N en una amina.`,b:`sp³ y piramidal trigonal; el par libre ocupa el cuarto orbital sp³.`},
+{src:`Tema 33, pág. 4`,fig:null,f:`¿Por qué el ángulo es ≈ 107° y no 109.5°?`,b:`El par libre repele más que los enlaces y cierra los ángulos.`},
+{src:`Tema 33, pág. 4`,fig:null,f:`El par libre del N: ¿qué papel da a la amina?`,b:`Base de Lewis y nucleófilo.`},
+{src:`Tema 33, pág. 5`,fig:`aminaClase`,f:`Amina primaria, secundaria y terciaria.`,b:`1ª R−NH₂ (1 cadena, 2 H) · 2ª R₂NH (2 cadenas, 1 H) · 3ª R₃N (3 cadenas, 0 H). Se cuentan las cadenas en el N.`},
+{src:`Tema 33, pág. 6`,fig:null,f:`Inversión piramidal.`,b:`El N de una terciaria con 3 grupos distintos oscila y convierte un enantiómero en el otro; no se aíslan por separado.`},
+{src:`Tema 33, pág. 6`,fig:`aminaClase`,f:`¿Qué aminas forman puentes de H entre sí?`,b:`Las primarias y las secundarias (tienen N−H). Las terciarias no, aunque sí con el agua.`},
+{src:`Tema 33, pág. 7`,fig:null,f:`Alifática, aromática y mixta: un ejemplo de cada una.`,b:`Etilamina · anilina · N-metilanilina.`},
+{src:`Tema 33, pág. 7`,fig:null,f:`Simétrica y asimétrica (aminas 2ª y 3ª).`,b:`Simétrica: grupos iguales en el N (dietilamina). Asimétrica: distintos (etilmetilamina).`},
+{src:`Tema 33, pág. 8`,fig:`nomAmina`,f:`Regla IUPAC para aminas primarias.`,b:`Alcano sin -o + amina; el C del N con el localizador más bajo. Propan-1-amina, butan-2-amina.`},
+{src:`Tema 33, pág. 9`,fig:`nomAmina`,f:`Regla para aminas secundarias y terciarias.`,b:`Base = cadena más larga; las otras cadenas del N con prefijo N- en orden alfabético. N-etil-N-metilpropan-1-amina.`},
+{src:`Tema 33, pág. 10`,fig:null,f:`Nombre de C₆H₅−NH₂ y de C₆H₅−NH−CH₃.`,b:`Anilina (bencenamina) y N-metilanilina.`},
+{src:`Tema 33, pág. 11`,fig:null,f:`Nombre de H₂N−CH₂−CH₂−NH₂.`,b:`Etano-1,2-diamina (se conserva la «o»).`},
+{src:`Tema 33, pág. 12`,fig:null,f:`Aminas biógenas del material.`,b:`Adrenalina, noradrenalina, dopamina, serotonina, histamina y melatonina.`}
+  ],
+
+  FQ:[
+{src:`Tema 33, pág. 5`,q:`"¿CH₃−NH−CH₂−CH₃ es primaria, secundaria o terciaria?" ¿Qué haces primero?`,o:[`Cuento las cadenas unidas al nitrógeno: son dos, secundaria`,`Cuento los carbonos de toda la molécula`,`Busco un grupo −OH`,`La nombro como éter`],e:`Dos cadenas en el N y un H: secundaria.`},
+{src:`Tema 33, pág. 9`,q:`"Nombra CH₃−CH₂−N(CH₃)−CH₂−CH₂−CH₃." ¿Cuál es el orden de los prefijos N-?`,o:[`N-etil antes que N-metil (alfabético)`,`N-metil antes que N-etil`,`Por tamaño, el más pequeño primero`,`Da igual el orden`],e:`E va antes que M: N-etil-N-metilpropan-1-amina.`},
+{src:`Tema 33, pág. 6`,q:`"¿Por qué una amina terciaria no forma puentes de H consigo misma?"`,o:[`No tiene H unido al nitrógeno`,`No tiene nitrógeno`,`Es una sal`,`Su N no tiene par libre`],e:`Sí tiene par libre; lo que le falta es el N−H.`},
+{src:`Tema 33, pág. 11`,q:`"¿Por qué etano-1,2-diamina conserva la «o» y etanamina no?"`,o:[`Con prefijos multiplicadores (di-) se conserva la «o» del alcano`,`Porque es aromática`,`Porque es terciaria`,`Es un error del material`],e:`Regla de poliaminas.`}
+  ],
+
+  VIDEOS:[],
+
+  GENS:[
+ {id:`clasAminaG`,t:`t33`,src:`Tema 33, pág. 5–6`,name:`Clasificar aminas y puentes de hidrógeno`,make(){
+   const L = [[`CH₃−NH₂`,0],[`CH₃−CH₂−NH₂`,0],[`CH₃−CH₂−CH₂−NH₂`,0],[`C₆H₅−NH₂`,0],[`CH₃−NH−CH₃`,1],[`CH₃−NH−CH₂−CH₃`,1],[`CH₃−CH₂−NH−CH₂−CH₃`,1],[`C₆H₅−NH−CH₃`,1],[`(CH₃)₃N`,2],[`CH₃−N(CH₃)−CH₂−CH₃`,2],[`(CH₃−CH₂)₃N`,2]];
+   const [f, k] = pick(L);
+   const base = [`Primaria; forma puentes de H entre sus moléculas`,`Secundaria; forma puentes de H entre sus moléculas`,`Terciaria; no forma puentes de H entre sus moléculas`,`Terciaria; forma puentes de H entre sus moléculas`];
+   const ans = base[k];
+   const opts = shuf(base);
+   const cadenas = [`una cadena y dos H`,`dos cadenas y un H`,`tres cadenas y ningún H`][k];
+   return { q:`Clasifique la amina ${f} y diga si forma puentes de H consigo misma.`, opts, correct: opts.indexOf(ans),
+     pasos:[`Se cuentan las cadenas unidas al nitrógeno: ${cadenas}.`, `${[`Primaria`,`Secundaria`,`Terciaria`][k]}: ${k < 2 ? `tiene N−H, forma puentes de H entre sus moléculas` : `no tiene N−H, no forma puentes de H consigo misma (sí con el agua)`}.`], r: ans }; }},
+ {id:`nomAminaG`,t:`t33`,src:`Tema 33, pág. 8–9`,name:`Nombrar aminas (IUPAC)`,make(){
+   const R = [``,`met`,`et`,`prop`,`but`,`pent`,`hex`];
+   const alk = n => `CH₃` + `−CH₂`.repeat(n - 1);
+   const nm = (n, pos) => n === 1 ? `metanamina` : n === 2 ? `etanamina` : `${R[n]}an-${pos}-amina`;
+   const tipo = pick([0, 0, 1, 2, 3]); /* 0: 1ª con N en C1 · 1: 1ª con N en C2 · 2: N-metil · 3: N,N-dimetil */
+   let n, f, name, pasos, alts;
+   if (tipo === 0){
+     n = between(1, 6); f = `${alk(n)}−NH₂`; name = nm(n, 1);
+     pasos = [`Cadena más larga con el N: ${n} C → ${R[n]}ano.`, `Se cambia -o por -amina${n >= 3 ? ` y el N está en el C1` : ``}.`, `Nombre: ${name}.`];
+     alts = [n >= 3 ? nm(n, 2) : null, nm(n === 6 ? 5 : n + 1, 1), `${R[n]}anol`, `${R[n]}anamida`];
+   } else if (tipo === 1){
+     n = between(3, 6); f = `CH₃−CH(NH₂)` + `−CH₂`.repeat(n - 3) + `−CH₃`; name = nm(n, 2);
+     pasos = [`Cadena más larga con el N: ${n} C → ${R[n]}ano.`, `El N está en el segundo carbono (numerando desde cualquier extremo el C del N queda en 2).`, `Nombre: ${name}.`];
+     alts = [nm(n, 1), nm(n === 6 ? 5 : n + 1, 2), `${R[n]}an-2-ol`, n >= 4 ? `${R[n]}an-3-amina` : null];
+   } else {
+     n = between(2, 5);
+     const base = n === 2 ? `etanamina` : `${R[n]}an-1-amina`, other = n === 5 ? `butan-1-amina` : `${R[n + 1]}an-1-amina`;
+     if (tipo === 2){ f = `${alk(n)}−NH−CH₃`; name = `N-metil${base}`; pasos = [`Cadena más larga unida al N: ${n} C → ${base}.`, `El otro grupo del N es un metilo: prefijo N-metil.`, `Nombre: ${name}.`]; alts = [`N,N-dimetil${base}`, base, `N-metil${other}`, `${base} de metilo`]; }
+     else { f = `${alk(n)}−N(CH₃)₂`; name = `N,N-dimetil${base}`; pasos = [`Cadena más larga unida al N: ${n} C → ${base}.`, `Hay dos metilos en el N: N,N-dimetil.`, `Nombre: ${name}.`]; alts = [`N-metil${base}`, `dimetil${base}`, `N,N-dimetil${other}`, base]; }
+   }
+   const opts = shuf([name].concat([...new Set(alts.filter(x => x && x !== name))].slice(0, 3)));
+   return { q:`Elige el nombre IUPAC de: ${f}`, opts, correct: opts.indexOf(name), pasos, r: name }; }}
+  ],
+
+  GUIA:[
+ { h:`Tema 33 (aminas): cómo estudiarlo`, go:[`practica`,`Ir a Práctica`], html:`<p>Es el primer tema de la Unidad VIII. El N hace 3 enlaces y tiene un par libre: de ahí salen el carácter básico, la geometría piramidal y los puentes de H. Lo más evaluable: <b>clasificar</b> (cuántas cadenas hay en el N) y <b>nombrar</b> (-amina, N-, anilina, diamina).</p>
+   <ol><li>Repaso del Tema 33 con sus dibujos.</li>
+   <li>En <b>Práctica</b>: «Clasificar aminas y puentes de hidrógeno» y «Nombrar aminas», hasta acertar <b>10 seguidos</b>.</li>
+   <li>Aprende la tabla: 1ª, 2ª y 3ª frente a número de cadenas, número de H y puentes de H.</li>
+   <li>Nombra a mano los ejemplos de las pág. 8–11 y compáralos con el repaso.</li></ol>` }
+  ],
+
+  SYN:{ amina:[`amino`,`nitrogenado`,`amoniaco`], anilina:[`bencenamina`,`aromatica`], putrescina:[`diamina`,`poliamina`], dopamina:[`biogena`,`catecolamina`], adrenalina:[`catecolamina`,`biogena`], histamina:[`biogena`], serotonina:[`biogena`] },
+
+  figs(F, AR){
+    const T = (x, y, s, o = {}) => `<text x="${x}" y="${y}" text-anchor="${o.a || `middle`}" class="${o.c || `tk`}"${o.fs ? ` style="font-size:${o.fs}px"` : ``}>${s}</text>`;
+    const defs = `<defs><marker id="ah33" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ahd"/></marker></defs>`;
+    const svg = (w, h, body, label) => `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}">${defs}${body}</svg>`;
+    const ln = (x1, y1, x2, y2, cls = `s`) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"/>`;
+    const C = `var(--t33)`;
+    const box = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" class="bx"/>`;
+    const hl = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" style="fill:${C};opacity:.16"/>`;
+
+    F.aminaGeom = { src:`Tema 33, pág. 4`, cap:`El N de una amina es sp³: tres enlaces forman la base de una pirámide y el par libre queda en la cúspide. El par libre repele más que los enlaces y los ángulos se cierran a ≈ 107°.`,
+      svg: (() => { let s = ``;
+        s += `<ellipse cx="170" cy="40" rx="20" ry="26" style="fill:${C};opacity:.18;stroke:${C};stroke-width:1.5"/>` + T(170, 38, `••`, { fs:20 });
+        s += T(170, 92, `N`, { fs:24, c:`tb` });
+        s += ln(160, 100, 100, 160) + ln(180, 100, 230, 150) + `<line x1="170" y1="104" x2="176" y2="162" style="stroke:currentColor;stroke-width:5;stroke-linecap:round"/>`;
+        s += T(92, 178, `R`, { fs:20 }) + T(176, 184, `R'`, { fs:20 }) + T(250, 172, `R''`, { fs:20 });
+        s += `<path d="M100 164 L176 168 L228 150" class="dash" style="fill:none"/>`;
+        s += box(300, 22, 244, 160);
+        s += T(312, 48, `N sp³`, { a:`start`, c:`tb` }) + T(312, 68, `Geometría piramidal trigonal`, { a:`start`, fs:12.5 });
+        s += T(312, 94, `Par libre en la cúspide`, { a:`start`, fs:12.5 }) + T(312, 112, `→ base de Lewis y nucleófilo`, { a:`start`, c:`tm`, fs:12 });
+        s += T(312, 138, `Ángulo ≈ 107°`, { a:`start`, c:`tb`, fs:12.5 }) + T(312, 156, `(menor que 109.5° por el par libre)`, { a:`start`, c:`tm`, fs:12 });
+        return svg(560, 200, s, `Geometría piramidal del nitrógeno en una amina`); })() };
+
+    F.aminaClase = { src:`Tema 33, pág. 5–6`, cap:`Se cuentan las cadenas unidas al N: una, primaria; dos, secundaria; tres, terciaria. Con N−H hay puentes de hidrógeno entre moléculas; la terciaria no los tiene.`,
+      svg: (() => { let s = ``;
+        const col = (x, nm, fm, d1, d2, pdh) => box(x, 10, 170, 200) + T(x + 85, 36, nm, { c:`tb` }) + T(x + 85, 78, fm, { fs:19 }) + hl(x + 14, 100, 142, 26) + T(x + 85, 118, d1, { fs:12.5 }) + T(x + 85, 150, d2, { c:`tm`, fs:12 }) + T(x + 85, 184, pdh, { c:`tb`, fs:12 });
+        s += col(10, `Primaria`, `R−NH₂`, `1 cadena · 2 H`, `ej.: metilamina`, `puentes de H: sí`);
+        s += col(195, `Secundaria`, `R₂NH`, `2 cadenas · 1 H`, `ej.: dimetilamina`, `puentes de H: sí`);
+        s += col(380, `Terciaria`, `R₃N`, `3 cadenas · 0 H`, `ej.: trietilamina`, `puentes de H: no`);
+        return svg(560, 222, s, `Aminas primarias, secundarias y terciarias`); })() };
+
+    F.nomAmina = { src:`Tema 33, pág. 8–9`, cap:`Alcano sin -o + amina; el C del N con el localizador más bajo. Las otras cadenas del N llevan prefijo N- en orden alfabético; dos iguales, N,N-di.`,
+      svg: (() => { let s = ``;
+        s += box(10, 10, 540, 52) + T(24, 32, `Primaria`, { a:`start`, c:`tb`, fs:13 }) + T(24, 52, `CH₃−CH₂−CH₂−NH₂ → propan-1-amina   ·   CH₃−CH(NH₂)−CH₂−CH₃ → butan-2-amina`, { a:`start`, fs:12.5 });
+        s += box(10, 70, 540, 52) + T(24, 92, `Secundaria`, { a:`start`, c:`tb`, fs:13 }) + T(24, 112, `CH₃−NH−CH₂−CH₃ → N-metiletanamina`, { a:`start`, fs:12.5 });
+        s += box(10, 130, 540, 52) + T(24, 152, `Terciaria`, { a:`start`, c:`tb`, fs:13 }) + T(24, 172, `CH₃−N(CH₃)−CH₂−CH₂−CH₃ → N,N-dimetilpropan-1-amina`, { a:`start`, fs:12.5 });
+        s += box(10, 190, 540, 40) + T(24, 214, `Aromática: C₆H₅−NH₂ anilina · C₆H₅−NH−CH₃ N-metilanilina · 4-cloroanilina`, { a:`start`, fs:12.5 }) ;
+        return svg(560, 240, s, `Reglas de nomenclatura de aminas`); })() };
+  }
+});
+
+/* ======================= TEMA 34: AMINOÁCIDOS ======================= */
+registerPack({
+  id:`t34`, version:1,
+  topic:{ t:`t34`, n:`Tema 34`, name:`Aminoácidos`, unit:`Unidad VIII · Compuestos orgánicos nitrogenados`, color:[`#A2467A`,`#E8B0CF`] },
+
+  REPASO:[
+{src:`Tema 34, pág. 3`,title:`Definición y estructura del α-aminoácido`,fig:`aaGeneral`,
+ body:`<p>Un <b>α-aminoácido</b> se organiza alrededor de un <b>carbono central (carbono α)</b>, el <b>carbono quiral</b>, unido a <b>4 grupos distintos</b>:</p>
+ <ul><li>un <b>grupo amino (−NH₂)</b>, de carácter <b>básico</b>;</li>
+ <li>un <b>grupo carboxilo (−COOH)</b>, de carácter <b>ácido</b> (o carboxilato, −COO⁻);</li>
+ <li>un <b>átomo de hidrógeno</b>;</li>
+ <li>una <b>cadena lateral o grupo R</b>.</li></ul>
+ <p>A <b>pH 7</b> el carboxilo está como <b>base conjugada (−COO⁻)</b> y el amino como <b>ácido conjugado (−NH₃⁺)</b>. Por eso cada aminoácido puede comportarse como <b>ácido o como base</b>: es <b>anfótero</b>.</p>
+ <p class="note">Complementario [5]: en la <b>glicina</b> el grupo R es un H, así que su carbono α <b>no es quiral</b>; todos los demás aminoácidos proteicos sí.</p>`,
+ memo:`Cα quiral con 4 grupos: NH₂ (básico), COOH (ácido), H y R. A pH 7: COO⁻ y NH₃⁺ → anfótero. (Glicina: R = H, no quiral.)`},
+{src:`Tema 34, pág. 4`,title:`Zwitterión`,fig:`aaZwit`,
+ body:`<p>Cuando un α-aminoácido se disuelve en agua o en los fluidos del cuerpo (<b>pH ≈ 7.4</b>) ocurre una <b>transferencia interna de protones</b>: el carboxilo pierde un H (<b>−COO⁻</b>) y el amino lo gana (<b>−NH₃⁺</b>).</p>
+ <p>Esa forma <b>neutra en conjunto pero con cargas opuestas en sus extremos</b> se llama <b>zwitterión</b> (o <b>ion dipolar</b>). Le permite <b>interactuar fácilmente con el agua</b> y participar en reacciones bioquímicas.</p>
+ <p class="note">Complementario [5]: según el pH cambia la forma. En medio muy <b>ácido</b> predomina el catión (−NH₃⁺ y −COOH); cerca de la neutralidad, el zwitterión; en medio muy <b>básico</b>, el anión (−NH₂ y −COO⁻).</p>`,
+ memo:`Zwitterión (ion dipolar): COO⁻ y NH₃⁺ a la vez, carga neta cero, a pH ≈ 7.4. Ácido: catión · neutro: zwitterión · básico: anión.`},
+{src:`Tema 34, pág. 5`,title:`Clasificación según el grupo R`,fig:`aaClases`,
+ body:`<p>La clasificación más usada es según las <b>propiedades químicas de la cadena lateral (grupo R)</b>, porque determina cómo se pliegan y funcionan las proteínas:</p>
+ <ul><li><b>Apolares (hidrofóbicos):</b> cadenas de C e H que repelen el agua; suelen ir al <b>interior</b> de las proteínas. Ej.: valina.</li>
+ <li><b>Polares sin carga (hidrofílicos):</b> con −OH, −SH o grupos amida; forman puentes de H con el agua. Ej.: treonina.</li>
+ <li><b>Ácidos (carga negativa a pH fisiológico):</b> tienen un segundo grupo carboxilo en la cadena lateral. Ej.: ácido aspártico (aspartato).</li>
+ <li><b>Básicos (carga positiva a pH fisiológico):</b> tienen N en la cadena lateral que capta protones. Ej.: lisina.</li></ul>`,
+ memo:`Por el grupo R: apolares (hidrofóbicos, valina), polares sin carga (treonina), ácidos (aspartato, carga −) y básicos (lisina, carga +).`},
+{src:`Tema 34, pág. 6`,title:`Aminoácidos apolares`,fig:`aaClases`,
+ body:`<p>Su grupo R es sobre todo hidrocarburo, sin cargas. Son <b>hidrofóbicos</b> y ayudan a mantener la <b>estructura tridimensional</b> de las proteínas. Hay dos tipos de cadena R:</p>
+ <ul><li><b>Alifáticas (7):</b> glicina (Gly, G), alanina (Ala, A), valina (Val, V), leucina (Leu, L), isoleucina (Ile, I), metionina (Met, M) y prolina (Pro, P).</li>
+ <li><b>Aromáticas (3):</b> fenilalanina (Phe, F), tirosina (Tyr, Y) y triptófano (Trp, W).</li></ul>
+ <p class="note">El material coloca la tirosina y el triptófano dentro de los apolares aromáticos; algunos textos clasifican la tirosina como polar. Para el examen, usa la clasificación del Lic.</p>`,
+ memo:`Apolares (10): Gly, Ala, Val, Leu, Ile, Met, Pro (alifáticos) + Phe, Tyr, Trp (aromáticos). Hidrofóbicos; mantienen la estructura 3D.`},
+{src:`Tema 34, pág. 7`,title:`Aminoácidos polares sin carga`,fig:`aaClases`,
+ body:`<p>Los grupos funcionales de su cadena R (<b>−OH, −SH o grupos amida −CONH₂</b>) interactúan con el agua mediante <b>enlaces de hidrógeno</b> y otras interacciones electrostáticas. Son hidrofílicos y frecuentes en la superficie de las proteínas.</p>
+ <ul><li><b>Serina</b> (Ser, S) y <b>treonina</b> (Thr, T): con −OH.</li>
+ <li><b>Cisteína</b> (Cys, C): con −SH.</li>
+ <li><b>Asparagina</b> (Asn, N) y <b>glutamina</b> (Gln, Q): con grupo amida.</li></ul>`,
+ memo:`Polares sin carga (5): Ser, Thr (−OH), Cys (−SH), Asn, Gln (amida −CONH₂). Puentes de H con el agua.`},
+{src:`Tema 34, pág. 8`,title:`Aminoácidos ácidos`,fig:`aaClases`,
+ body:`<p>Tienen un <b>segundo grupo carboxilo en la cadena lateral</b>. En pH ácido ese grupo está sin cargar (neutro); a <b>pH fisiológico (7.4)</b> está como <b>carboxilato (−COO⁻)</b>, adquiere <b>carga negativa</b> y se les llama:</p>
+ <ul><li><b>Aspartato</b> (ácido aspártico, Asp, D).</li>
+ <li><b>Glutamato</b> (ácido glutámico, Glu, E).</li></ul>`,
+ memo:`Ácidos (2): ácido aspártico y ácido glutámico. Segundo −COOH en R; a pH 7.4 son aspartato y glutamato, con carga negativa.`},
+{src:`Tema 34, pág. 9`,title:`Aminoácidos básicos`,fig:`aaClases`,
+ body:`<p>Su cadena lateral tiene <b>átomos de nitrógeno que captan protones (H⁺)</b>: funcionan «como imanes» para los protones. A pH fisiológico tienen <b>carga positiva</b>.</p>
+ <ul><li><b>Lisina</b> (Lys, K), <b>arginina</b> (Arg, R) e <b>histidina</b> (His, H).</li></ul>
+ <p>Su carga positiva permite que las proteínas como las <b>histonas</b> se unan al <b>ADN</b> (carga negativa) para empaquetarlo dentro del núcleo.</p>`,
+ memo:`Básicos (3): Lys, Arg, His. N en R capta H⁺ → carga positiva a pH 7.4. Histonas + ADN.`},
+{src:`Tema 34, pág. 10`,title:`Propiedades físicas`,fig:null,
+ body:`<p>Están determinadas sobre todo por su <b>estructura dipolar</b>: en estado sólido y en solución neutra existen como <b>zwitteriones</b>.</p>
+ <ul><li><b>Estado físico:</b> sólidos cristalinos de color blanco.</li>
+ <li><b>Puntos de fusión elevados:</b> más de <b>200 °C</b>, por las fuertes atracciones electrostáticas entre cargas opuestas; la mayoría se descompone antes de fundirse.</li>
+ <li><b>Solubilidad:</b> solubles en <b>agua</b> y en soluciones ácidas o básicas diluidas.</li>
+ <li><b>Sabor:</b> varía según el aminoácido y su isomería; la glicina y la alanina son <b>dulces</b> y la leucina es <b>insípida</b>.</li></ul>
+ <p class="note">La diapositiva termina la frase del sabor cortada («…la…»); el resto del texto no se ve en el PDF.</p>`,
+ memo:`Sólidos cristalinos blancos; p. de fusión > 200 °C (zwitteriones); solubles en agua y ácidos/bases diluidos; Gly y Ala dulces, Leu insípida.`},
+{src:`Tema 34, pág. 11`,title:`Propiedades químicas`,fig:null,
+ body:`<p>Derivan de sus tres componentes: el <b>grupo carboxilo</b>, el <b>grupo amino</b> y la <b>cadena lateral (R)</b>.</p>
+ <ul><li><b>Comportamiento anfótero</b> (ácido-base).</li>
+ <li><b>Capacidad amortiguadora (buffer):</b> las proteínas resisten cambios bruscos de pH al añadir pequeñas cantidades de ácidos o bases.</li>
+ <li><b>Formación de enlaces peptídicos</b> (Tema 35).</li>
+ <li><b>Reactividad de los grupos R:</b> la <b>cisteína</b> (−SH) se oxida y forma un <b>puente disulfuro (−S−S−)</b>, dando <b>cistina</b>, clave para estabilizar la estructura 3D. Los −OH de <b>serina, treonina y tirosina</b> pueden <b>fosforilarse</b>, un mecanismo esencial de regulación enzimática y señalización celular.</li></ul>`,
+ memo:`Anfóteros, buffer, enlace peptídico. Cys + Cys → cistina (puente −S−S−). Ser, Thr, Tyr se fosforilan (regulación enzimática).`},
+{src:`Tema 34, pág. 2`,title:`Aminoácidos esenciales y no esenciales`,fig:null,
+ body:`<p>El objetivo del tema pide <b>diferenciar aminoácidos esenciales y no esenciales</b> y su importancia en la dieta, pero las diapositivas no desarrollan el punto.</p>
+ <p class="note">Complementario [5] (no está en las diapositivas): los <b>esenciales</b> no los sintetiza el organismo y deben venir de la dieta; en adultos son 9: <b>histidina, isoleucina, leucina, lisina, metionina, fenilalanina, treonina, triptófano y valina</b>. Los <b>no esenciales</b> los sintetiza el cuerpo. Confirma con el Lic. qué lista espera.</p>`,
+ memo:`Esenciales (dieta): His, Ile, Leu, Lys, Met, Phe, Thr, Trp, Val. (No vienen en las diapositivas: confirmar con el Lic.)`}
+  ],
+
+  ERRATA:{
+    [`Definición y estructura del α-aminoácido`]:[
+      { tipo:`aviso`, pg:`pág. 3`, que:`La lista de grupos del carbono α`, dice:`Aparece numerada a., (viñeta), a., b.`, ok:`Son cuatro grupos: amino, carboxilo, hidrógeno y cadena lateral R`, por:`Es un defecto de numeración de la diapositiva; el contenido es el mismo.` }],
+    [`Propiedades físicas`]:[
+      { tipo:`aviso`, pg:`pág. 10`, que:`Frase sobre el sabor`, dice:`Termina cortada: «…la leucina es insípida, la…»`, ok:`El resto no se ve en el PDF`, por:`La diapositiva corta el texto; no hay más información para completarlo.` }]
+  },
+
+  MCQ:[
+{src:`Tema 34, pág. 3`,q:`El carbono α de un α-aminoácido está unido a:`,o:[`Un grupo amino, un carboxilo, un H y un grupo R`,`Dos grupos amino y dos H`,`Un carboxilo, un hidroxilo y dos R`,`Solo a cadena lateral`],e:`Cuatro grupos distintos: es el carbono quiral.`},
+{src:`Tema 34, pág. 3`,q:`Según el material, el carbono α es:`,o:[`Quiral`,`Sp lineal`,`Siempre aromático`,`Un carbono con carga positiva`],e:`Tiene 4 grupos distintos.`},
+{src:`Tema 34, pág. 3`,q:`El grupo amino de un aminoácido tiene carácter:`,o:[`Básico`,`Ácido`,`Neutro`,`Oxidante`],e:`Y el carboxilo es ácido.`},
+{src:`Tema 34, pág. 3`,q:`A pH 7 el grupo carboxilo de un aminoácido está como:`,o:[`−COO⁻ (base conjugada)`,`−COOH sin cargar`,`−CH₂OH`,`−CO−NH₂`],e:`Cede su protón.`},
+{src:`Tema 34, pág. 3`,q:`A pH 7 el grupo amino de un aminoácido está como:`,o:[`−NH₃⁺ (ácido conjugado)`,`−NH₂ sin cargar`,`−NO₂`,`−N=`],e:`Capta un protón.`},
+{src:`Tema 34, pág. 3`,q:`Un aminoácido puede comportarse como ácido o como base. Esto se llama:`,o:[`Comportamiento anfótero`,`Isomería óptica`,`Polimerización`,`Desnaturalización`],e:`Anfótero = ácido y base.`},
+{src:`Tema 34, pág. 4`,q:`Un zwitterión es una forma del aminoácido:`,o:[`Neutra en conjunto, con cargas opuestas en sus extremos`,`Con carga neta +2`,`Sin ningún grupo ionizado`,`Siempre insoluble en agua`],e:`Se llama también ion dipolar.`},
+{src:`Tema 34, pág. 4`,q:`En el zwitterión, ¿qué grupos están cargados?`,o:[`−COO⁻ y −NH₃⁺`,`−COOH y −NH₂`,`−COO⁻ y −NH₂`,`−COOH y −NH₃⁺`],e:`El carboxilo pierde un H y el amino lo gana.`},
+{src:`Tema 34, pág. 4`,q:`La formación del zwitterión ocurre por:`,o:[`Una transferencia interna de protones`,`Una oxidación`,`La pérdida de un grupo R`,`La rotura del carbono α`],e:`Del carboxilo al amino de la misma molécula.`},
+{src:`Tema 34, pág. 4`,q:`El pH aproximado de los fluidos del cuerpo, donde el aminoácido es zwitterión, es:`,o:[`7.4`,`1.0`,`12`,`3.0`],e:`pH fisiológico ≈ 7.4.`},
+{src:`Tema 34, pág. 5`,q:`La clasificación más usada de los aminoácidos se basa en:`,o:[`Las propiedades químicas de la cadena lateral (R)`,`El color`,`El número de carbonos de la molécula`,`El sabor`],e:`Determina cómo se pliegan las proteínas.`},
+{src:`Tema 34, pág. 6`,q:`Los aminoácidos apolares suelen ubicarse:`,o:[`En el interior de las proteínas`,`En la superficie en contacto con el agua`,`Fuera de la célula`,`Solo en el ADN`],e:`Son hidrofóbicos.`},
+{src:`Tema 34, pág. 6`,q:`¿Cuál es un aminoácido apolar alifático?`,o:[`Valina`,`Serina`,`Lisina`,`Ácido aspártico`],e:`Gly, Ala, Val, Leu, Ile, Met, Pro.`},
+{src:`Tema 34, pág. 6`,q:`¿Cuáles son los apolares de cadena aromática?`,o:[`Fenilalanina, tirosina y triptófano`,`Serina, treonina y cisteína`,`Lisina, arginina e histidina`,`Glicina, alanina y prolina`],e:`Phe (F), Tyr (Y) y Trp (W).`},
+{src:`Tema 34, pág. 6`,q:`La abreviatura de la leucina es:`,o:[`Leu, L`,`Lys, K`,`Val, V`,`Ile, I`],e:`Lys es lisina; Ile, isoleucina.`},
+{src:`Tema 34, pág. 7`,q:`Los aminoácidos polares sin carga tienen en su cadena R grupos como:`,o:[`−OH, −SH o amida (−CONH₂)`,`Solo cadenas de hidrocarburo`,`Un segundo −COOH`,`Un N con carga positiva`],e:`Forman puentes de H con el agua.`},
+{src:`Tema 34, pág. 7`,q:`¿Cuál es un aminoácido polar sin carga?`,o:[`Treonina`,`Valina`,`Ácido glutámico`,`Arginina`],e:`Ser, Thr, Cys, Asn, Gln.`},
+{src:`Tema 34, pág. 7`,q:`La cisteína pertenece al grupo de los:`,o:[`Polares sin carga (con −SH)`,`Apolares`,`Ácidos`,`Básicos`],e:`Su cadena lateral lleva un tiol.`},
+{src:`Tema 34, pág. 8`,q:`Los aminoácidos ácidos tienen en la cadena lateral:`,o:[`Un segundo grupo carboxilo`,`Un grupo amino extra`,`Un anillo aromático`,`Un grupo −SH`],e:`A pH 7.4 quedan con carga negativa.`},
+{src:`Tema 34, pág. 8`,q:`A pH fisiológico, el ácido aspártico y el ácido glutámico se llaman:`,o:[`Aspartato y glutamato`,`Asparagina y glutamina`,`Aspartamo y glutatión`,`Aspirina y glutamina`],e:`Forma ionizada del carboxilo de la cadena lateral.`},
+{src:`Tema 34, pág. 9`,q:`Los aminoácidos básicos son:`,o:[`Lisina, arginina e histidina`,`Serina, treonina y cisteína`,`Aspartato y glutamato`,`Glicina, alanina y valina`],e:`Su N capta protones.`},
+{src:`Tema 34, pág. 9`,q:`A pH fisiológico los aminoácidos básicos tienen carga:`,o:[`Positiva`,`Negativa`,`Cero siempre`,`Doble negativa`],e:`Captan H⁺.`},
+{src:`Tema 34, pág. 9`,q:`Las histonas se unen al ADN gracias, sobre todo, a:`,o:[`La carga positiva de sus aminoácidos básicos`,`La carga negativa de sus aminoácidos ácidos`,`Sus aminoácidos apolares`,`Los puentes disulfuro`],e:`Esto permite empaquetar el ADN en el núcleo.`},
+{src:`Tema 34, pág. 10`,q:`Los aminoácidos son, en estado puro:`,o:[`Sólidos cristalinos blancos`,`Líquidos incoloros`,`Gases`,`Sólidos amarillos`],e:`Pág. 10.`},
+{src:`Tema 34, pág. 10`,q:`Su punto de fusión es alto (más de 200 °C) porque:`,o:[`Hay fuertes atracciones electrostáticas entre sus zwitteriones`,`Son moléculas muy pequeñas y apolares`,`No tienen cargas`,`Forman enlaces metálicos`],e:`Muchos se descomponen antes de fundirse.`},
+{src:`Tema 34, pág. 10`,q:`Los aminoácidos son solubles en:`,o:[`Agua y en soluciones ácidas o básicas diluidas`,`Solo en solventes apolares`,`Solo en aceite`,`Ninguno de los anteriores`],e:`Son iones dipolares.`},
+{src:`Tema 34, pág. 10`,q:`¿Qué aminoácidos tienen sabor dulce, según el material?`,o:[`Glicina y alanina`,`Leucina y valina`,`Lisina y arginina`,`Cisteína y metionina`],e:`La leucina es insípida.`},
+{src:`Tema 34, pág. 11`,q:`La cisteína forma el puente disulfuro (−S−S−) y da:`,o:[`Cistina`,`Cisteamina`,`Citrulina`,`Cistitis`],e:`Estabiliza la estructura 3D de las proteínas.`},
+{src:`Tema 34, pág. 11`,q:`¿Qué aminoácidos pueden fosforilarse en su −OH?`,o:[`Serina, treonina y tirosina`,`Valina, leucina e isoleucina`,`Lisina, arginina e histidina`,`Glicina, alanina y prolina`],e:`Mecanismo de regulación enzimática y señalización celular.`},
+{src:`Tema 34, pág. 11`,q:`La capacidad amortiguadora de las proteínas significa que:`,o:[`Resisten cambios bruscos de pH`,`Se disuelven en cualquier pH`,`Cambian de color con el pH`,`Siempre aumentan el pH`],e:`Gracias al comportamiento anfótero de sus grupos.`}
+  ],
+
+  ABIERTAS:[
+{src:`Tema 34, pág. 3–4`,q:`Describa la estructura de un α-aminoácido y explique qué es un zwitterión.`,a:`Un α-aminoácido tiene un carbono central (carbono α, quiral) unido a cuatro grupos distintos: un amino (−NH₂, básico), un carboxilo (−COOH, ácido), un H y una cadena lateral R. En agua y a pH fisiológico (≈ 7.4) hay una transferencia interna de protones: el carboxilo pierde un H (−COO⁻) y el amino lo gana (−NH₃⁺). Esa forma, neutra en conjunto pero con cargas opuestas en los extremos, es el zwitterión o ion dipolar, y le permite interactuar con el agua. Por tener un grupo ácido y uno básico, el aminoácido es anfótero.`},
+{src:`Tema 34, pág. 5–9`,q:`Clasifique los 20 aminoácidos proteicos según su grupo R y cite ejemplos de cada clase.`,a:`Apolares (hidrofóbicos): alifáticos (Gly, Ala, Val, Leu, Ile, Met, Pro) y aromáticos (Phe, Tyr, Trp). Polares sin carga: Ser, Thr, Cys, Asn y Gln (con −OH, −SH o amida). Ácidos (carga negativa a pH 7.4): ácido aspártico y ácido glutámico, con un segundo carboxilo. Básicos (carga positiva a pH 7.4): lisina, arginina e histidina, con N en la cadena lateral. Total: 10 + 5 + 2 + 3 = 20.`},
+{src:`Tema 34, pág. 10–11`,q:`Explique las propiedades físicas y químicas de los aminoácidos y relaciónelas con su estructura dipolar.`,a:`Físicas: como existen como zwitteriones, son sólidos cristalinos blancos con puntos de fusión altos (más de 200 °C, se descomponen) por las atracciones electrostáticas, y solubles en agua y en soluciones ácidas o básicas diluidas; el sabor varía (Gly y Ala dulces, Leu insípida). Químicas: derivan del carboxilo, del amino y del grupo R. Son anfóteros, dan capacidad amortiguadora, forman enlaces peptídicos y sus cadenas laterales reaccionan: la cisteína forma puentes disulfuro (cistina) y los −OH de Ser, Thr y Tyr pueden fosforilarse.`}
+  ],
+
+  EJ:[
+{src:`Tema 34, pág. 5–9`,q:`Clasifique según su grupo R: a) valina; b) treonina; c) ácido aspártico; d) lisina; e) fenilalanina.`,
+ pide:`Ubicar cada aminoácido en una de las cuatro clases del material.`,datos:[`apolar · polar sin carga · ácido · básico`],f:`Se mira el grupo R: hidrocarburo, −OH/−SH/amida, segundo −COOH o N básico`,
+ pasos:[`a) Valina: R de hidrocarburo ramificado → apolar alifático.`,`b) Treonina: R con −OH → polar sin carga.`,`c) Ácido aspártico: R con un segundo −COOH → ácido (aspartato a pH 7.4, carga −).`,`d) Lisina: R con grupo amino → básico (carga + a pH 7.4).`,`e) Fenilalanina: R con anillo aromático → apolar aromático.`],r:`a) apolar; b) polar sin carga; c) ácido; d) básico; e) apolar aromático`},
+{src:`Tema 34, pág. 4`,q:`Dibuje la forma de la glicina como zwitterión y diga cuál es su carga neta.`,
+ pide:`Colocar −NH₃⁺ y −COO⁻ en la glicina (R = H).`,datos:[`glicina: R = H`,`pH ≈ 7.4`],f:`Zwitterión: H₃N⁺−CHR−COO⁻`,
+ pasos:[`Estructura general: H₃N⁺−CHR−COO⁻.`,`En la glicina R = H: H₃N⁺−CH₂−COO⁻.`,`Cargas: +1 (amino) y −1 (carboxilato).`,`Carga neta = +1 − 1 = 0.`],r:`H₃N⁺−CH₂−COO⁻; carga neta 0`},
+{src:`Tema 34, pág. 5`,q:`Escriba el nombre, la abreviatura de tres letras y la de una letra de: a) alanina; b) triptófano; c) lisina; d) ácido glutámico.`,
+ pide:`Recordar las abreviaturas de la lista del material.`,datos:[`Ala, A · Trp, W · Lys, K · Glu, E`],f:`nombre → Xxx, X`,
+ pasos:[`a) Alanina: Ala, A.`,`b) Triptófano: Trp, W.`,`c) Lisina: Lys, K.`,`d) Ácido glutámico: Glu, E.`],r:`Ala/A; Trp/W; Lys/K; Glu/E`},
+{src:`Tema 34, pág. 6–9`,q:`Cuente cuántos aminoácidos hay en cada clase del material y verifique que suman 20.`,
+ pide:`Sumar los aminoácidos de apolares, polares, ácidos y básicos.`,datos:[`apolares 7 + 3`,`polares 5`,`ácidos 2`,`básicos 3`],f:`Suma de las clases`,
+ pasos:[`Apolares: 7 alifáticos + 3 aromáticos = 10.`,`Polares sin carga: Ser, Thr, Cys, Asn, Gln = 5.`,`Ácidos: Asp, Glu = 2.`,`Básicos: Lys, Arg, His = 3.`,`Total: 10 + 5 + 2 + 3 = 20.`],r:`10 + 5 + 2 + 3 = 20`},
+{src:`Tema 34, pág. 11`,q:`Dos moléculas de cisteína se oxidan. ¿Qué enlace se forma, cómo se llama el producto y por qué importa?`,
+ pide:`Aplicar la reactividad del grupo R de la cisteína.`,datos:[`cisteína: −SH (tiol)`],f:`2 R−SH → R−S−S−R (oxidación)`,
+ pasos:[`Dos grupos tiol (−SH) se oxidan y se unen.`,`Se forma un puente disulfuro (−S−S−).`,`El producto es la cistina.`,`Estabiliza la estructura tridimensional de las proteínas.`],r:`Puente disulfuro; cistina; estabiliza la estructura 3D`}
+  ],
+
+  FORM:[
+{src:`Tema 34, pág. 3–11`,title:`Aminoácidos`,rows:[
+ [`Estructura`,`Cα quiral + NH₂ (básico) + COOH (ácido) + H + R · glicina: R = H`],
+ [`A pH 7`,`−COO⁻ (base conjugada) y −NH₃⁺ (ácido conjugado) · anfótero`],
+ [`Zwitterión`,`Ion dipolar · COO⁻ y NH₃⁺ · carga neta 0 · pH ≈ 7.4`],
+ [`Apolares (10)`,`Gly, Ala, Val, Leu, Ile, Met, Pro + Phe, Tyr, Trp (aromáticos) · hidrofóbicos · interior de la proteína`],
+ [`Polares sin carga (5)`,`Ser, Thr (−OH) · Cys (−SH) · Asn, Gln (amida) · puentes de H con agua`],
+ [`Ácidos (2)`,`Asp, Glu · segundo COOH · a pH 7.4 aspartato y glutamato (carga −)`],
+ [`Básicos (3)`,`Lys, Arg, His · N en R · carga + a pH 7.4 · histonas se unen al ADN`],
+ [`Físicas`,`Sólidos cristalinos blancos · p. fusión &gt; 200 °C · solubles en agua y ácidos/bases diluidos · Gly y Ala dulces, Leu insípida`],
+ [`Químicas`,`Anfóteros · buffer · enlace peptídico · Cys−S−S−Cys = cistina · fosforilación de Ser, Thr, Tyr`],
+ [`Abreviaturas`,`Gly G · Ala A · Val V · Leu L · Ile I · Met M · Pro P · Phe F · Tyr Y · Trp W · Ser S · Thr T · Cys C · Asn N · Gln Q · Asp D · Glu E · Lys K · Arg R · His H`]
+]}
+  ],
+
+  FICHAS:[
+{src:`Tema 34, pág. 3`,fig:`aaGeneral`,f:`¿Qué cuatro grupos tiene el carbono α?`,b:`Amino (−NH₂), carboxilo (−COOH), un H y la cadena lateral R. Es el carbono quiral.`},
+{src:`Tema 34, pág. 3`,fig:null,f:`¿Por qué el aminoácido es anfótero?`,b:`Tiene un grupo ácido (−COOH) y uno básico (−NH₂): puede actuar como ácido o como base.`},
+{src:`Tema 34, pág. 3`,fig:null,f:`Formas del carboxilo y del amino a pH 7.`,b:`−COO⁻ (base conjugada) y −NH₃⁺ (ácido conjugado).`},
+{src:`Tema 34, pág. 4`,fig:`aaZwit`,f:`¿Qué es un zwitterión?`,b:`Forma neutra en conjunto, con −COO⁻ y −NH₃⁺ a la vez (ion dipolar). Aparece a pH ≈ 7.4 por transferencia interna de protones.`},
+{src:`Tema 34, pág. 5`,fig:`aaClases`,f:`Las cuatro clases por el grupo R.`,b:`Apolares (hidrofóbicos) · polares sin carga · ácidos (carga −) · básicos (carga +).`},
+{src:`Tema 34, pág. 6`,fig:`aaClases`,f:`Aminoácidos apolares alifáticos.`,b:`Gly, Ala, Val, Leu, Ile, Met y Pro.`},
+{src:`Tema 34, pág. 6`,fig:`aaClases`,f:`Aminoácidos apolares aromáticos.`,b:`Fenilalanina (F), tirosina (Y) y triptófano (W).`},
+{src:`Tema 34, pág. 7`,fig:`aaClases`,f:`Aminoácidos polares sin carga.`,b:`Ser, Thr, Cys, Asn y Gln: −OH, −SH o amida; forman puentes de H con el agua.`},
+{src:`Tema 34, pág. 8`,fig:`aaClases`,f:`Aminoácidos ácidos.`,b:`Ácido aspártico y ácido glutámico: segundo −COOH; a pH 7.4 son aspartato y glutamato (carga −).`},
+{src:`Tema 34, pág. 9`,fig:`aaClases`,f:`Aminoácidos básicos.`,b:`Lisina, arginina e histidina: N en la cadena lateral, carga + a pH 7.4. Las histonas se unen al ADN.`},
+{src:`Tema 34, pág. 10`,fig:null,f:`¿Por qué los aminoácidos tienen puntos de fusión altos (> 200 °C)?`,b:`Por las fuertes atracciones electrostáticas entre zwitteriones. Muchos se descomponen antes de fundirse.`},
+{src:`Tema 34, pág. 10`,fig:null,f:`Solubilidad y sabor.`,b:`Solubles en agua y en ácidos o bases diluidos. Gly y Ala dulces; Leu insípida.`},
+{src:`Tema 34, pág. 11`,fig:null,f:`Puente disulfuro.`,b:`Dos cisteínas se oxidan y unen sus −SH formando −S−S− (cistina); estabiliza la estructura 3D.`},
+{src:`Tema 34, pág. 11`,fig:null,f:`Fosforilación en aminoácidos.`,b:`Los −OH de Ser, Thr y Tyr pueden fosforilarse: regulación enzimática y señalización celular.`}
+  ],
+
+  FQ:[
+{src:`Tema 34, pág. 5`,q:`"Me dan Ser y me piden la clase." ¿Qué haces primero?`,o:[`Miro el grupo R: tiene −OH, es polar sin carga`,`Cuento los carbonos de la cadena principal`,`Veo si es dulce`,`Busco un anillo aromático`],e:`La clasificación es por el grupo R.`},
+{src:`Tema 34, pág. 4`,q:`"¿Por qué un aminoácido a pH 7.4 tiene carga neta cero si tiene dos cargas?"`,o:[`Porque tiene una carga + (NH₃⁺) y una − (COO⁻) que se compensan`,`Porque no tiene cargas`,`Porque pierde el grupo R`,`Porque es un gas`],e:`Es un zwitterión.`},
+{src:`Tema 34, pág. 9`,q:`"¿Por qué la lisina tiene carga positiva a pH fisiológico?"`,o:[`Su N de la cadena lateral capta un protón`,`Tiene un segundo carboxilo`,`Es apolar`,`Pierde el grupo amino`],e:`Es un aminoácido básico.`},
+{src:`Tema 34, pág. 11`,q:`"¿Qué aminoácido forma puentes disulfuro?"`,o:[`Cisteína (−SH)`,`Serina (−OH)`,`Lisina (−NH₂)`,`Valina (hidrocarburo)`],e:`Dos cisteínas dan cistina.`}
+  ],
+
+  VIDEOS:[],
+
+  GENS:[
+ {id:`clasAaG`,t:`t34`,src:`Tema 34, pág. 5–9`,name:`Clasificar aminoácidos por su grupo R`,make(){
+   const CL = [`Apolar (hidrofóbico)`,`Polar sin carga`,`Ácido (carga negativa a pH 7.4)`,`Básico (carga positiva a pH 7.4)`];
+   const L = [[`glicina`,0],[`alanina`,0],[`valina`,0],[`leucina`,0],[`isoleucina`,0],[`metionina`,0],[`prolina`,0],[`fenilalanina`,0],[`tirosina`,0],[`triptófano`,0],[`serina`,1],[`treonina`,1],[`cisteína`,1],[`asparagina`,1],[`glutamina`,1],[`ácido aspártico`,2],[`ácido glutámico`,2],[`lisina`,3],[`arginina`,3],[`histidina`,3]];
+   const [nom, k] = pick(L);
+   const why = [`su grupo R es un hidrocarburo, sin grupos que formen puentes de H ni cargas`,`su grupo R tiene −OH, −SH o amida y forma puentes de H con el agua`,`su grupo R lleva un segundo carboxilo (queda −COO⁻ a pH 7.4)`,`su grupo R tiene N que capta protones (carga + a pH 7.4)`][k];
+   const opts = shuf(CL.slice());
+   const art = nom.startsWith(`ácido`) ? `el` : `la`;
+   return { q:`Según el material, ¿a qué clase pertenece ${art} ${nom}?`, opts, correct: opts.indexOf(CL[k]),
+     pasos:[`Se mira el grupo R de ${nom}: ${why}.`, `Clase: ${CL[k]}.`], r: CL[k] }; }},
+ {id:`abrevAaG`,t:`t34`,src:`Tema 34, pág. 6–9`,name:`Abreviaturas de los aminoácidos`,make(){
+   const L = [[`glicina`,`Gly, G`],[`alanina`,`Ala, A`],[`valina`,`Val, V`],[`leucina`,`Leu, L`],[`isoleucina`,`Ile, I`],[`metionina`,`Met, M`],[`prolina`,`Pro, P`],[`fenilalanina`,`Phe, F`],[`tirosina`,`Tyr, Y`],[`triptófano`,`Trp, W`],[`serina`,`Ser, S`],[`treonina`,`Thr, T`],[`cisteína`,`Cys, C`],[`asparagina`,`Asn, N`],[`glutamina`,`Gln, Q`],[`lisina`,`Lys, K`],[`arginina`,`Arg, R`],[`histidina`,`His, H`]];
+   const d = pick(L);
+   const otros = shuf(L.filter(x => x !== d)).slice(0, 3).map(x => x[1]);
+   const opts = shuf([d[1]].concat(otros));
+   return { q:`¿Cuál es la abreviatura (tres letras, una letra) de la ${d[0]}?`, opts, correct: opts.indexOf(d[1]),
+     pasos:[`En el material, la ${d[0]} se escribe ${d[1]}.`], r: d[1] }; }},
+ {id:`aaPhG`,t:`t34`,src:`Tema 34, pág. 4 (complementario)`,name:`Forma del aminoácido según el pH`,make(){
+   const E = [`Catión: −NH₃⁺ y −COOH`,`Zwitterión: −NH₃⁺ y −COO⁻`,`Anión: −NH₂ y −COO⁻`,`Molécula sin cargas: −NH₂ y −COOH`];
+   const C = [[`en un medio muy ácido (pH cercano a 1)`,0],[`en agua a pH ≈ 7`,1],[`en los fluidos del cuerpo (pH ≈ 7.4)`,1],[`en un medio muy básico (pH cercano a 13)`,2]];
+   const [c, k] = pick(C);
+   const opts = shuf(E.slice());
+   return { q:`¿Qué forma predomina en un aminoácido simple (sin grupo R ionizable) ${c}?`, opts, correct: opts.indexOf(E[k]),
+     pasos:[k === 0 ? `Con exceso de H⁺, ambos grupos están protonados: el carboxilo es −COOH y el amino −NH₃⁺ (carga neta +).` : k === 1 ? `Cerca de la neutralidad el carboxilo pierde su H y el amino lo gana: zwitterión, carga neta 0.` : `Con exceso de OH⁻ el amino pierde su H: −NH₂ y −COO⁻ (carga neta −).`, `Forma: ${E[k]}.`], r: E[k] }; }}
+  ],
+
+  GUIA:[
+ { h:`Tema 34 (aminoácidos): cómo estudiarlo`, go:[`practica`,`Ir a Práctica`], html:`<p>Lo central: la <b>estructura del α-aminoácido</b> (Cα con NH₂, COOH, H y R), el <b>zwitterión</b> y la <b>clasificación por el grupo R</b>. El objetivo del tema también menciona esenciales y no esenciales, pero las diapositivas no lo desarrollan: confírmalo con el Lic.</p>
+   <ol><li>Repaso del Tema 34 con sus dibujos.</li>
+   <li>Memoriza las 4 clases y sus miembros: <b>10 apolares, 5 polares, 2 ácidos, 3 básicos = 20</b>.</li>
+   <li>En <b>Práctica</b>: «Clasificar aminoácidos» y «Abreviaturas», hasta acertar <b>10 seguidos</b>.</li>
+   <li>Dibuja de memoria el zwitterión de la glicina y explica de dónde salen las cargas.</li></ol>` }
+  ],
+
+  SYN:{ aminoacido:[`alfa`,`zwitterion`,`anfotero`], zwitterion:[`ion dipolar`,`anfotero`], anfotero:[`zwitterion`,`buffer`], apolar:[`hidrofobico`], polar:[`hidrofilico`], acido:[`aspartato`,`glutamato`], basico:[`lisina`,`arginina`,`histidina`], cisteina:[`cistina`,`disulfuro`], histona:[`adn`] },
+
+  figs(F, AR){
+    const T = (x, y, s, o = {}) => `<text x="${x}" y="${y}" text-anchor="${o.a || `middle`}" class="${o.c || `tk`}"${o.fs ? ` style="font-size:${o.fs}px"` : ``}>${s}</text>`;
+    const defs = `<defs><marker id="ah34" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ahd"/></marker></defs>`;
+    const svg = (w, h, body, label) => `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}">${defs}${body}</svg>`;
+    const ln = (x1, y1, x2, y2, cls = `s`) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"/>`;
+    const arrow = (x1, y1, x2, y2 = y1) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="ar" marker-end="url(#ah34)"/>`;
+    const C = `var(--t34)`;
+    const box = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" class="bx"/>`;
+    const hl = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" style="fill:${C};opacity:.16"/>`;
+
+    F.aaGeneral = { src:`Tema 34, pág. 3`, cap:`El carbono α (quiral) une un grupo amino, un carboxilo, un H y la cadena lateral R. A pH 7 el amino está como −NH₃⁺ y el carboxilo como −COO⁻.`,
+      svg: (() => { let s = ``;
+        s += T(220, 106, `Cα`, { fs:22, c:`tb` });
+        s += ln(206, 100, 150, 100) + hl(82, 82, 68, 30) + T(116, 104, `H₃N⁺`, { fs:18 }) + T(116, 72, `amino (básico)`, { c:`tm`, fs:12 });
+        s += ln(236, 100, 290, 100) + hl(290, 82, 76, 30) + T(328, 104, `COO⁻`, { fs:18 }) + T(328, 72, `carboxilo (ácido)`, { c:`tm`, fs:12 });
+        s += ln(220, 86, 220, 52) + T(220, 44, `H`, { fs:18 });
+        s += ln(220, 114, 220, 148) + hl(196, 148, 48, 30) + T(220, 170, `R`, { fs:20, c:`tb` }) + T(220, 192, `cadena lateral`, { c:`tm`, fs:12 });
+        s += box(400, 40, 150, 120) + T(475, 64, `Cα quiral`, { c:`tb` }) + T(475, 88, `4 grupos distintos`, { fs:12.5 }) + T(475, 112, `anfótero:`, { fs:12.5, c:`tb` }) + T(475, 130, `ácido y base`, { fs:12.5 }) + T(475, 150, `(glicina: R = H)`, { c:`tm`, fs:11.5 });
+        return svg(560, 208, s, `Estructura general de un α-aminoácido`); })() };
+
+    F.aaZwit = { src:`Tema 34, pág. 4`, cap:`En agua el carboxilo cede un H al amino de la misma molécula: queda −COO⁻ y −NH₃⁺, con carga neta cero (zwitterión). Con exceso de ácido es catión; con exceso de base, anión.`,
+      svg: (() => { let s = ``;
+        const col = (x, ttl, fm, ch, hl2) => box(x, 40, 170, 120) + (hl2 ? hl(x + 6, 46, 158, 108) : ``) + T(x + 85, 66, ttl, { c:`tb`, fs:13 }) + T(x + 85, 100, fm[0], { fs:14 }) + T(x + 85, 122, fm[1], { fs:14 }) + T(x + 85, 148, ch, { c:`tm`, fs:12 });
+        s += col(10, `Medio ácido`, [`H₃N⁺−CHR−COOH`, ``], `catión · carga neta +1`, false);
+        s += col(195, `pH ≈ 7.4`, [`H₃N⁺−CHR−COO⁻`, ``], `zwitterión · carga neta 0`, true);
+        s += col(380, `Medio básico`, [`H₂N−CHR−COO⁻`, ``], `anión · carga neta −1`, false);
+        s += arrow(185, 100, 195, 100) + arrow(370, 100, 380, 100);
+        s += T(280, 20, `← más H⁺                    más OH⁻ →`, { c:`tm`, fs:12 });
+        s += T(280, 190, `forma para un aminoácido simple, sin grupo R ionizable`, { c:`tm`, fs:11.5 });
+        return svg(560, 202, s, `Estados de ionización del aminoácido según el pH`); })() };
+
+    F.aaClases = { src:`Tema 34, pág. 5–9`, cap:`Los 20 aminoácidos proteicos según su grupo R: 10 apolares, 5 polares sin carga, 2 ácidos y 3 básicos.`,
+      svg: (() => { let s = ``;
+        const bx2 = (x, y, w, h, ttl, a, b, c) => box(x, y, w, h) + T(x + 12, y + 22, ttl, { a:`start`, c:`tb`, fs:13 }) + T(x + 12, y + 42, a, { a:`start`, fs:11.5 }) + (b ? T(x + 12, y + 58, b, { a:`start`, fs:11.5 }) : ``) + (c ? T(x + 12, y + 74, c, { a:`start`, c:`tm`, fs:11 }) : ``);
+        s += bx2(10, 8, 270, 90, `Apolares · hidrofóbicos (10)`, `Gly · Ala · Val · Leu · Ile · Met · Pro`, `Phe · Tyr · Trp (aromáticos)`, `interior de la proteína`);
+        s += bx2(290, 8, 260, 90, `Polares sin carga (5)`, `Ser · Thr (−OH)`, `Cys (−SH) · Asn · Gln (amida)`, `puentes de H con el agua`);
+        s += bx2(10, 106, 270, 78, `Ácidos · carga − a pH 7.4 (2)`, `Asp · Glu`, `segundo −COOH en R`, ``);
+        s += bx2(290, 106, 260, 78, `Básicos · carga + a pH 7.4 (3)`, `Lys · Arg · His`, `N en R que capta H⁺`, ``);
+        return svg(560, 194, s, `Clasificación de los aminoácidos según el grupo R`); })() };
+  }
+});
+
+/* ======================= TEMA 35: PÉPTIDOS ======================= */
+registerPack({
+  id:`t35`, version:1,
+  topic:{ t:`t35`, n:`Tema 35`, name:`Péptidos`, unit:`Unidad VIII · Compuestos orgánicos nitrogenados`, color:[`#3F7C8C`,`#9FD2DF`] },
+
+  REPASO:[
+{src:`Tema 35, pág. 3`,title:`Péptidos: definición y diferencia con las proteínas`,fig:`peptClas`,
+ body:`<p>Los <b>péptidos</b> son biomoléculas formadas por la unión de <b>dos o más aminoácidos</b> mediante un enlace covalente llamado <b>enlace peptídico</b>. En esencia son <b>cadenas cortas de aminoácidos</b>: la estructura intermedia entre los aminoácidos individuales y las proteínas completas.</p>
+ <p><b>Diferencia con las proteínas:</b> el tamaño y la complejidad estructural.</p>
+ <ul><li><b>Péptidos:</b> cadenas lineales relativamente cortas (generalmente <b>hasta 50 aminoácidos</b>), sin estructura tridimensional compleja.</li>
+ <li><b>Proteínas:</b> suelen superar los <b>50–100 aminoácidos</b> y se pliegan en estructuras 3D específicas para cumplir su función.</li></ul>
+ <p class="note">El material incluye un video en esta diapositiva (youtu.be/z2sICp8E1BA).</p>`,
+ memo:`Péptido: 2 o más aminoácidos unidos por enlace peptídico; hasta ≈ 50 aa, sin estructura 3D compleja. Proteína: más de 50–100 aa, con plegamiento 3D.`},
+{src:`Tema 35, pág. 4`,title:`Formación del enlace peptídico`,fig:`peptForm`,
+ body:`<p><b>Formación:</b> se origina por una <b>reacción de condensación</b>: el <b>grupo carboxilo (−COOH)</b> de un aminoácido se une al <b>grupo amino (−NH₂)</b> del siguiente y se <b>libera una molécula de agua (H₂O)</b>.</p>
+ <p>Es un <b>enlace amida</b> sustituido entre el grupo <b>α-carboxilo</b> de un aminoácido y el <b>α-amino</b> de otro (−CO−NH−).</p>
+ <p><b>Direccionalidad:</b> toda cadena peptídica tiene <b>dos extremos distintos</b>:</p>
+ <ul><li><b>N-terminal:</b> con un grupo amino libre; ahí <b>inicia</b> la secuencia.</li>
+ <li><b>C-terminal:</b> con un grupo carboxilo libre; ahí <b>termina</b>.</li></ul>
+ <p class="note">Complementario [5]: por convención la secuencia se escribe de izquierda a derecha, del N-terminal al C-terminal. Una cadena lineal de <b>n</b> aminoácidos tiene <b>n − 1</b> enlaces peptídicos y se liberan <b>n − 1</b> moléculas de agua al formarla.</p>`,
+ memo:`Condensación: −COOH + −NH₂ → −CO−NH− + H₂O (enlace amida). N-terminal: NH₂ libre, inicio. C-terminal: COOH libre, fin. n aa → n − 1 enlaces.`},
+{src:`Tema 35, pág. 4`,title:`Clasificación según la configuración (cis y trans)`,fig:`peptForm`,
+ body:`<p>Según la <b>configuración espacial</b> (isomería geométrica) alrededor del enlace C−N, los dos carbonos α adyacentes pueden estar:</p>
+ <ul><li><b>Enlace peptídico trans:</b> los dos Cα están en <b>lados opuestos</b> del enlace C−N. Es el más común (<b>99.9 %</b>).</li>
+ <li><b>Enlace peptídico cis:</b> los dos Cα están del <b>mismo lado</b> del enlace C−N.</li></ul>
+ <p class="note">Complementario [5]: el objetivo del tema habla del <b>carácter parcial de doble enlace</b> del enlace peptídico (por resonancia entre C−N y C=N⁺), que lo hace <b>rígido y plano</b> y explica por qué la forma trans domina.</p>`,
+ memo:`Trans: Cα en lados opuestos del enlace C−N, 99.9 %. Cis: Cα del mismo lado. El enlace tiene carácter parcial de doble enlace: rígido y plano.`},
+{src:`Tema 35, pág. 5`,title:`Clasificación según los grupos que participan`,fig:`peptForm`,
+ body:`<ul><li><b>Enlace peptídico normal (α-peptídico):</b> entre el <b>carboxilo unido al Cα</b> de un aminoácido y el <b>amino unido al Cα</b> del siguiente.</li>
+ <li><b>Enlace isopeptídico:</b> es un enlace amida que se forma <b>fuera de la cadena principal</b>, con el grupo amino o carboxilo de una <b>cadena lateral (R)</b> en lugar de los grupos α. Ejemplo: el enlace entre el <b>grupo γ-carboxilo del glutamato</b> y la <b>cisteína</b> en el <b>glutatión</b>.</li></ul>
+ <p class="note">Complementario [5]: el <b>glutatión</b> (γ-Glu-Cys-Gly) es un tripéptido antioxidante.</p>`,
+ memo:`Normal (α): α-COOH con α-NH₂. Isopeptídico: usa un grupo de la cadena lateral (γ-carboxilo del Glu con la Cys en el glutatión).`},
+{src:`Tema 35, pág. 5`,title:`Clasificación según el número de residuos`,fig:`peptClas`,
+ body:`<p>Se clasifican según cuántos enlaces peptídicos (o residuos) contienen:</p>
+ <ul><li><b>Dipéptidos, tripéptidos, tetrapéptidos y oligopéptidos:</b> entre <b>1 y 9 enlaces peptídicos</b> (de <b>2 a 10 aminoácidos</b>).</li>
+ <li><b>Polipéptidos:</b> <b>10 o más enlaces peptídicos</b>: cadenas largas que, al plegarse, forman las proteínas.</li></ul>
+ <p class="note">La figura de la pág. 8 muestra: péptidos de 2 a 10 aminoácidos, polipéptidos de 10 a 50 y proteínas de más de 50. Los límites se solapan en 10; para ordenar, usa la regla del texto (≤ 9 enlaces = oligopéptido; ≥ 10 enlaces = polipéptido).</p>`,
+ memo:`Di-, tri-, tetra-, oligopéptido: 1–9 enlaces (2–10 aa). Polipéptido: ≥ 10 enlaces. Proteína: más de 50 aa.`},
+{src:`Tema 35, pág. 6`,title:`Propiedades físicas de los péptidos`,fig:null,
+ body:`<p>Dependen del <b>tamaño de la cadena</b>, de la naturaleza <b>polar o apolar de los grupos R</b> y de su <b>carácter dipolar</b>.</p>
+ <ul><li><b>Aspecto:</b> sólidos cristalinos o polvos amorfos, generalmente blancos.</li>
+ <li><b>Puntos de fusión:</b> mayores de <b>200 °C</b>; como los aminoácidos libres, existen como <b>zwitteriones</b> en estado sólido.</li>
+ <li><b>Solubilidad:</b> generalmente solubles en <b>agua, ácidos diluidos y bases diluidas</b>, por sus grupos polares, los enlaces peptídicos (que forman puentes de H) y sus extremos cargados.</li>
+ <li><b>Propiedades osmóticas y difusión:</b> por su tamaño relativamente pequeño ejercen <b>presión osmótica considerable</b> y <b>atraviesan membranas semipermeables o de diálisis</b>, a diferencia de las proteínas.</li>
+ <li><b>Sabor:</b> con muchos aminoácidos hidrofóbicos, <b>amargo</b> (quesos maduros); <b>dulce</b> (aspartamo, dipéptido artificial de ácido aspártico y fenilalanina); <b>umami</b> (péptidos ricos en glutamato).</li></ul>`,
+ memo:`Sólidos blancos; p. fusión > 200 °C; solubles en agua, ácidos y bases diluidos; atraviesan membranas de diálisis (las proteínas no); amargo (hidrofóbicos), dulce (aspartamo = Asp + Phe), umami (glutamato).`},
+{src:`Tema 35, pág. 7`,title:`Propiedades químicas: hidrólisis y Biuret`,fig:null,
+ body:`<p>Están determinadas por la reactividad de sus <b>extremos terminales</b>, los <b>enlaces peptídicos</b> y las <b>cadenas laterales (R)</b>.</p>
+ <ul><li><b>Comportamiento anfótero</b> y carácter ácido-base.</li>
+ <li><b>Hidrólisis del enlace peptídico:</b> los enlaces son muy estables, pero pueden romperse por hidrólisis (agua que regenera los aminoácidos libres):
+  <ul><li><b>Química:</b> calentar el péptido con ácidos fuertes (como <b>HCl 6 M a 110 °C durante 24 h</b>) o con bases fuertes.</li>
+  <li><b>Enzimática:</b> catalizada de forma rápida y específica por <b>peptidasas o proteasas</b>, como la <b>tripsina, la pepsina y la quimotripsina</b>, que cortan enlaces entre aminoácidos específicos.</li></ul></li>
+ <li><b>Reacciones colorimétricas (reacción de Biuret)</b> y <b>reactividad de los extremos (secuenciación)</b>: el material solo los enuncia.</li></ul>
+ <p class="note">Complementario [5]: en la reacción de <b>Biuret</b>, los péptidos con al menos dos enlaces peptídicos dan, con Cu²⁺ en medio alcalino, un color violeta; el dipéptido no lo da.</p>`,
+ memo:`Hidrólisis: química (HCl 6 M, 110 °C, 24 h, o bases) o enzimática (tripsina, pepsina, quimotripsina). Biuret: reacción colorimétrica del enlace peptídico. Secuenciación: extremos terminales.`},
+{src:`Tema 35, pág. 7`,title:`Propiedades químicas: puentes disulfuro y otras reacciones`,fig:null,
+ body:`<ul><li><b>Puentes disulfuro y oxidorreducción:</b> los residuos de <b>cisteína</b> pueden oxidarse y formar <b>enlaces covalentes disulfuro (−S−S−)</b>.</li>
+ <li><b>Condensación y modificación química:</b> los grupos reactivos (amino, carboxilo, hidroxilo, tiol) permiten <b>acilación, esterificación, fosforilación o glicosilación</b>, fundamentales en la regulación biológica y en la síntesis química de péptidos en el laboratorio.</li></ul>
+ <p class="note">El objetivo del tema pide destacar <b>péptidos de interés clínico</b> (hormonas o antioxidantes). En las diapositivas solo aparece el <b>glutatión</b> (antioxidante). Complementario [5]: ejemplos de hormonas peptídicas son la <b>insulina</b> (51 aa), el <b>glucagón</b> (29 aa) y la <b>oxitocina</b> (9 aa).</p>`,
+ memo:`Cys + Cys → puente −S−S−. Modificaciones: acilación, esterificación, fosforilación, glicosilación. Clínicos: glutatión (antioxidante); insulina, glucagón, oxitocina (hormonas).`}
+  ],
+
+  ERRATA:{
+    [`Propiedades químicas: hidrólisis y Biuret`]:[
+      { tipo:`error`, pg:`pág. 7`, que:`Concentración del ácido para hidrolizar`, dice:`HCl6 M`, ok:`HCl 6 M (ácido clorhídrico 6 mol/L)`, por:`Falta el espacio; «HCl6» no es una fórmula.` }],
+    [`Clasificación según el número de residuos`]:[
+      { tipo:`aviso`, pg:`pág. 5 y 8`, que:`Límites entre péptido y polipéptido`, dice:`Texto: oligopéptidos hasta 9 enlaces y polipéptidos desde 10 enlaces. Figura: péptidos de 2 a 10 aminoácidos y polipéptidos de 10 a 50`, ok:`Los límites no coinciden exactamente: 9 enlaces son 10 aminoácidos y 10 enlaces son 11`, por:`La figura se solapa en 10. Confirma con el Lic. el corte exacto antes del examen.` }]
+  },
+
+  MCQ:[
+{src:`Tema 35, pág. 3`,q:`Un péptido es una cadena de:`,o:[`Dos o más aminoácidos unidos por enlaces peptídicos`,`Un solo aminoácido`,`Monosacáridos`,`Ácidos grasos`],e:`Es la estructura intermedia entre el aminoácido y la proteína.`},
+{src:`Tema 35, pág. 3`,q:`Los péptidos tienen generalmente hasta:`,o:[`50 aminoácidos`,`5 aminoácidos`,`500 aminoácidos`,`2000 aminoácidos`],e:`Las proteínas suelen superar los 50–100.`},
+{src:`Tema 35, pág. 3`,q:`La principal diferencia entre un péptido y una proteína es:`,o:[`El tamaño y la complejidad estructural`,`El tipo de enlace que los une`,`El color`,`Que las proteínas no tienen aminoácidos`],e:`Ambos tienen enlaces peptídicos.`},
+{src:`Tema 35, pág. 3`,q:`A diferencia de las proteínas, los péptidos:`,o:[`No tienen una estructura tridimensional compleja`,`Siempre son insolubles`,`No contienen nitrógeno`,`Tienen enlaces iónicos entre aminoácidos`],e:`Son cadenas lineales relativamente cortas.`},
+{src:`Tema 35, pág. 4`,q:`El enlace peptídico se forma por una reacción de:`,o:[`Condensación`,`Oxidación`,`Neutralización`,`Combustión`],e:`Se libera una molécula de agua.`},
+{src:`Tema 35, pág. 4`,q:`¿Qué grupos se unen para formar el enlace peptídico?`,o:[`El −COOH de un aminoácido y el −NH₂ del siguiente`,`Dos grupos −NH₂`,`Dos grupos −COOH`,`Un −OH y un −SH`],e:`Se pierde H₂O.`},
+{src:`Tema 35, pág. 4`,q:`¿Qué molécula se libera al formar un enlace peptídico?`,o:[`Agua`,`Dióxido de carbono`,`Amoníaco`,`Oxígeno`],e:`Por eso es una condensación.`},
+{src:`Tema 35, pág. 4`,q:`El enlace peptídico es, químicamente, un enlace:`,o:[`Amida`,`Éster`,`Éter`,`Glucosídico`],e:`−CO−NH−.`},
+{src:`Tema 35, pág. 4`,q:`El extremo N-terminal de un péptido tiene:`,o:[`Un grupo amino libre`,`Un grupo carboxilo libre`,`Un puente disulfuro`,`Un grupo fosfato`],e:`Ahí inicia la secuencia.`},
+{src:`Tema 35, pág. 4`,q:`El extremo C-terminal de un péptido tiene:`,o:[`Un grupo carboxilo libre`,`Un grupo amino libre`,`Un anillo aromático`,`Un grupo −SH`],e:`Ahí termina la secuencia.`},
+{src:`Tema 35, pág. 4`,q:`Una cadena peptídica tiene:`,o:[`Dos extremos distintos (direccionalidad)`,`Dos extremos iguales`,`Un solo extremo`,`Ningún extremo libre`],e:`N-terminal y C-terminal.`},
+{src:`Tema 35, pág. 4`,q:`El enlace peptídico trans, el más común, representa aproximadamente:`,o:[`99.9 %`,`50 %`,`10 %`,`0.1 %`],e:`Los dos Cα quedan en lados opuestos del enlace C−N.`},
+{src:`Tema 35, pág. 4`,q:`En el enlace peptídico cis, los dos carbonos α:`,o:[`Están del mismo lado del enlace C−N`,`Están en lados opuestos del enlace C−N`,`Están unidos por un puente disulfuro`,`No existen`],e:`En el trans están en lados opuestos.`},
+{src:`Tema 35, pág. 5`,q:`El enlace peptídico normal (α-peptídico) se forma entre:`,o:[`El carboxilo del Cα de un aminoácido y el amino del Cα del siguiente`,`Dos cadenas laterales`,`Dos grupos amino`,`El carboxilo de una cadena lateral y el agua`],e:`Usa los grupos α.`},
+{src:`Tema 35, pág. 5`,q:`Un enlace isopeptídico es un enlace amida que:`,o:[`Se forma con un grupo de la cadena lateral, fuera de la cadena principal`,`Solo existe en los carbohidratos`,`Une dos aminoácidos por sus grupos α`,`Es un enlace iónico`],e:`Ejemplo: el glutatión.`},
+{src:`Tema 35, pág. 5`,q:`El glutatión es un ejemplo de péptido con enlace:`,o:[`Isopeptídico (γ-carboxilo del glutamato con la cisteína)`,`Disulfuro únicamente`,`Glucosídico`,`Fosfodiéster`],e:`Pág. 5.`},
+{src:`Tema 35, pág. 5`,q:`Un péptido de 2 aminoácidos se llama:`,o:[`Dipéptido`,`Tripéptido`,`Polipéptido`,`Proteína`],e:`Tiene un enlace peptídico.`},
+{src:`Tema 35, pág. 5`,q:`Un tripéptido tiene:`,o:[`3 aminoácidos y 2 enlaces peptídicos`,`3 aminoácidos y 3 enlaces peptídicos`,`2 aminoácidos y 3 enlaces`,`3 aminoácidos y 1 enlace`],e:`Enlaces = aminoácidos − 1.`},
+{src:`Tema 35, pág. 5`,q:`Los oligopéptidos contienen según el material:`,o:[`De 1 a 9 enlaces peptídicos (2 a 10 aminoácidos)`,`10 o más enlaces peptídicos`,`Más de 100 aminoácidos`,`Solo un aminoácido`],e:`Los polipéptidos tienen 10 o más.`},
+{src:`Tema 35, pág. 5`,q:`Los polipéptidos contienen:`,o:[`10 o más enlaces peptídicos`,`Hasta 3 enlaces`,`Un solo enlace`,`Ningún enlace`],e:`Cadenas largas que, al plegarse, forman proteínas.`},
+{src:`Tema 35, pág. 6`,q:`Los péptidos puros y secos son generalmente:`,o:[`Sólidos cristalinos o polvos amorfos blancos`,`Líquidos amarillos`,`Gases incoloros`,`Metales`],e:`Existen como zwitteriones.`},
+{src:`Tema 35, pág. 6`,q:`Su punto de fusión es alto (mayor de 200 °C) porque:`,o:[`Existen como zwitteriones con atracciones electrostáticas`,`Son apolares`,`No tienen cargas`,`Pesan muy poco`],e:`Igual que los aminoácidos libres.`},
+{src:`Tema 35, pág. 6`,q:`Los péptidos son generalmente solubles en:`,o:[`Agua, ácidos diluidos y bases diluidas`,`Solo en aceite`,`Solo en éter`,`Ninguno`],e:`Por sus grupos polares y extremos cargados.`},
+{src:`Tema 35, pág. 6`,q:`A diferencia de las proteínas, los péptidos:`,o:[`Pueden atravesar membranas semipermeables o de diálisis`,`Nunca se disuelven`,`No ejercen presión osmótica`,`Son más grandes`],e:`Su tamaño es relativamente pequeño.`},
+{src:`Tema 35, pág. 6`,q:`Los péptidos con muchos aminoácidos hidrofóbicos suelen tener sabor:`,o:[`Amargo`,`Dulce`,`Salado`,`Ácido`],e:`Como los quesos maduros.`},
+{src:`Tema 35, pág. 6`,q:`El aspartamo es un dipéptido artificial de:`,o:[`Ácido aspártico y fenilalanina`,`Glicina y alanina`,`Lisina y arginina`,`Cisteína y serina`],e:`Tiene sabor dulce.`},
+{src:`Tema 35, pág. 6`,q:`El sabor umami se asocia a péptidos ricos en:`,o:[`Glutamato`,`Valina`,`Cisteína`,`Glicina`],e:`Pág. 6.`},
+{src:`Tema 35, pág. 7`,q:`La hidrólisis química del enlace peptídico se logra con:`,o:[`Ácidos fuertes (HCl 6 M, 110 °C, 24 h) o bases fuertes`,`Agua fría`,`Luz visible`,`Cualquier azúcar`],e:`El enlace es muy estable en condiciones normales.`},
+{src:`Tema 35, pág. 7`,q:`La hidrólisis enzimática del enlace peptídico la catalizan:`,o:[`Peptidasas o proteasas, como tripsina, pepsina y quimotripsina`,`Lipasas`,`Amilasas`,`Fosfatasas`],e:`Cortan enlaces entre aminoácidos específicos.`},
+{src:`Tema 35, pág. 7`,q:`La reacción de Biuret es una reacción:`,o:[`Colorimétrica`,`De combustión`,`De precipitación sin color`,`De oxidación del agua`],e:`El material la enuncia entre las propiedades químicas.`},
+{src:`Tema 35, pág. 7`,q:`Los puentes disulfuro entre residuos de cisteína se forman por:`,o:[`Oxidación de los grupos tiol (−SH)`,`Hidrólisis del enlace peptídico`,`Reducción de un carbonilo`,`Esterificación`],e:`Dan enlaces −S−S−.`},
+{src:`Tema 35, pág. 7`,q:`¿Cuál de estas es una modificación química de los péptidos mencionada en el material?`,o:[`Fosforilación`,`Fusión nuclear`,`Fermentación`,`Saponificación`],e:`También acilación, esterificación y glicosilación.`}
+  ],
+
+  ABIERTAS:[
+{src:`Tema 35, pág. 3–4`,q:`Defina péptido, explique cómo se forma el enlace peptídico y qué es la direccionalidad de la cadena.`,a:`Un péptido es una biomolécula formada por dos o más aminoácidos unidos por enlaces peptídicos; es una cadena corta (hasta unos 50 aminoácidos), intermedia entre el aminoácido y la proteína. El enlace se forma por condensación: el carboxilo (−COOH) de un aminoácido reacciona con el amino (−NH₂) del siguiente y se libera una molécula de agua, quedando un enlace amida (−CO−NH−). La cadena tiene dos extremos distintos: el N-terminal, con un amino libre, donde inicia la secuencia, y el C-terminal, con un carboxilo libre, donde termina.`},
+{src:`Tema 35, pág. 4–5`,q:`Explique las tres formas de clasificar el enlace o la cadena peptídica que presenta el material.`,a:`1) Por la configuración espacial: enlace trans (los dos Cα en lados opuestos del enlace C−N, 99.9 %) y cis (del mismo lado). 2) Por los grupos que participan: enlace peptídico normal (α-carboxilo con α-amino) e isopeptídico (se forma con un grupo de la cadena lateral, como el γ-carboxilo del glutamato con la cisteína en el glutatión). 3) Por el número de residuos: dipéptidos, tripéptidos, tetrapéptidos y oligopéptidos (1 a 9 enlaces, 2 a 10 aminoácidos) y polipéptidos (10 o más enlaces), que al plegarse forman las proteínas.`},
+{src:`Tema 35, pág. 6–7`,q:`Resuma las propiedades físicas y químicas de los péptidos.`,a:`Físicas: sólidos cristalinos o polvos amorfos blancos, con punto de fusión mayor de 200 °C (zwitteriones), solubles en agua y en ácidos o bases diluidos, con presión osmótica considerable y capaces de atravesar membranas de diálisis; el sabor puede ser amargo (hidrofóbicos), dulce (aspartamo) o umami (glutamato). Químicas: anfóteros; el enlace peptídico es estable pero se hidroliza con ácidos o bases fuertes (HCl 6 M, 110 °C, 24 h) o con peptidasas (tripsina, pepsina, quimotripsina); reacción de Biuret; reactividad de los extremos (secuenciación); puentes disulfuro entre cisteínas; y modificaciones como acilación, esterificación, fosforilación y glicosilación.`}
+  ],
+
+  EJ:[
+{src:`Tema 35, pág. 4`,q:`Escriba la reacción de formación del dipéptido glicil-alanina (Gly−Ala) a partir de glicina y alanina e indique el extremo N-terminal y el C-terminal.`,
+ pide:`Unir el −COOH de la glicina con el −NH₂ de la alanina, liberando agua.`,datos:[`Gly: H₂N−CH₂−COOH`,`Ala: H₂N−CH(CH₃)−COOH`],f:`H₂N−CHR−COOH + H₂N−CHR'−COOH → H₂N−CHR−CO−NH−CHR'−COOH + H₂O`,
+ pasos:[`El carboxilo de la glicina reacciona con el amino de la alanina.`,`Se libera H₂O y queda el enlace peptídico −CO−NH−.`,`Producto: H₂N−CH₂−CO−NH−CH(CH₃)−COOH.`,`N-terminal: la glicina (amino libre). C-terminal: la alanina (carboxilo libre).`],r:`H₂N−CH₂−CO−NH−CH(CH₃)−COOH + H₂O; N-terminal Gly, C-terminal Ala`},
+{src:`Tema 35, pág. 4–5`,q:`Un péptido tiene 8 aminoácidos. ¿Cuántos enlaces peptídicos tiene, cuántas moléculas de agua se liberaron al formarlo y cómo se clasifica?`,
+ pide:`Relacionar aminoácidos, enlaces y agua; clasificar según el material.`,datos:[`n = 8 aminoácidos`],f:`enlaces = n − 1 · agua liberada = n − 1`,
+ pasos:[`Enlaces peptídicos = 8 − 1 = 7.`,`Cada enlace libera una molécula de agua: 7 H₂O.`,`7 enlaces está entre 1 y 9: oligopéptido.`],r:`7 enlaces; 7 H₂O; oligopéptido`},
+{src:`Tema 35, pág. 5`,q:`Una cadena de 25 aminoácidos y otra de 3 aminoácidos: ¿cómo se clasifica cada una y cuántos enlaces peptídicos tiene?`,
+ pide:`Aplicar la regla del número de enlaces.`,datos:[`≤ 9 enlaces: oligopéptido (incluye di-, tri-, tetra-)`,`≥ 10 enlaces: polipéptido`],f:`enlaces = n − 1`,
+ pasos:[`25 aminoácidos → 24 enlaces (≥ 10): polipéptido.`,`3 aminoácidos → 2 enlaces: tripéptido.`],r:`25 aa: polipéptido (24 enlaces); 3 aa: tripéptido (2 enlaces)`},
+{src:`Tema 35, pág. 5`,q:`En el glutatión, el enlace entre el glutamato y la cisteína usa el γ-carboxilo de la cadena lateral del glutamato. ¿Cómo se llama este tipo de enlace y en qué se diferencia del normal?`,
+ pide:`Distinguir el enlace α-peptídico del isopeptídico.`,datos:[`glutatión: antioxidante`],f:`Normal: α-COOH + α-NH₂ · Isopeptídico: grupo de la cadena lateral`,
+ pasos:[`El enlace usa un carboxilo de la cadena lateral (γ), no el α-carboxilo.`,`Está fuera de la cadena principal: es un enlace isopeptídico.`,`El normal (α-peptídico) une el α-carboxilo de uno con el α-amino del siguiente.`],r:`Isopeptídico: usa un grupo de la cadena lateral; el normal usa los grupos α`},
+{src:`Tema 35, pág. 7`,q:`Indique dos formas de hidrolizar un péptido y para qué sirve la reacción de Biuret según el material.`,
+ pide:`Recordar las condiciones químicas y enzimáticas.`,datos:[`HCl 6 M, 110 °C, 24 h`,`tripsina, pepsina, quimotripsina`],f:`péptido + (n − 1) H₂O → n aminoácidos`,
+ pasos:[`Química: calentar con ácido fuerte (HCl 6 M, 110 °C, 24 h) o con bases fuertes.`,`Enzimática: peptidasas o proteasas (tripsina, pepsina, quimotripsina), rápida y específica.`,`Ambas rompen el enlace peptídico y liberan los aminoácidos libres.`,`El Biuret es una reacción colorimétrica característica de los péptidos y las proteínas.`],r:`Con ácidos/bases fuertes (HCl 6 M, 110 °C, 24 h) o con peptidasas; Biuret: reacción colorimétrica`}
+  ],
+
+  FORM:[
+{src:`Tema 35, pág. 3–8`,title:`Péptidos`,rows:[
+ [`Definición`,`2 o más aminoácidos unidos por enlace peptídico · hasta ≈ 50 aa · sin 3D complejo`],
+ [`Proteína`,`&gt; 50–100 aa · estructura tridimensional específica`],
+ [`Formación`,`Condensación: −COOH + −NH₂ → −CO−NH− + H₂O · enlace amida`],
+ [`Extremos`,`N-terminal (NH₂ libre, inicio) · C-terminal (COOH libre, fin)`],
+ [`Cantidad`,`n aa → n − 1 enlaces y n − 1 H₂O`],
+ [`Configuración`,`Trans: Cα en lados opuestos, 99.9 % · cis: del mismo lado`],
+ [`Grupos`,`Normal (α-peptídico): α-COOH + α-NH₂ · isopeptídico: cadena lateral (glutatión)`],
+ [`Número`,`Di-, tri-, tetra-, oligo-: 1–9 enlaces (2–10 aa) · poli-: ≥ 10 enlaces`],
+ [`Físicas`,`Sólidos blancos · p. fusión &gt; 200 °C · solubles en agua, ácidos y bases diluidos · atraviesan diálisis · amargo, dulce (aspartamo), umami`],
+ [`Hidrólisis`,`Química: HCl 6 M, 110 °C, 24 h, o bases · enzimática: tripsina, pepsina, quimotripsina`],
+ [`Otras`,`Biuret (colorimétrica) · secuenciación · −S−S− (cisteína) · acilación, esterificación, fosforilación, glicosilación`]
+]}
+  ],
+
+  FICHAS:[
+{src:`Tema 35, pág. 3`,fig:`peptClas`,f:`¿Qué es un péptido?`,b:`Cadena de 2 o más aminoácidos unidos por enlaces peptídicos; generalmente hasta ≈ 50 aa.`},
+{src:`Tema 35, pág. 3`,fig:`peptClas`,f:`Péptido frente a proteína.`,b:`Se diferencian por el tamaño y la complejidad: péptidos hasta ≈ 50 aa sin 3D complejo; proteínas más de 50–100 aa con plegamiento 3D.`},
+{src:`Tema 35, pág. 4`,fig:`peptForm`,f:`¿Cómo se forma el enlace peptídico?`,b:`Condensación: el −COOH de un aminoácido con el −NH₂ del siguiente, liberando H₂O. Es un enlace amida (−CO−NH−).`},
+{src:`Tema 35, pág. 4`,fig:`peptDir`,f:`N-terminal y C-terminal.`,b:`N-terminal: amino libre, inicio de la secuencia. C-terminal: carboxilo libre, final.`},
+{src:`Tema 35, pág. 4`,fig:null,f:`Enlace peptídico trans y cis.`,b:`Trans: Cα en lados opuestos del enlace C−N (99.9 %). Cis: Cα del mismo lado.`},
+{src:`Tema 35, pág. 5`,fig:null,f:`Enlace normal e isopeptídico.`,b:`Normal: α-COOH con α-NH₂. Isopeptídico: usa un grupo de la cadena lateral, p. ej. el γ-carboxilo del glutamato con la cisteína en el glutatión.`},
+{src:`Tema 35, pág. 5`,fig:`peptClas`,f:`Clasificación por número de residuos.`,b:`Di-, tri-, tetra- y oligopéptidos: 1–9 enlaces (2–10 aa). Polipéptidos: 10 o más enlaces.`},
+{src:`Tema 35, pág. 4`,fig:null,f:`Un péptido de n aminoácidos: ¿cuántos enlaces y cuánta agua?`,b:`n − 1 enlaces peptídicos y n − 1 moléculas de H₂O liberadas.`},
+{src:`Tema 35, pág. 6`,fig:null,f:`Aspecto, punto de fusión y solubilidad de los péptidos.`,b:`Sólidos blancos; p. fusión > 200 °C (zwitteriones); solubles en agua, ácidos y bases diluidos.`},
+{src:`Tema 35, pág. 6`,fig:null,f:`¿Por qué los péptidos atraviesan membranas de diálisis y las proteínas no?`,b:`Por su tamaño relativamente pequeño; ejercen presión osmótica considerable.`},
+{src:`Tema 35, pág. 6`,fig:null,f:`Sabor de los péptidos.`,b:`Amargo (muchos aa hidrofóbicos), dulce (aspartamo: Asp + Phe) y umami (ricos en glutamato).`},
+{src:`Tema 35, pág. 7`,fig:null,f:`Hidrólisis del enlace peptídico.`,b:`Química: HCl 6 M, 110 °C, 24 h o bases fuertes. Enzimática: tripsina, pepsina, quimotripsina.`},
+{src:`Tema 35, pág. 7`,fig:null,f:`Reacciones químicas que enuncia el material.`,b:`Biuret (colorimétrica), secuenciación (extremos), puentes disulfuro (Cys), acilación, esterificación, fosforilación y glicosilación.`}
+  ],
+
+  FQ:[
+{src:`Tema 35, pág. 5`,q:`"Un péptido tiene 6 aminoácidos. ¿Cuántos enlaces peptídicos tiene?" ¿Qué haces primero?`,o:[`Aplico n − 1: 6 − 1 = 5 enlaces`,`Cuento 6 enlaces, uno por aminoácido`,`Multiplico por 2`,`Sumo 1 y obtengo 7`],e:`Enlaces = aminoácidos − 1.`},
+{src:`Tema 35, pág. 4`,q:`"¿Qué se libera al formarse un enlace peptídico?"`,o:[`Una molécula de agua`,`Una molécula de CO₂`,`Una molécula de NH₃`,`Nada`],e:`Es una condensación.`},
+{src:`Tema 35, pág. 4`,q:`"En Ala−Gly−Ser (de izquierda a derecha), ¿cuál es el N-terminal?"`,o:[`Ala: el primero tiene el amino libre`,`Ser`,`Gly`,`Los tres`],e:`Se escribe de N-terminal a C-terminal (complementario).`},
+{src:`Tema 35, pág. 7`,q:`"¿Qué enzimas cortan péptidos?"`,o:[`Peptidasas o proteasas (tripsina, pepsina, quimotripsina)`,`Amilasas`,`Lipasas`,`Ureasas`],e:`Hidrólisis enzimática del enlace peptídico.`}
+  ],
+
+  VIDEOS:[
+{sub:`Péptidos: definición`,src:`Tema 35, pág. 3`,id:`z2sICp8E1BA`,title:`Video de la diapositiva 3 del Lic. (definición de péptidos)`,ch:`Material del Lic.`,rep:[`Péptidos: definición y diferencia con las proteínas`]},
+{sub:`Enlace peptídico`,src:`Tema 35, pág. 4`,id:`S6aIS2aoy9Q`,title:`Video de la diapositiva 4 del Lic. (enlace peptídico)`,ch:`Material del Lic.`,rep:[`Formación del enlace peptídico`,`Clasificación según la configuración (cis y trans)`]}
+  ],
+
+  GENS:[
+ {id:`peptClasG`,t:`t35`,src:`Tema 35, pág. 4–5`,name:`Enlaces y clasificación de un péptido`,make(){
+   const n = pick([2, 3, 4, 5, 6, 7, 8, 9, 12, 15, 20, 30, 40, 45]);
+   const cl = n === 2 ? `dipéptido` : n === 3 ? `tripéptido` : n === 4 ? `tetrapéptido` : n <= 9 ? `oligopéptido` : `polipéptido`;
+   const E = k => `${k} ${k === 1 ? `enlace` : `enlaces`}`;
+   const ans = `${E(n - 1)}; ${cl}`;
+   const bad = [`${E(n)}; ${cl}`, `${E(n - 1)}; ${n <= 9 ? `polipéptido` : `oligopéptido`}`, `${E(n + 1)}; ${cl}`, `${E(n - 2)}; ${n === 2 ? `tripéptido` : `dipéptido`}`];
+   const opts = shuf([ans].concat([...new Set(bad.filter(x => x !== ans && !x.startsWith(`0 `) && !x.startsWith(`-`)))].slice(0, 3)));
+   return { q:`Una cadena lineal tiene ${n} aminoácidos. ¿Cuántos enlaces peptídicos tiene y cómo se clasifica según el material?`, opts, correct: opts.indexOf(ans),
+     pasos:[`Enlaces = n − 1 = ${n} − 1 = ${n - 1}.`, n === 2 ? `2 aminoácidos: dipéptido.` : n === 3 ? `3 aminoácidos: tripéptido.` : n === 4 ? `4 aminoácidos: tetrapéptido.` : n <= 9 ? `${n - 1} enlaces (entre 1 y 9): oligopéptido.` : `${n - 1} enlaces (10 o más): polipéptido.`, `Respuesta: ${ans}.`], r: ans }; }},
+ {id:`aguaPeptG`,t:`t35`,src:`Tema 35, pág. 4`,name:`Agua liberada al formar un péptido`,make(){
+   const n = pick([2, 3, 4, 5, 6, 8, 10, 12, 20]);
+   const ans = `${n - 1}`;
+   const opts = shuf([ans, `${n}`, `${n + 1}`, `${n - 2}`].filter((x, i, a) => a.indexOf(x) === i && +x >= 1));
+   return { q:`Se unen ${n} aminoácidos en una cadena lineal por enlaces peptídicos. ¿Cuántas moléculas de agua se liberan en total?`, opts, correct: opts.indexOf(ans),
+     pasos:[`Cada enlace peptídico se forma por condensación y libera 1 H₂O.`, `Una cadena lineal de ${n} aminoácidos tiene ${n} − 1 = ${n - 1} enlaces.`, `Se liberan ${n - 1} moléculas de agua.`], r: ans }; }},
+ {id:`termPeptG`,t:`t35`,src:`Tema 35, pág. 4`,name:`N-terminal y C-terminal`,make(){
+   const A = [`Gly`,`Ala`,`Val`,`Leu`,`Ser`,`Cys`,`Lys`,`Glu`,`Phe`,`Pro`,`Thr`,`Asp`];
+   const t = shuf(A).slice(0, 3); const nterm = Math.random() < .5;
+   const ans = nterm ? t[0] : t[2];
+   const opts = shuf(t.slice());
+   return { q:`El tripéptido ${t.join(`−`)} está escrito de izquierda a derecha como se escribe habitualmente. ¿Cuál es el residuo ${nterm ? `N-terminal (con el grupo amino libre)` : `C-terminal (con el grupo carboxilo libre)`}?`, opts, correct: opts.indexOf(ans),
+     pasos:[`Por convención, la secuencia se escribe del extremo N-terminal (izquierda) al C-terminal (derecha).`, nterm ? `El primero (${t[0]}) conserva el grupo amino libre.` : `El último (${t[2]}) conserva el grupo carboxilo libre.`, `Respuesta: ${ans}.`], r: ans }; }}
+  ],
+
+  GUIA:[
+ { h:`Tema 35 (péptidos): cómo estudiarlo`, go:[`practica`,`Ir a Práctica`], html:`<p>Cierra la Unidad VIII: aminoácidos → <b>péptidos</b> → proteínas. Lo central es el <b>enlace peptídico</b> (condensación, −CO−NH−, pierde H₂O), los <b>extremos N y C</b>, la <b>clasificación</b> (cis/trans, normal/isopeptídico, por número de residuos) y las <b>propiedades</b>.</p>
+   <ol><li>Repaso del Tema 35 con sus dibujos y los dos videos del Lic.</li>
+   <li>En <b>Práctica</b>: «Enlaces y clasificación», «Agua liberada» y «N-terminal y C-terminal», hasta acertar <b>10 seguidos</b>.</li>
+   <li>Escribe a mano la formación de un dipéptido y marca el enlace peptídico.</li>
+   <li>Mira el aviso del repaso: los límites oligopéptido/polipéptido del texto y de la figura no coinciden; confírmalo con el Lic.</li></ol>` }
+  ],
+
+  SYN:{ peptido:[`enlace peptidico`,`aminoacido`], enlace:[`amida`,`condensacion`], glutation:[`antioxidante`,`isopeptidico`], aspartamo:[`dulce`,`dipeptido`], biuret:[`colorimetrica`], tripsina:[`proteasa`,`peptidasa`], proteasa:[`peptidasa`,`hidrolisis`] },
+
+  figs(F, AR){
+    const T = (x, y, s, o = {}) => `<text x="${x}" y="${y}" text-anchor="${o.a || `middle`}" class="${o.c || `tk`}"${o.fs ? ` style="font-size:${o.fs}px"` : ``}>${s}</text>`;
+    const defs = `<defs><marker id="ah35" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ahd"/></marker></defs>`;
+    const svg = (w, h, body, label) => `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}">${defs}${body}</svg>`;
+    const arrow = (x1, y1, x2, y2 = y1) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="ar" marker-end="url(#ah35)"/>`;
+    const C = `var(--t35)`;
+    const box = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" class="bx"/>`;
+    const hl = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" style="fill:${C};opacity:.18"/>`;
+
+    F.peptForm = { src:`Tema 35, pág. 4`, cap:`El −COOH de un aminoácido y el −NH₂ del siguiente se condensan: sale una molécula de agua y queda el enlace peptídico −CO−NH−, un enlace amida.`,
+      svg: (() => { let s = ``;
+        s += T(280, 22, `condensación`, { c:`tm`, fs:12 });
+        s += T(110, 76, `H₂N−CHR−COOH`, { fs:16 }) + T(280, 76, `+`, { fs:18 }) + T(440, 76, `H₂N−CHR'−COOH`, { fs:16 });
+        s += arrow(280, 96, 280, 128);
+        s += hl(244, 144, 62, 30) + T(280, 166, `H₂N−CHR−CO−NH−CHR'−COOH`, { fs:16 }) + T(280, 200, `+ H₂O`, { c:`tb`, fs:15 });
+        s += T(275, 138, `enlace peptídico`, { c:`tb`, fs:12 });
+        s += T(60, 166, `N-terminal`, { c:`tm`, fs:11.5 }) + T(510, 166, `C-terminal`, { c:`tm`, fs:11.5 });
+        return svg(560, 214, s, `Formación del enlace peptídico`); })() };
+
+    F.peptDir = { src:`Tema 35, pág. 4`, cap:`La cadena tiene dirección: empieza en el extremo N-terminal (amino libre) y termina en el C-terminal (carboxilo libre). Se escribe de N a C.`,
+      svg: (() => { let s = ``;
+        ['aa₁','aa₂','aa₃','aa₄'].forEach((a, i) => { s += box(70 + i * 110, 56, 80, 44) + T(110 + i * 110, 84, a, { fs:16, c:`tb` }); if (i < 3) s += hl(150 + i * 110, 70, 30, 16) + T(165 + i * 110, 83, `CO−NH`, { fs:9 }); });
+        s += T(70, 40, `H₃N⁺ (amino libre)`, { a:`start`, c:`tm`, fs:12 }) + T(70, 24, `N-terminal · inicio`, { a:`start`, c:`tb`, fs:13 });
+        s += T(490, 40, `COO⁻ (carboxilo libre)`, { a:`end`, c:`tm`, fs:12 }) + T(490, 24, `C-terminal · fin`, { a:`end`, c:`tb`, fs:13 });
+        s += arrow(90, 130, 470, 130) + T(280, 154, `se lee de N a C`, { c:`tm`, fs:12 });
+        return svg(560, 166, s, `Direccionalidad de una cadena peptídica`); })() };
+
+    F.peptClas = { src:`Tema 35, pág. 3–5 y 8`, cap:`Por el número de aminoácidos: péptidos (2 a 10), polipéptidos (hasta ≈ 50) y proteínas (más de 50). Enlaces = aminoácidos − 1.`,
+      svg: (() => { let s = ``;
+        s += box(10, 30, 160, 96) + T(90, 56, `Péptidos`, { c:`tb` }) + T(90, 78, `2 a 10 aa`, { fs:13 }) + T(90, 98, `1 a 9 enlaces`, { c:`tm`, fs:12 }) + T(90, 116, `di · tri · tetra · oligo`, { c:`tm`, fs:11.5 });
+        s += box(200, 30, 160, 96) + T(280, 56, `Polipéptidos`, { c:`tb` }) + T(280, 78, `hasta ≈ 50 aa`, { fs:13 }) + T(280, 98, `≥ 10 enlaces`, { c:`tm`, fs:12 }) + T(280, 116, `cadenas largas`, { c:`tm`, fs:11.5 });
+        s += hl(390, 30, 160, 96) + box(390, 30, 160, 96) + T(470, 56, `Proteínas`, { c:`tb` }) + T(470, 78, `&gt; 50–100 aa`, { fs:13 }) + T(470, 98, `plegamiento 3D`, { c:`tm`, fs:12 }) + T(470, 116, `función específica`, { c:`tm`, fs:11.5 });
+        s += arrow(172, 78, 198, 78) + arrow(362, 78, 388, 78);
+        s += T(280, 156, `Los límites de la figura se solapan en 10; el texto usa 9 y 10 enlaces`, { c:`tm`, fs:11.5 });
+        return svg(560, 168, s, `Péptidos, polipéptidos y proteínas según el tamaño`); })() };
+  }
+});

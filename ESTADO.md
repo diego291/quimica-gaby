@@ -10,6 +10,7 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 - Temas: `fuente/material/tNN.js`. Módulos: `retro*.js`, `dib*.js`, `errata.js`. Audio en `audio/` (voz Piper es_MX-claude-high).
 ## Hecho (verificado y estable)
 - Temas 15–28 y 30–32: repaso, fichas, preguntas, ejercicios, videos, práctica y audio.
+- Unidad VIII cargada: Tema 33 (aminas), 34 (aminoácidos) y 35 (péptidos): repaso con figuras, fichas, preguntas, ejercicios, formulario, 8 prácticas, guía y grupo «Compuestos nitrogenados» en el Simulacro. Sin audio Piper, sin «Explícalo de otra forma» y sin videos de apoyo (solo los 2 enlaces del Lic. en el Tema 35). Lo no incluido en las diapositivas va marcado «Complementario» (esenciales/no esenciales, ionización por pH, Biuret, hormonas peptídicas).
 - Correcciones del material (errata) con aviso por ficha.
 - Retroalimentación: diagnóstico, Mis fallos con repaso espaciado, Cómo evalúan, Simulacro.
 - Dibujar: 7 lecciones, 8 ejercicios con editor táctil, Taller libre; núcleo con 738 pruebas.
@@ -26,9 +27,10 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 3. Cargar unidades 1–3 (átomo y enlace) y el Tema 29, si existe: faltan los PDF.
 4. Pasar `historial-gaby.json` a Gaby para que lo cargue en cada dispositivo.
 5. Probar Dibujar (rediseño con pasos y ayuda) en una pantalla táctil física: solo se probó con emulador a 390 px.
-6. Actualizar el orden de Candidato cuando el Lic. entregue la guía de la Unidad VII o confirme qué temas entran al parcial 3.
+6. Generar el audio (Piper) y «Explícalo de otra forma» de los Temas 33–35, y buscar videos de apoyo para 33 y 34; confirmar con el Lic. la lista de aminoácidos esenciales y el corte oligopéptido/polipéptido (10 vs 11 aa).
+7. Actualizar el orden de Candidato cuando el Lic. entregue la guía de la Unidad VII o confirme qué temas entran al parcial 3.
 ## Restricciones
 - Cero datos privados (tokens, notas, respuestas, fotos, apellido de Gaby) en el repo.
 - Sin force push ni reescribir historial sin permiso explícito de Diego.
 ## Última versión/commit publicado
-App 2026.11.14-2329 · commit 193093b (pestaña Candidato a examen).
+App 2026.11.22-0915 · Temas 33–35 (Unidad VIII).
