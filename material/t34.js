@@ -171,7 +171,9 @@ registerPack({
 {src:`Tema 34, pág. 11`,q:`"¿Qué aminoácido forma puentes disulfuro?"`,o:[`Cisteína (−SH)`,`Serina (−OH)`,`Lisina (−NH₂)`,`Valina (hidrocarburo)`],e:`Dos cisteínas dan cistina.`}
   ],
 
-  VIDEOS:[],
+  VIDEOS:[
+{sub:`Estructura y clasificación`,src:`Tema 34, pág. 3–9`,id:`f6D6bVmZSlI`,title:`¿Qué es un aminoácido? Estructura y clasificación`,ch:`Anatomy Eusabiaga`,rep:[`Definición y estructura del α-aminoácido`,`Zwitterión`,`Clasificación según el grupo R`]}
+  ],
 
   GENS:[
  {id:`clasAaG`,t:`t34`,src:`Tema 34, pág. 5–9`,name:`Clasificar aminoácidos por su grupo R`,make(){

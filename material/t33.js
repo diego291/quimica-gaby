@@ -183,7 +183,9 @@ registerPack({
 {src:`Tema 33, pág. 11`,q:`"¿Por qué etano-1,2-diamina conserva la «o» y etanamina no?"`,o:[`Con prefijos multiplicadores (di-) se conserva la «o» del alcano`,`Porque es aromática`,`Porque es terciaria`,`Es un error del material`],e:`Regla de poliaminas.`}
   ],
 
-  VIDEOS:[],
+  VIDEOS:[
+{sub:`Clasificar y nombrar aminas`,src:`Tema 33, pág. 5–11`,id:`1SI8YG8wc3A`,title:`Nomenclatura de las aminas: primarias, secundarias y terciarias (simétricas y asimétricas)`,ch:`YouTube`,rep:[`Aminas primarias, secundarias y terciarias`,`Nomenclatura IUPAC de aminas primarias`,`Nomenclatura de aminas secundarias y terciarias`]}
+  ],
 
   GENS:[
  {id:`clasAminaG`,t:`t33`,src:`Tema 33, pág. 5–6`,name:`Clasificar aminas y puentes de hidrógeno`,make(){

@@ -1455,7 +1455,9 @@ registerPack({
 {src:`Tema 33, pág. 11`,q:`"¿Por qué etano-1,2-diamina conserva la «o» y etanamina no?"`,o:[`Con prefijos multiplicadores (di-) se conserva la «o» del alcano`,`Porque es aromática`,`Porque es terciaria`,`Es un error del material`],e:`Regla de poliaminas.`}
   ],
 
-  VIDEOS:[],
+  VIDEOS:[
+{sub:`Clasificar y nombrar aminas`,src:`Tema 33, pág. 5–11`,id:`1SI8YG8wc3A`,title:`Nomenclatura de las aminas: primarias, secundarias y terciarias (simétricas y asimétricas)`,ch:`YouTube`,rep:[`Aminas primarias, secundarias y terciarias`,`Nomenclatura IUPAC de aminas primarias`,`Nomenclatura de aminas secundarias y terciarias`]}
+  ],
 
   GENS:[
  {id:`clasAminaG`,t:`t33`,src:`Tema 33, pág. 5–6`,name:`Clasificar aminas y puentes de hidrógeno`,make(){
@@ -1714,7 +1716,9 @@ registerPack({
 {src:`Tema 34, pág. 11`,q:`"¿Qué aminoácido forma puentes disulfuro?"`,o:[`Cisteína (−SH)`,`Serina (−OH)`,`Lisina (−NH₂)`,`Valina (hidrocarburo)`],e:`Dos cisteínas dan cistina.`}
   ],
 
-  VIDEOS:[],
+  VIDEOS:[
+{sub:`Estructura y clasificación`,src:`Tema 34, pág. 3–9`,id:`f6D6bVmZSlI`,title:`¿Qué es un aminoácido? Estructura y clasificación`,ch:`Anatomy Eusabiaga`,rep:[`Definición y estructura del α-aminoácido`,`Zwitterión`,`Clasificación según el grupo R`]}
+  ],
 
   GENS:[
  {id:`clasAaG`,t:`t34`,src:`Tema 34, pág. 5–9`,name:`Clasificar aminoácidos por su grupo R`,make(){
