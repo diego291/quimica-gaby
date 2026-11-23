@@ -213,7 +213,7 @@ const RF_GRUPOS = [
   { k:`u13`, n:`Unidades 1–3 · átomo, enlace y laboratorio (refuerzo)`, ts:[`u13`] },
   { k:`h`, n:`Hidrocarburos`, ts:[`t22`,`t23`,`t24`,`t25`,`t26`] },
   { k:`ox`, n:`Funciones oxigenadas`, ts:[`t27`,`t28`,`t30`,`t31`,`t32`] },
-  { k:`nit`, n:`Compuestos nitrogenados`, ts:[`t33`,`t34`,`t35`] }
+  { k:`nit`, n:`Compuestos nitrogenados`, ts:[`t33`,`t34`,`t35`,`t36`] }
 ];
 const RF_MODOS = {
   parcial:{ n:`Parcial`, d:`20 preguntas objetivas y 10 problemas, como el Parcial 2. Se califica sobre 10.`, min:60 },

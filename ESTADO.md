@@ -9,7 +9,8 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 - JS/CSS puros. Editar solo `fuente/`; `python3 fuente/publicar.py` genera app.js, app.css, core.js, packs.js y sube la versión (sw.js).
 - Temas: `fuente/material/tNN.js`. Módulos: `retro*.js`, `dib*.js`, `errata.js`. Audio en `audio/` (voz Piper es_MX-claude-high).
 ## Hecho (verificado y estable)
-- Temas 15–28 y 30–35: repaso, fichas, preguntas, ejercicios, videos, práctica y audio.
+- Temas 15–28 y 30–36: repaso, fichas, preguntas, ejercicios, videos, práctica y audio.
+- Tema 36 (proteínas) cargado: 15 apartados de repaso con 6 figuras, fichas, preguntas, ejercicios, formulario, 5 prácticas, guía, «Explícalo de otra forma» y grupo «Compuestos nitrogenados» del Simulacro. Sin audio ni videos (la pág. 15 solo trae un enlace de Drive del Lic.). Lo no incluido en las diapositivas va marcado «Complementario» (carga según pH/pI, electroforesis, Biuret). Avisos: textos cortados en pág. 4, 12 y 16; el índice anuncia «5. punto isoeléctrico» sin diapositiva propia (está en la pág. 14).
 - Unidad VIII cargada: Tema 33 (aminas), 34 (aminoácidos) y 35 (péptidos): repaso con figuras, fichas, preguntas, ejercicios, formulario, 8 prácticas, guía y grupo «Compuestos nitrogenados» en el Simulacro. «Explícalo de otra forma» (31 fichas) y 1 video de apoyo en 33 y en 34 (sin comprobar que reproduzcan); sin audio Piper. Lo no incluido en las diapositivas va marcado «Complementario» (esenciales/no esenciales, ionización por pH, Biuret, hormonas peptídicas).
 - Correcciones del material (errata) con aviso por ficha.
 - Retroalimentación: diagnóstico, Mis fallos con repaso espaciado, Cómo evalúan, Simulacro.
@@ -27,10 +28,10 @@ Se publica en GitHub Pages; Diego carga el material tema por tema desde los PDF 
 3. Cargar unidades 1–3 (átomo y enlace) y el Tema 29, si existe: faltan los PDF.
 4. Pasar `historial-gaby.json` a Gaby para que lo cargue en cada dispositivo.
 5. Probar Dibujar (rediseño con pasos y ayuda) en una pantalla táctil física: solo se probó con emulador a 390 px.
-6. Generar el audio (Piper) de los Temas 33–35 (no se pudo: falta la voz es_MX-claude-high); confirmar con el Lic. aminoácidos esenciales y el corte oligo/polipéptido (10 vs 11 aa); comprobar que reproducen los videos de apoyo de 33 y 34.
+6. Generar el audio (Piper) de los Temas 33–36; revisar el enlace de Drive de la pág. 15 del Tema 36 (¿video?) y confirmar con el Lic. cómo espera «las proteínas no se disuelven» (coloidales) (no se pudo: falta la voz es_MX-claude-high); confirmar con el Lic. aminoácidos esenciales y el corte oligo/polipéptido (10 vs 11 aa); comprobar que reproducen los videos de apoyo de 33 y 34.
 7. Actualizar el orden de Candidato cuando el Lic. entregue la guía de la Unidad VII o confirme qué temas entran al parcial 3.
 ## Restricciones
 - Cero datos privados (tokens, notas, respuestas, fotos, apellido de Gaby) en el repo.
 - Sin force push ni reescribir historial sin permiso explícito de Diego.
 ## Última versión/commit publicado
-App 2026.11.22-0923 · Explícalo y videos de los Temas 33–35.
+App 2026.11.23-1145 · Tema 36 (proteínas).
